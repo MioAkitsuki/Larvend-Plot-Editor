@@ -19,7 +19,7 @@ namespace Larvend
         public TextType textType;
         public string speaker;
         public string text;
-        public AudioClip voice;
+        public int voiceId = -1;
 
         public Vector2 positionOffset;
         public float displaySpeed;

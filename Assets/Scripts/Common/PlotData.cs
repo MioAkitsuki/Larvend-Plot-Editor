@@ -11,9 +11,9 @@ namespace Larvend
     [CreateAssetMenu(fileName = "PlotData", menuName = "Larvend/PlotData", order = 0)]
     public class PlotData : ScriptableObject
     {
-        public string id;
         [SerializeReference]
         public List<CommandBase> Data = new List<CommandBase>();
+        public VoiceBank VoiceBankData;
 
         [CustomEditor(typeof(PlotData))]
         public class CommandConfigEditor : Editor
