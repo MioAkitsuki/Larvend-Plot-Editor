@@ -5,7 +5,6 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditor.Callbacks;
 
-
 namespace Larvend
 {
     
@@ -14,14 +13,15 @@ namespace Larvend
     {
         public string Id;
         public PlotHeader Header;
+
         [SerializeReference]
         public List<CommandBase> Data = new List<CommandBase>();
 
         #if UNITY_EDITOR
         [CustomEditor(typeof(PlotData))]
-        public class CommandConfigEditor : Editor
+        public class PlotDataEditor : Editor
         {
-            public PlotData commandConfig;
+            public PlotData plotData;
             private int selectedIndex;
             private static List<Type> commandTypes = new List<Type>();
 
@@ -36,7 +36,7 @@ namespace Larvend
 
             private void OnEnable()
             {
-                commandConfig = (PlotData)target;
+                plotData = (PlotData)target;
                 selectedIndex = 0;
             }
 
@@ -56,7 +56,7 @@ namespace Larvend
                 {
                     var obj = Activator.CreateInstance(commandType) as CommandBase;
                     if (obj == null) return;
-                    commandConfig.Data.Add(obj);
+                    plotData.Data.Add(obj);
                 }
 
                 serializedObject.ApplyModifiedProperties();

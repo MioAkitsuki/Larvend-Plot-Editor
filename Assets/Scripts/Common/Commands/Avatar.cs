@@ -4,26 +4,23 @@ using UnityEngine;
 namespace Larvend
 {
     [Serializable]
-    public class Background : CommandBase
+    public class Avatar : CommandBase
     {
-        public enum BackgroundType
+        public enum AvatarType
         {
-            Front,
-            Middle,
-            Back
+            None,
+            Left,
+            Right
         }
 
         public enum AppearMethod
         {
             Appear,
-            Fade,
-            FadeFromBlack,
-            FadeFromWhite,
-            FadeFromTransparent
+            Fade
         }
 
         public AppearMethod appearMethod;
-        public BackgroundType backgroundType;
+        public AvatarType avatarType;
         public Sprite sprite;
 
         public Vector2 positionOffset;
@@ -34,12 +31,13 @@ namespace Larvend
 
         public override CommandType GetCommandType()
         {
-            return CommandType.Background;
+            return CommandType.Avatar;
         }
 
         public override void OnEnter()
         {
             isFinished = false;
+            AvatarController.Execute(this);
         }
 
         public override void OnUpdate()
@@ -54,12 +52,18 @@ namespace Larvend
 
         public override void Skip()
         {
-            throw new NotImplementedException();
+            AvatarController.Skip();
+            Finish();
         }
 
         public override bool IsFinished()
         {
             return isFinished;
+        }
+
+        public void Finish()
+        {
+            isFinished = true;
         }
     }
 }

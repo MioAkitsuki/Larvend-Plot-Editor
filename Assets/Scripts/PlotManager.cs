@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using QFramework;
@@ -12,14 +13,68 @@ namespace Larvend
             get { return MonoSingletonProperty<PlotManager>.Instance; }
         }
 
+        public static bool HasPlot = false;
+
         private AudioSource musicSource;
         private AudioSource voiceSource;
         public PlotData plotData;
+
+        private Queue<CommandBase> commands = new Queue<CommandBase>();
+
+        private CommandGroup currentGroup = new CommandGroup();
 
         void Awake()
         {
             musicSource = transform.Find("MusicSource").GetComponent<AudioSource>();
             voiceSource = transform.Find("VoiceSource").GetComponent<AudioSource>();
+
+            TypeEventSystem.Global.Register<NextCommandEvent>(e => {
+                if (HasPlot) NextCommand();
+            }).UnRegisterWhenGameObjectDestroyed(gameObject);
+        }
+
+        void Update()
+        {
+            if (Input.GetKeyUp(KeyCode.S) && !HasPlot)
+            {
+                ReadAndStart();
+            }
+
+            currentGroup?.OnUpdate();
+        }
+
+        private void ReadAndStart()
+        {
+            foreach (var command in plotData.Data)
+            {
+                commands.Enqueue(command);
+            }
+            HasPlot = true;
+            NextCommand();
+        }
+
+        private void NextCommand()
+        {
+            if (!currentGroup.isEmpty() && !currentGroup.IsFinished())
+            {
+                if (currentGroup.IsSkippable()) currentGroup.Skip();
+                else return;
+            }
+            else
+            {
+                currentGroup?.OnExit();
+                
+                currentGroup.commandGroup.Clear();
+                currentGroup.commandGroup.Add(commands.Dequeue());
+                while (commands.Count > 0 && commands.Peek().appearTiming == CommandBase.AppearTiming.Simultaneously)
+                {
+                    currentGroup.commandGroup.Add(commands.Dequeue());
+                }
+
+                currentGroup?.OnEnter();
+            }
+
+            if (commands.Count == 0) HasPlot = false;
         }
 
         public void OnSingletonInit()
