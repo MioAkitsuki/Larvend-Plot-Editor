@@ -9,10 +9,14 @@ namespace Larvend
     [Serializable]
     public class Voice
     {
-        public int id;
         public string name;
-        public string description;
         public AudioClip audioClip;
+
+        public Voice(AudioClip clip)
+        {
+            audioClip = clip;
+            name = clip.name;
+        }
     }
 
     public static class VoiceSerializer
@@ -20,7 +24,6 @@ namespace Larvend
         public static byte[] ToByte(Voice voice)
         {
             List<byte> byteList = new List<byte>();
-            byteList.AddRange(BitConverter.GetBytes(voice.id));
             byteList.AddRange(AudioSerializer.ToByte(voice.audioClip));
 
             return byteList.ToArray();
@@ -28,11 +31,7 @@ namespace Larvend
 
         public static Voice Parse(byte[] bytes, int startIndex, out int endIndex)
         {
-            Voice voice = new Voice
-            {
-                id = BitConverter.ToInt32(bytes, startIndex),
-                audioClip = AudioSerializer.Parse(bytes, startIndex + 4, out endIndex)
-            };
+            Voice voice = new Voice(AudioSerializer.Parse(bytes, startIndex + 4, out endIndex));
 
             return voice;
         }

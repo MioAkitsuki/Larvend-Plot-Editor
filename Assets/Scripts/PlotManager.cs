@@ -12,12 +12,14 @@ namespace Larvend
             get { return MonoSingletonProperty<PlotManager>.Instance; }
         }
 
-        public AudioSource audioSource;
+        private AudioSource musicSource;
+        private AudioSource voiceSource;
         public PlotData plotData;
 
         void Awake()
         {
-            audioSource = transform.GetComponent<AudioSource>();
+            musicSource = transform.Find("MusicSource").GetComponent<AudioSource>();
+            voiceSource = transform.Find("VoiceSource").GetComponent<AudioSource>();
         }
 
         public void OnSingletonInit()

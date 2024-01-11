@@ -1,4 +1,5 @@
 using System;
+using TMPro;
 using UnityEngine;
 
 namespace Larvend
@@ -14,15 +15,18 @@ namespace Larvend
             ByRightBox
         }
 
-        private bool isFinished = false;
+        public AppearMethod appearMethod;
 
         public TextType textType;
         public string speaker;
         public string text;
-        public int voiceId = -1;
+        public TextConfig textConfig;
+        public AudioClip voice;
 
         public Vector2 positionOffset;
-        public float displaySpeed;
+        public float displaySpeed = 1;
+
+        private bool isFinished = false;
 
         public override CommandType GetCommandType()
         {
@@ -41,12 +45,49 @@ namespace Larvend
 
         public override void OnExit()
         {
-            throw new NotImplementedException();
+            return;
         }
 
         public override bool IsFinished()
         {
             return isFinished;
         }
+    }
+
+    [Serializable]
+    public class TextConfig
+    {
+        public int FontSize;
+        public Color FontColor;
+        public FontStyles FontStyle;
+        public TextAlignmentOptions TextAlignmentOption;
+
+        public static TextConfig DefaultFullScreen => new TextConfig() {
+            FontSize = 36,
+            FontColor = Color.white,
+            FontStyle = FontStyles.Normal,
+            TextAlignmentOption = TextAlignmentOptions.Midline | TextAlignmentOptions.Center
+        };
+
+        public static TextConfig DefaultFullScreenSpeaker => new TextConfig() {
+            FontSize = 32,
+            FontColor = new Color(0.8f, 0.8f, 0.8f, 1f),
+            FontStyle = FontStyles.Normal,
+            TextAlignmentOption = TextAlignmentOptions.Midline | TextAlignmentOptions.Right
+        };
+
+        public static TextConfig DefaultByBar => new TextConfig() {
+            FontSize = 36,
+            FontColor = Color.white,
+            FontStyle = FontStyles.Normal,
+            TextAlignmentOption = TextAlignmentOptions.Top | TextAlignmentOptions.Left
+        };
+
+        public static TextConfig DefaultByBarSpeaker => new TextConfig() {
+            FontSize = 32,
+            FontColor = new Color(0.8f, 0.8f, 0.8f, 1f),
+            FontStyle = FontStyles.Underline,
+            TextAlignmentOption = TextAlignmentOptions.Midline | TextAlignmentOptions.Left
+        };
     }
 }

@@ -5,16 +5,19 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditor.Callbacks;
 
-#if UNITY_EDITOR
+
 namespace Larvend
 {
+    
     [CreateAssetMenu(fileName = "PlotData", menuName = "Larvend/PlotData", order = 0)]
     public class PlotData : ScriptableObject
     {
+        public string Id;
+        public PlotHeader Header;
         [SerializeReference]
         public List<CommandBase> Data = new List<CommandBase>();
-        public VoiceBank VoiceBankData;
 
+        #if UNITY_EDITOR
         [CustomEditor(typeof(PlotData))]
         public class CommandConfigEditor : Editor
         {
@@ -58,8 +61,7 @@ namespace Larvend
 
                 serializedObject.ApplyModifiedProperties();
             }
-
+            #endif
         }
     }
 }
-#endif

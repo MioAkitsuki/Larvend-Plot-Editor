@@ -15,6 +15,15 @@ namespace Larvend
     [Serializable]
     public abstract class CommandBase
     {
+        public enum PlayMode
+        {
+            Manual,
+            Auto
+        }
+
+        public PlayMode playMode;
+        public float time;
+
         abstract public CommandType GetCommandType();
 
         abstract public void OnEnter();
