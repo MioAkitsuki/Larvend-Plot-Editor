@@ -54,11 +54,17 @@ namespace Larvend
         private void SwitchType(Text.TextType type)
         {
             mCurrentType = type;
-            if (mCurrentCanvasGroup) StartCoroutine(Fade(mCurrentCanvasGroup, 0, 0.2f));
+            if (mCurrentCanvasGroup) StartCoroutine(Fade(mCurrentCanvasGroup, 0, 0.1f));
 
             TextConfig textConfig, speakerConfig;
             switch (mCurrentType)
             {
+                case Text.TextType.None:
+                    mCurrentCanvasGroup = null;
+                    mCurrentSpeakerField = null;
+                    mCurrentTextField = null;
+                    mCurrentText.Finish();
+                    break;
                 case Text.TextType.FullScreen:
                     mCurrentCanvasGroup = mFullScreenCanvasGroup;
                     mCurrentSpeakerField = mFullScreenSpeaker;
@@ -97,7 +103,6 @@ namespace Larvend
 
         public static void Execute(Text text)
         {
-            if (text.textType == Text.TextType.None) throw new System.Exception("TextType is None");
             mCurrentText = text;
             if (mCurrentType != text.textType) Instance.SwitchType(text.textType);
 
@@ -156,14 +161,14 @@ namespace Larvend
                 Instance.StopCoroutine(mCurrentCoroutine);
             mCurrentCoroutine = null;
 
-            mCurrentTextField.text = mCurrentText.text;
+            if (mCurrentType != Text.TextType.None) mCurrentTextField.text = mCurrentText.text;
         }
 
         public IEnumerator FadeText()
         {
             while (!Mathf.Approximately(mCurrentTextField.alpha, 0f))
             {
-                mCurrentTextField.alpha = Mathf.MoveTowards(mCurrentTextField.alpha, 0f, 0.2f);
+                mCurrentTextField.alpha = Mathf.MoveTowards(mCurrentTextField.alpha, 0f, 0.1f);
                 yield return new WaitForFixedUpdate();
             }
             mCurrentTextField.alpha = 0f;
@@ -195,7 +200,7 @@ namespace Larvend
             }
             mCurrentTextField.alpha = 0f;
 
-            yield return new WaitForSeconds(mCurrentText.time == 0f ? 1f : mCurrentText.time);
+            yield return new WaitForSeconds(0.5f);
 
             mCurrentTextField.SetText(mCurrentText.text);
             mCurrentSpeakerField.SetText(mCurrentText.speaker);

@@ -21,7 +21,8 @@ namespace Larvend
 
         private Queue<CommandBase> commands = new Queue<CommandBase>();
 
-        private CommandGroup currentGroup = new CommandGroup();
+        public static CommandGroup currentGroup = new CommandGroup();
+        public static CommandGroup automaticGroup = new CommandGroup();
 
         void Awake()
         {
@@ -41,6 +42,15 @@ namespace Larvend
             }
 
             currentGroup?.OnUpdate();
+
+            if (currentGroup.IsFinished() && !automaticGroup.isEmpty())
+            {
+                currentGroup.OnExit();
+                currentGroup = automaticGroup;
+                currentGroup.OnEnter();
+
+                automaticGroup = new CommandGroup();
+            }
         }
 
         private void ReadAndStart()
@@ -65,10 +75,20 @@ namespace Larvend
                 currentGroup?.OnExit();
                 
                 currentGroup.commandGroup.Clear();
+                automaticGroup.commandGroup.Clear();
                 currentGroup.commandGroup.Add(commands.Dequeue());
                 while (commands.Count > 0 && commands.Peek().appearTiming == CommandBase.AppearTiming.Simultaneously)
                 {
                     currentGroup.commandGroup.Add(commands.Dequeue());
+                }
+
+                if (commands.Count > 0 && commands.Peek().appearTiming == CommandBase.AppearTiming.AfterPreviousFinished)
+                {
+                    automaticGroup.commandGroup.Add(commands.Dequeue());
+                    while (commands.Count > 0 && commands.Peek().appearTiming == CommandBase.AppearTiming.Simultaneously)
+                    {
+                        automaticGroup.commandGroup.Add(commands.Dequeue());
+                    }
                 }
 
                 currentGroup?.OnEnter();

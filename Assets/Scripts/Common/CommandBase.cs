@@ -19,7 +19,8 @@ namespace Larvend
         public enum AppearTiming
         {
             BySequence,
-            Simultaneously
+            Simultaneously,
+            AfterPreviousFinished
         }
 
         public bool skippable = true;

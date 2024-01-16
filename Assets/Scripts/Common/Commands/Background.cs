@@ -8,6 +8,7 @@ namespace Larvend
     {
         public enum BackgroundType
         {
+            None,
             Front,
             Middle,
             Back
@@ -16,7 +17,7 @@ namespace Larvend
         public enum AppearMethod
         {
             Appear,
-            Fade,
+            CrossFade,
             FadeFromBlack,
             FadeFromWhite,
             FadeFromTransparent
@@ -40,6 +41,7 @@ namespace Larvend
         public override void OnEnter()
         {
             isFinished = false;
+            BackgroundController.Execute(this);
         }
 
         public override void OnUpdate()
@@ -60,6 +62,11 @@ namespace Larvend
         public override bool IsFinished()
         {
             return isFinished;
+        }
+
+        public void Finish()
+        {
+            isFinished = true;
         }
     }
 }
