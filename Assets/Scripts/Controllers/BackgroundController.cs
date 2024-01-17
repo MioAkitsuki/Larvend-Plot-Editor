@@ -98,29 +98,29 @@ namespace Larvend
                 mCurrentCanvasGroup.alpha = 1;
 
                 mCurrentBackground.Finish();
+                return;
             }
 
-            if (background.appearMethod == Background.AppearMethod.CrossFade)
+            if (mCurrentCoroutine != null)
             {
-                if (mCurrentCoroutine != null)
-                {
-                    Instance.StopCoroutine(mCurrentCoroutine);
-                }
-
-                mCurrentCoroutine = Instance.StartCoroutine(Instance.CrossFadeBackground());
-                Instance.StartCoroutine(Instance.Fade(mCurrentCanvasGroup, 1f, 0.2f));
+                Instance.StopCoroutine(mCurrentCoroutine);
             }
-
-            if (background.appearMethod == Background.AppearMethod.FadeFromBlack)
+            switch (background.appearMethod)
             {
-                if (mCurrentCoroutine != null)
-                {
-                    Instance.StopCoroutine(mCurrentCoroutine);
-                }
-
-                mCurrentCoroutine = Instance.StartCoroutine(Instance.FadeFromBlackBackground());
-                Instance.StartCoroutine(Instance.Fade(mCurrentCanvasGroup, 1f, 0.2f));
+                case Background.AppearMethod.CrossFade:
+                    mCurrentCoroutine = Instance.StartCoroutine(Instance.CrossFadeBackground());
+                    break;
+                case Background.AppearMethod.FadeFromBlack:
+                    mCurrentCoroutine = Instance.StartCoroutine(Instance.FadeFromBlackBackground());
+                    break;
+                case Background.AppearMethod.FadeFromWhite:
+                    mCurrentCoroutine = Instance.StartCoroutine(Instance.FadeFromWhiteBackground());
+                    break;
+                case Background.AppearMethod.FadeFromTransparent:
+                    mCurrentCoroutine = Instance.StartCoroutine(Instance.FadeFromTransparentBackground());
+                    break;
             }
+            Instance.StartCoroutine(Instance.Fade(mCurrentCanvasGroup, 1f, 0.2f));
         }
 
         private IEnumerator Fade(CanvasGroup canvasGroup, float targetAlpha, float speed)
@@ -141,7 +141,7 @@ namespace Larvend
 
             while (Mathf.Abs(image.color.a - targetAlpha) >= 1f / 255)
             {
-                image.color = Color.Lerp(image.color, new Color(image.color.r, image.color.g, image.color.b, targetAlpha), speed);
+                image.color = image.color = new Color(image.color.r, image.color.g, image.color.b, Mathf.MoveTowards(image.color.a, targetAlpha, speed));
                 yield return new WaitForFixedUpdate();
             }
             image.color = new Color(image.color.r, image.color.g, image.color.b, targetAlpha);
@@ -160,6 +160,36 @@ namespace Larvend
         {
             mCurrentOldImage.sprite = null;
             mCurrentOldImage.color = new Color(0, 0, 0, 1);
+
+            var time = mCurrentBackground.time == 0f ? 1f / mCurrentBackground.displaySpeed : mCurrentBackground.time;
+
+            yield return Fade(mCurrentImage, 0, 0.1f / time);
+            mCurrentImage.sprite = mCurrentBackground.sprite ?? null;
+            yield return Fade(mCurrentImage, 1, 0.1f / time);
+
+            mCurrentCoroutine = null;
+            mCurrentBackground.Finish();
+        }
+
+        public IEnumerator FadeFromWhiteBackground()
+        {
+            mCurrentOldImage.sprite = null;
+            mCurrentOldImage.color = new Color(1, 1, 1, 1);
+
+            var time = mCurrentBackground.time == 0f ? 1f / mCurrentBackground.displaySpeed : mCurrentBackground.time;
+
+            yield return Fade(mCurrentImage, 0, 0.1f / time);
+            mCurrentImage.sprite = mCurrentBackground.sprite ?? null;
+            yield return Fade(mCurrentImage, 1, 0.1f / time);
+
+            mCurrentCoroutine = null;
+            mCurrentBackground.Finish();
+        }
+
+        public IEnumerator FadeFromTransparentBackground()
+        {
+            mCurrentOldImage.sprite = null;
+            mCurrentOldImage.color = new Color(1, 1, 1, 0);
 
             var time = mCurrentBackground.time == 0f ? 1f / mCurrentBackground.displaySpeed : mCurrentBackground.time;
 

@@ -16,7 +16,8 @@ namespace Larvend
         public enum AppearMethod
         {
             Appear,
-            Fade
+            CrossFade,
+            FadeFromTransparent
         }
 
         public AppearMethod appearMethod;

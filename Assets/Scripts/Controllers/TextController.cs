@@ -56,6 +56,9 @@ namespace Larvend
             mCurrentType = type;
             if (mCurrentCanvasGroup) StartCoroutine(Fade(mCurrentCanvasGroup, 0, 0.1f));
 
+            mCurrentTextField?.SetText("");
+            mCurrentSpeakerField?.SetText("");
+
             TextConfig textConfig, speakerConfig;
             switch (mCurrentType)
             {
@@ -195,7 +198,7 @@ namespace Larvend
 
             while (!Mathf.Approximately(mCurrentTextField.alpha, 0f))
             {
-                mCurrentTextField.alpha = Mathf.MoveTowards(mCurrentTextField.alpha, 0f, speed);
+                mCurrentTextField.alpha = Mathf.MoveTowards(mCurrentTextField.alpha, 0f, speed * 2);
                 yield return new WaitForFixedUpdate();
             }
             mCurrentTextField.alpha = 0f;
