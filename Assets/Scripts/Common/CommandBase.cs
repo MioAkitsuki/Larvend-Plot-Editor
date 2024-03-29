@@ -90,9 +90,6 @@ namespace Larvend
             return true;
         }
 
-        public bool isEmpty()
-        {
-            return commandGroup.Count == 0;
-        }
+        public bool IsEmpty => commandGroup.Count == 0;
     }
 }

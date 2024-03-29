@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using QFramework;
+using Serialization;
 using UnityEngine;
 
 namespace Larvend
@@ -36,14 +37,22 @@ namespace Larvend
 
         void Update()
         {
-            if (Input.GetKeyUp(KeyCode.S) && !HasPlot)
+            if (Input.GetKeyUp(KeyCode.O) && !HasPlot)
             {
-                ReadAndStart();
+                ProjectHelper.OpenProject();
+            }
+            if (Input.GetKeyUp(KeyCode.I))
+            {
+                ResourceManager.ImportImageResource();
+            }
+            if (Input.GetKeyUp(KeyCode.S))
+            {
+                ProjectHelper.SaveProject();
             }
 
             currentGroup?.OnUpdate();
 
-            if (currentGroup.IsFinished() && !automaticGroup.isEmpty())
+            if (currentGroup.IsFinished() && !automaticGroup.IsEmpty)
             {
                 currentGroup.OnExit();
                 currentGroup = automaticGroup;
@@ -65,7 +74,7 @@ namespace Larvend
 
         private void NextCommand()
         {
-            if (!currentGroup.isEmpty() && !currentGroup.IsFinished())
+            if (!currentGroup.IsEmpty && !currentGroup.IsFinished())
             {
                 if (currentGroup.IsSkippable()) currentGroup.Skip();
                 else return;
