@@ -7,8 +7,8 @@ using System.IO;
 using QFramework;
 using ICSharpCode.SharpZipLib.Zip;
 using Larvend;
-using UnityEditor.iOS;
-using System.Linq;
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
 
 namespace Serialization
 {
@@ -128,13 +128,14 @@ namespace Serialization
     {
         public static void DeSerializeProject(string _guid)
         {
-            var _path = Path.Combine(Application.temporaryCachePath, _guid);
+            var path = Path.Combine(Application.temporaryCachePath, _guid);
 
-            if (!Directory.Exists(_path)) return;
+            if (!Directory.Exists(path)) return;
 
             try
             {
-                DeSerializeResources(Path.Combine(_path, "resources"));
+                DeSerializeMeta(Path.Combine(Global.CurrentProjectPath, "meta.yaml"));
+                DeSerializeResources(Path.Combine(path, "resources"));
 
                 Global.CurrentGUID = _guid;
             }
@@ -152,10 +153,53 @@ namespace Serialization
             try
             {
                 ResourceManager.SaveAllResources();
+
+                SerializeMeta();
             }
             catch (System.Exception _e)
             {
                 Debug.LogError("[SerializationHelper.SerializeProject]: " + _e.ToString());
+                return;
+            }
+        }
+
+        public static void SerializeMeta(string _path = null)
+        {
+            _path ??= Path.Combine(Global.CurrentProjectPath, "meta.yaml");
+
+            if (File.Exists(_path)) File.Delete(_path);
+            File.Create(_path).Dispose();
+
+            try
+            {
+                var serializer = new SerializerBuilder().WithNamingConvention(CamelCaseNamingConvention.Instance).WithIndentedSequences().Build();
+                var yaml = serializer.Serialize(ResourceManager.Instance);
+
+                File.WriteAllText(_path, yaml);
+            }
+            catch (System.Exception _e)
+            {
+                Debug.LogError("[SerializationHelper.SerializeMeta]: " + _e.ToString());
+                return;
+            }
+        }
+
+        public static void DeSerializeMeta(string _path = null)
+        {
+             _path ??= Path.Combine(Global.CurrentProjectPath, "meta.yaml");
+
+            if (!File.Exists(_path)) return;
+
+            try
+            {
+                var deserializer = new DeserializerBuilder().WithNamingConvention(CamelCaseNamingConvention.Instance).Build();
+                var yaml = File.ReadAllText(_path);
+
+                ResourceManager.Instance = deserializer.Deserialize<ResourceManager>(yaml);
+            }
+            catch (System.Exception _e)
+            {
+                Debug.LogError("[SerializationHelper.DeSerializeMeta]: " + _e.ToString());
                 return;
             }
         }
@@ -207,7 +251,7 @@ namespace Serialization
     
             try
             {
-                return UnzipFile(File.OpenRead(_filePathName), _outputPath, _password) ? _guid : null;
+                return UnCompressFromZip(_filePathName, _outputPath, _password) ? _guid : null;
             }
             catch (System.Exception _e)
             {
@@ -362,57 +406,50 @@ namespace Serialization
             return _srcPath;
         }
 
-        private static bool UnzipFile(Stream _inputStream, string _outputPath, string _password = null)
+        public static bool UnCompressFromZip(string _srcZipFilePath, string _targetDirPath, string _password = "")
         {
-            if ((null == _inputStream) || string.IsNullOrEmpty(_outputPath)) return false;
+            if (!Directory.Exists(_targetDirPath)) Directory.CreateDirectory(_targetDirPath);
 
-            if (!Directory.Exists(_outputPath))
-                Directory.CreateDirectory(_outputPath);
-
-            ZipEntry entry = null;
-            using (ZipInputStream zipInputStream = new ZipInputStream(_inputStream))
+            try
             {
-                if (!string.IsNullOrEmpty(_password))
-                    zipInputStream.Password = _password;
-    
-                while (null != (entry = zipInputStream.GetNextEntry()))
+                using (ZipInputStream zipInputStream = new ZipInputStream(File.OpenRead(_srcZipFilePath)))
                 {
-                    if (string.IsNullOrEmpty(entry.Name))
-                        continue;
-    
-                    string filePathName = Path.Combine(_outputPath, entry.Name);
-
-                    if (entry.IsDirectory)
+                    if (!string.IsNullOrEmpty(_password))
                     {
-                        Directory.CreateDirectory(filePathName);
-                        continue;
+                        zipInputStream.Password = _password;
                     }
 
-                    try
+                    ZipEntry entry;
+                    while ((entry = zipInputStream.GetNextEntry()) != null)
                     {
-                        using (FileStream fileStream = File.Create(filePathName))
+                        string filePath = Path.Combine(_targetDirPath, entry.Name);
+                        string fileParentPath = Path.GetDirectoryName(filePath);
+                        if (!Directory.Exists(fileParentPath))
                         {
-                            byte[] bytes = new byte[1024];
-                            while (true)
+                            Directory.CreateDirectory(fileParentPath);
+                        }
+                        using (FileStream fileStream = File.Create(filePath))
+                        {
+                            byte[] buffer = new byte[1024*1024];
+                            int len = 0;
+                            while ((len = zipInputStream.Read(buffer, 0, buffer.Length))>0)
                             {
-                                int count = zipInputStream.Read(bytes, 0, bytes.Length);
-                                if (count > 0)
-                                    fileStream.Write(bytes, 0, count);
-                                else break;
+                                fileStream.Write(buffer, 0, len);
                             }
                         }
                     }
-                    catch (System.Exception _e)
-                    {
-                        Debug.LogError("[ZipUtility.UnzipFile]: " + _e.ToString());
-
-                        return false;
-                    }
                 }
+
+                return true;
             }
+            catch (System.Exception _e)
+            {
+                Debug.LogError("[ZipHelper.UnCompressFromZip]: " + _e.ToString());
     
-            return true;
+                return false;
+            }
         }
+
     }
 
     public class XmlHelper

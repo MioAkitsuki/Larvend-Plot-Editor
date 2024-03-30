@@ -47,6 +47,10 @@ namespace Larvend
             }
             if (Input.GetKeyUp(KeyCode.S))
             {
+                SerializationHelper.SerializeProject();
+            }
+            if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyUp(KeyCode.S))
+            {
                 ProjectHelper.SaveProject();
             }
 

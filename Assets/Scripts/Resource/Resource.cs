@@ -1,18 +1,22 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using YamlDotNet.Serialization;
 
 namespace Larvend
 {
+    [System.Serializable, YamlSerializable]
     public abstract class ResourceBase
     {
-        public string guid;
+        [YamlIgnore] public string guid;
         public string name;
+        public string description;
     }
 
+    [System.Serializable, YamlSerializable]
     public class ImageResource : ResourceBase
     {
-        public Texture2D texture;
+        [YamlIgnore] public Texture2D texture;
 
         public ImageResource(string _guid, string _name, Texture2D _texture)
         {

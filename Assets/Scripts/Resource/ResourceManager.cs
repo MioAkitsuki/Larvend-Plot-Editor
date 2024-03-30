@@ -5,18 +5,22 @@ using Schwarzer.Windows;
 using Serialization;
 using UnityEditor;
 using UnityEngine;
+using YamlDotNet.Serialization;
 
 namespace Larvend
 {
+    [YamlSerializable]
     public class ResourceManager : ISingleton
     {
-        public static ResourceManager Instance;
-        public void OnSingletonInit()
+        [YamlIgnore] public static ResourceManager Instance
         {
-
+            get => _instance ??= new ResourceManager();
+            set => _instance = value;
         }
+        private static ResourceManager _instance;
+        public void OnSingletonInit() { }
 
-        public static Dictionary<string, ImageResource> Images
+        [YamlMember] public Dictionary<string, ImageResource> Images
         {
             get => _images ??= new Dictionary<string, ImageResource>();
             set => _images = value;
@@ -35,14 +39,14 @@ namespace Larvend
 
             if (ResourceHelper.OpenImageResource(_path, out var _resource))
             {
-                Images.Add(_resource.guid, _resource);
+                Instance.Images.Add(_resource.guid, _resource);
                 ResourceHelper.SaveImageResource(_resource);
             }
         }
 
         public static void SaveAllResources()
         {
-            foreach (var _image in Images)
+            foreach (var _image in Instance.Images)
             {
                 ResourceHelper.SaveImageResource(_image.Value);
             }
@@ -53,8 +57,20 @@ namespace Larvend
             switch (_resource)
             {
                 case ImageResource _image:
-                    Images.Add(_image.guid, _image);
+                    TryLinkResource(_image);
                     break;
+            }
+        }
+
+        public static void TryLinkResource(ImageResource _resource)
+        {
+            if (Instance.Images.TryGetValue(_resource.guid, out var image))
+            {
+                image.texture = _resource.texture;
+            }
+            else
+            {
+                Instance.Images.Add(_resource.guid, _resource);
             }
         }
 
