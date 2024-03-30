@@ -12,6 +12,18 @@ Unauthorized use of assets in this repo is strictly prohibited.
 
 - Visual Studio Code
 
+## Plugins
+
+I won't include the plugins into this repo. If you want to build by yourself, make sure you have imported them correctly.
+
+- TextMesh Pro
+
+- YamlDotNet
+
+- QFramework
+
+- SharpZipLib
+
 ## Contact
 
 - E-mail: <a href="mailto:k@ahympia.com"> k@ahympia.com </a>
