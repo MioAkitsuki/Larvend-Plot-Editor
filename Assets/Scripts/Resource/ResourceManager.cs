@@ -29,7 +29,7 @@ namespace Larvend
 
         public static void ImportImageResource()
         {
-            if (string.IsNullOrEmpty(Global.CurrentGUID)) return;
+            if (string.IsNullOrEmpty(ProjectManager.ProjectFolderPath)) return;
 
 # if UNITY_EDITOR
             var _path = EditorUtility.OpenFilePanelWithFilters(title: "Select File", directory: Application.dataPath, filters: new string[] {"Image files", "png,jpg,jpeg"});

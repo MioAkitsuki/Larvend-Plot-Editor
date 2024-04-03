@@ -18,34 +18,36 @@ namespace Serialization
         /// When you are trying to create a project:
         /// Create a guid -> Create temporary folder
         /// </summary>
-        public static void NewProject()
+        public static bool NewProject(out string _guid)
         {
-            Global.CurrentGUID = System.Guid.NewGuid().ToString("D");
-            Directory.CreateDirectory(Global.CurrentProjectPath);
+            _guid = System.Guid.NewGuid().ToString("D");
+            Directory.CreateDirectory(Path.Combine(Application.temporaryCachePath, _guid));
+
+            return true;
         }
 
         /// <summary>
         /// When you are trying to open a project:
         /// Select a path -> Compress the project file into temp folder -> Deserialize the project
         /// </summary>
-        public static void OpenProject()
+        public static bool OpenProject(string _path, out string _guid)
         {
-            var _path = Dialog.OpenFileDialog(Title: "Select File", InitPath: Application.dataPath, Filter: "lpf");
-            if (_path == null || !File.Exists(_path)) return;
-
+            _guid = null;
             try
             {
-                var _guid = ZipHelper.UnCompress(_path);
-                if (string.IsNullOrEmpty(_guid)) return;
+                _guid = ZipHelper.UnCompress(_path);
+                if (string.IsNullOrEmpty(_guid)) return false;
 
                 SerializationHelper.DeSerializeProject(_guid);
             
                 EditorUtility.RevealInFinder(Path.Combine(Application.temporaryCachePath, _guid));
+
+                return true;
             }
             catch (System.Exception _e)
             {
                 Debug.LogError("[ProjectHelper.OpenProject]: " + _e.ToString());
-                return;
+                return false;
             }
         }
 
@@ -53,11 +55,8 @@ namespace Serialization
         /// When you are trying to save a project:
         /// Select a path -> Serialize the project -> Compress the serialized project folder -> Save to target path
         /// </summary>
-        public static void SaveProject()
+        public static bool SaveProject(string _targetPath)
         {
-            var _targetPath = Dialog.SaveFileDialog(Title: "Select Place to Save", InitPath: Application.dataPath, Filter: "lpf");
-            if (string.IsNullOrEmpty(_targetPath)) return;
-
             if (File.Exists(_targetPath)) File.Delete(_targetPath);
 
             try
@@ -65,15 +64,17 @@ namespace Serialization
                 SerializationHelper.SerializeProject();
 
                 List<string> _paths = new List<string>();
-                _paths.AddRange(Directory.GetFiles(Global.CurrentProjectPath));
-                _paths.AddRange(Directory.GetDirectories(Global.CurrentProjectPath));
+                _paths.AddRange(Directory.GetFiles(ProjectManager.ProjectFolderPath));
+                _paths.AddRange(Directory.GetDirectories(ProjectManager.ProjectFolderPath));
 
                 ZipHelper.CompressFilesToZip(_paths.ToArray(), _targetPath);
+
+                return true;
             }
             catch (System.Exception _e)
             {
                 Debug.LogError("[ProjectHelper.SaveProject]: " + _e.ToString());
-                return;
+                return false;
             }
         }
     }
@@ -84,7 +85,7 @@ namespace Serialization
         {
             _resource = null;
 
-            if (Global.CurrentGUID == null) return false;
+            if (string.IsNullOrEmpty(ProjectManager.GUID)) return false;
             if (_path == null || !File.Exists(_path)) return false;
 
             try
@@ -106,7 +107,7 @@ namespace Serialization
 
         public static bool SaveImageResource(ImageResource _resource, string _directoryPath = null)
         {
-            if (_directoryPath == null) _directoryPath = Path.Combine(Global.CurrentProjectPath, $"resources/image");
+            if (_directoryPath == null) _directoryPath = Path.Combine(ProjectManager.ProjectFolderPath, $"resources/image");
             if (!Directory.Exists(_directoryPath)) Directory.CreateDirectory(_directoryPath);
 
             try
@@ -134,10 +135,10 @@ namespace Serialization
 
             try
             {
-                DeSerializeMeta(Path.Combine(Global.CurrentProjectPath, "meta.yaml"));
+                DeSerializeMeta(Path.Combine(ProjectManager.ProjectFolderPath, "meta.yaml"));
                 DeSerializeResources(Path.Combine(path, "resources"));
 
-                Global.CurrentGUID = _guid;
+                ProjectManager.GUID = _guid;
             }
             catch (System.Exception _e)
             {
@@ -148,7 +149,7 @@ namespace Serialization
 
         public static void SerializeProject()
         {
-            if (string.IsNullOrEmpty(Global.CurrentGUID)) return;
+            if (string.IsNullOrEmpty(ProjectManager.GUID)) return;
 
             try
             {
@@ -165,7 +166,7 @@ namespace Serialization
 
         public static void SerializeMeta(string _path = null)
         {
-            _path ??= Path.Combine(Global.CurrentProjectPath, "meta.yaml");
+            _path ??= Path.Combine(ProjectManager.ProjectFolderPath, "meta.yaml");
 
             if (File.Exists(_path)) File.Delete(_path);
             File.Create(_path).Dispose();
@@ -186,7 +187,7 @@ namespace Serialization
 
         public static void DeSerializeMeta(string _path = null)
         {
-             _path ??= Path.Combine(Global.CurrentProjectPath, "meta.yaml");
+             _path ??= Path.Combine(ProjectManager.ProjectFolderPath, "meta.yaml");
 
             if (!File.Exists(_path)) return;
 

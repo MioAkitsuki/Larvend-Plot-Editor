@@ -37,10 +37,6 @@ namespace Larvend
 
         void Update()
         {
-            if (Input.GetKeyUp(KeyCode.O) && !HasPlot)
-            {
-                ProjectHelper.OpenProject();
-            }
             if (Input.GetKeyUp(KeyCode.I))
             {
                 ResourceManager.ImportImageResource();
@@ -48,10 +44,6 @@ namespace Larvend
             if (Input.GetKeyUp(KeyCode.S))
             {
                 SerializationHelper.SerializeProject();
-            }
-            if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyUp(KeyCode.S))
-            {
-                ProjectHelper.SaveProject();
             }
 
             currentGroup?.OnUpdate();

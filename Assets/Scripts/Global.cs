@@ -11,8 +11,5 @@ namespace Larvend
         {
             Instance = this;
         }
-
-        public static string CurrentGUID;
-        public static string CurrentProjectPath => CurrentGUID == null ? "" : Path.Combine(Application.temporaryCachePath, CurrentGUID);
     }
 }
