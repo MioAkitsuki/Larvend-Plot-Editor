@@ -9,15 +9,10 @@ namespace Kuchinashi.UI
     {
         private DropdownMenu activeMenu = null;
 
-        private void Awake()
-        {
-            CreateCanvas();
-        }
-
         public void ToggleActive(DropdownMenu menu)
         {
-            if (activeMenu != null)
-                activeMenu.Toggle();
+            if (activeMenu != null) activeMenu.Toggle();
+            else CreateCanvas();
 
             activeMenu = menu;
             activeMenu.Toggle();
@@ -29,6 +24,8 @@ namespace Kuchinashi.UI
                 activeMenu.Toggle();
 
             activeMenu = null;
+
+            RemoveCanvas();
         }
 
         private void CreateCanvas()
@@ -38,6 +35,19 @@ namespace Kuchinashi.UI
             canvas.sortingOrder = 10000;
 
             gameObject.AddComponent<GraphicRaycaster>();
+        }
+
+        private void RemoveCanvas()
+        {
+            List<Component> components = new List<Component>() {
+                gameObject.GetComponent<GraphicRaycaster>(),
+                gameObject.GetComponent<Canvas>()
+            };
+            
+            foreach (Component item in components)
+            {
+                Destroy(item);
+            }
         }
     }
 
