@@ -2,12 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using QFramework;
 using Schwarzer.Windows;
-using Serialization;
 using UnityEditor;
 using UnityEngine;
 using YamlDotNet.Serialization;
+using Larvend.PlotEditor.Serialization;
 
-namespace Larvend
+namespace Larvend.PlotEditor.DataSystem
 {
     [YamlSerializable]
     public class ResourceManager : ISingleton
@@ -19,6 +19,8 @@ namespace Larvend
         }
         private static ResourceManager _instance;
         public void OnSingletonInit() { }
+
+        #region Image Resource
 
         [YamlMember] public Dictionary<string, ImageResource> Images
         {
@@ -44,6 +46,8 @@ namespace Larvend
             }
         }
 
+        #endregion
+
         public static void SaveAllResources()
         {
             foreach (var _image in Instance.Images)
@@ -58,6 +62,9 @@ namespace Larvend
             {
                 case ImageResource _image:
                     TryLinkResource(_image);
+                    break;
+                case AudioResource _audio:
+                    TryLinkResource(_audio);
                     break;
             }
         }
@@ -74,8 +81,40 @@ namespace Larvend
             }
         }
 
-        public static List<AudioClip> Musics;
-        public static List<AudioClip> Sounds;
-        public static List<AudioClip> Voices;
+        public static void TryLinkResource(AudioResource _resource)
+        {
+            if (Instance.Audios.TryGetValue(_resource.guid, out var audio))
+            {
+                audio.audioClip = _resource.audioClip;
+            }
+            else
+            {
+                Instance.Audios.Add(_resource.guid, _resource);
+            }
+        }
+
+        [YamlMember] public Dictionary<string, AudioResource> Audios
+        {
+            get => _audios ??= new Dictionary<string, AudioResource>();
+            set => _audios = value;
+        }
+        private static Dictionary<string, AudioResource> _audios;
+
+        public static void ImportAudioResource()
+        {
+            if (string.IsNullOrEmpty(ProjectManager.ProjectFolderPath)) return;
+
+# if UNITY_EDITOR
+            var _path = EditorUtility.OpenFilePanelWithFilters(title: "Select File", directory: Application.dataPath, filters: new string[] {"Ogg Vorbis", "ogg"});
+# else
+            var _path = Dialog.OpenFileDialog(Title: "Select File", InitPath: Application.dataPath, Filter: "ogg");
+#endif
+
+            if (ResourceHelper.OpenAudioResource(_path, out var _resource))
+            {
+                Instance.Audios.Add(_resource.guid, _resource);
+                ResourceHelper.SaveAudioResource(_resource);
+            }
+        }
     }
 }

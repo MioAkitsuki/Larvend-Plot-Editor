@@ -1,8 +1,9 @@
 using System;
 using TMPro;
 using UnityEngine;
+using Larvend.PlotEditor.DataSystem;
 
-namespace Larvend
+namespace Larvend.PlotEditor
 {
     [Serializable]
     public class Text : CommandBase

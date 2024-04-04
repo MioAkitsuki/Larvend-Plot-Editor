@@ -5,7 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Larvend
+namespace Larvend.PlotEditor
 {
     public class AvatarController : MonoBehaviour , ISingleton
     {

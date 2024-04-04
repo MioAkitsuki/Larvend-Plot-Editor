@@ -6,11 +6,13 @@ using UnityEditor;
 using System.IO;
 using QFramework;
 using ICSharpCode.SharpZipLib.Zip;
-using Larvend;
+using Larvend.PlotEditor.DataSystem;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
+using System;
+using YamlDotNet.Core;
 
-namespace Serialization
+namespace Larvend.PlotEditor.Serialization
 {
     public class ProjectHelper
     {
@@ -123,6 +125,51 @@ namespace Serialization
                 return false;
             }
         }
+
+        public static bool OpenAudioResource(string _path, out AudioResource _resource)
+        {
+            _resource = null;
+
+            if (string.IsNullOrEmpty(ProjectManager.GUID)) return false;
+            if (_path == null || !File.Exists(_path)) return false;
+
+            try
+            {
+                var _clip = OggVorbis.VorbisPlugin.Load(_path);
+                var _guid = System.Guid.NewGuid().ToString("D");
+
+                var newAudioResource = new AudioResource(_guid, _path.GetFileNameWithoutExtend(), _clip);
+
+                _resource = newAudioResource;
+                return true;
+            }
+            catch (System.Exception _e)
+            {
+                Debug.LogError("[ResourceHelper.OpenAudioResource]: " + _e.ToString());
+                return false;
+            }
+        }
+
+        public static bool SaveAudioResource(AudioResource _resource, string _directoryPath = null)
+        {
+            if (_directoryPath == null) _directoryPath = Path.Combine(ProjectManager.ProjectFolderPath, $"resources/audio");
+            if (!Directory.Exists(_directoryPath)) Directory.CreateDirectory(_directoryPath);
+
+            try
+            {
+                var _audioPath = Path.Combine(_directoryPath, $"{_resource.guid}.wav");
+
+                if (File.Exists(_audioPath)) File.Delete(_audioPath);
+                OggVorbis.VorbisPlugin.Save(_audioPath, _resource.audioClip, 1);
+
+                return true;
+            }
+            catch (System.Exception _e)
+            {
+                Debug.LogError("[ResourceHelper.SaveAudioResource]: " + _e.ToString());
+                return false;
+            }
+        }
     }
 
     public class SerializationHelper
@@ -187,20 +234,20 @@ namespace Serialization
 
         public static void DeSerializeMeta(string _path = null)
         {
-             _path ??= Path.Combine(ProjectManager.ProjectFolderPath, "meta.yaml");
+            _path ??= Path.Combine(ProjectManager.ProjectFolderPath, "meta.yaml");
 
             if (!File.Exists(_path)) return;
 
             try
             {
-                var deserializer = new DeserializerBuilder().WithNamingConvention(CamelCaseNamingConvention.Instance).Build();
+                var deserializer = new DeserializerBuilder().WithNamingConvention(CamelCaseNamingConvention.Instance).IgnoreUnmatchedProperties().Build();
                 var yaml = File.ReadAllText(_path);
 
                 ResourceManager.Instance = deserializer.Deserialize<ResourceManager>(yaml);
             }
-            catch (System.Exception _e)
+            catch (YamlException _e)
             {
-                Debug.LogError("[SerializationHelper.DeSerializeMeta]: " + _e.ToString());
+                Debug.LogError("[SerializationHelper.DeSerializeMeta]: " + $" {_e.Message}\n{_e.InnerException.Message}");
                 return;
             }
         }
@@ -221,6 +268,22 @@ namespace Serialization
             }
         }
 
+        public static void DeSerializeAudioResources(string _path)
+        {
+            if (!Directory.Exists(_path) || Directory.GetFiles(_path).Length == 0) return;
+            var _files = Directory.GetFiles(_path);
+
+            foreach (var _file in _files)
+            {
+                var _guid = _file.GetFileNameWithoutExtend();
+                var _clip = OggVorbis.VorbisPlugin.Load(_file);
+
+                var _audioResource = new AudioResource(_guid, _guid, _clip);
+
+                ResourceManager.AddResource(_audioResource);
+            }
+        }
+
         public static void DeSerializeResources(string _path)
         {
             if (!Directory.Exists(_path)) return;
@@ -233,6 +296,9 @@ namespace Serialization
                 {
                     case "image":
                         DeSerializeImageResources(_directory);
+                        break;
+                    case "audio":
+                        DeSerializeAudioResources(_directory);
                         break;
                     default:
                         break;
@@ -482,6 +548,7 @@ namespace Serialization
         public static void SaveImage(Texture2D _texture, string _path)
         {
             if (_texture == null || string.IsNullOrEmpty(_path)) return;
+            if (File.Exists(_path)) File.Delete(_path);
 
             try
             {

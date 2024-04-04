@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Kuchinashi.UI;
 using QFramework;
 using UnityEngine;
 using UnityEngine.UI;
@@ -23,29 +24,44 @@ namespace Larvend.PlotEditor
         void Awake()
         {
             Initialize();
-
             RefreshUIStatus();
+
+            TypeEventSystem.Global.Register<PlotEditorUIRefreshEvent>(e => {
+                RefreshUIStatus();
+            }).UnRegisterWhenGameObjectDestroyed(gameObject);
         }
 
         private void RefreshUIStatus()
         {
-            if (string.IsNullOrEmpty(ProjectManager.GUID))
-            {
-                saveProjectButton.interactable = false;
-                saveAsProjectButton.interactable = false;
-            }
+            saveProjectButton.interactable = !string.IsNullOrEmpty(ProjectManager.GUID);
+            saveAsProjectButton.interactable = !string.IsNullOrEmpty(ProjectManager.GUID);
         }
 
         private void Initialize()
         {
             newProjectButton = transform.Find("Menu/Files/Dropdown/New").GetComponent<Button>();
-            newProjectButton.onClick.AddListener(() => this.SendCommand<NewProjectCommand>());
+            newProjectButton.onClick.AddListener(() => {
+                this.SendCommand<NewProjectCommand>();
+                newProjectButton.GetComponentInParent<DropdownMenu>().toggle.onClick.Invoke();
+            });
+
             openProjectButton = transform.Find("Menu/Files/Dropdown/Open").GetComponent<Button>();
-            openProjectButton.onClick.AddListener(() => this.SendCommand<OpenProjectCommand>());
+            openProjectButton.onClick.AddListener(() => {
+                this.SendCommand<OpenProjectCommand>();
+                newProjectButton.GetComponentInParent<DropdownMenu>().toggle.onClick.Invoke();
+            });
+
             saveProjectButton = transform.Find("Menu/Files/Dropdown/Save").GetComponent<Button>();
-            saveProjectButton.onClick.AddListener(() => this.SendCommand<SaveProjectCommand>());
+            saveProjectButton.onClick.AddListener(() => {
+                this.SendCommand<SaveProjectCommand>();
+                newProjectButton.GetComponentInParent<DropdownMenu>().toggle.onClick.Invoke();
+            });
+
             saveAsProjectButton = transform.Find("Menu/Files/Dropdown/SaveAs").GetComponent<Button>();
-            saveAsProjectButton.onClick.AddListener(() => this.SendCommand<SaveAsProjectCommand>());
+            saveAsProjectButton.onClick.AddListener(() => {
+                this.SendCommand<SaveAsProjectCommand>();
+                newProjectButton.GetComponentInParent<DropdownMenu>().toggle.onClick.Invoke();
+            });
         }
 
         public IArchitecture GetArchitecture()

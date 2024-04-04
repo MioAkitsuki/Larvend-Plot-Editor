@@ -1,18 +1,9 @@
 using System;
 using System.Collections.Generic;
+using Larvend.PlotEditor.DataSystem;
 
-namespace Larvend
+namespace Larvend.PlotEditor
 {
-    public enum CommandType
-    {
-        Text,
-        Animation,
-        Sound,
-        Avatar,
-        Tachie,
-        Background
-    }
-
     [Serializable]
     public abstract class CommandBase
     {

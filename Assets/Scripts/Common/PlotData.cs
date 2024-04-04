@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditor.Callbacks;
 
-namespace Larvend
+namespace Larvend.PlotEditor
 {
     
     [CreateAssetMenu(fileName = "PlotData", menuName = "Larvend/PlotData", order = 0)]

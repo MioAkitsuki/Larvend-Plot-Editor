@@ -1,7 +1,8 @@
 using System;
 using UnityEngine;
+using Larvend.PlotEditor.DataSystem;
 
-namespace Larvend
+namespace Larvend.PlotEditor
 {
     [Serializable]
     public class Avatar : CommandBase

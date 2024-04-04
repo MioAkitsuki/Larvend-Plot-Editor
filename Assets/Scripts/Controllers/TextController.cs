@@ -4,7 +4,7 @@ using QFramework;
 using TMPro;
 using UnityEngine;
 
-namespace Larvend
+namespace Larvend.PlotEditor
 {
     public class TextController : MonoBehaviour , ISingleton
     {

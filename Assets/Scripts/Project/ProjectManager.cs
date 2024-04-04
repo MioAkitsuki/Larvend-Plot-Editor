@@ -1,12 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using Larvend.PlotEditor.DataSystem;
 using QFramework;
-using Schwarzer.Windows;
-using Serialization;
 using UnityEngine;
 
-namespace Larvend
+namespace Larvend.PlotEditor
 {
     public class ProjectManager : MonoBehaviour , ISingleton
     {
@@ -26,10 +25,18 @@ namespace Larvend
             Application.wantsToQuit += WantsToQuit;
             Application.targetFrameRate = 60;
         }
+        
+        void Update()
+        {
+            if (Input.GetKeyUp(KeyCode.I))
+            {
+                ResourceManager.ImportAudioResource();
+            }
+        }
 
         static bool WantsToQuit()
         {
-            if (!string.IsNullOrEmpty(GUID)) Directory.Delete(ProjectFolderPath);
+            if (!string.IsNullOrEmpty(GUID)) Directory.Delete(ProjectFolderPath, true);
             return true;
         }
     }

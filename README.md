@@ -20,6 +20,8 @@ I won't include the plugins into this repo. If you want to build by yourself, ma
 
 - YamlDotNet
 
+- Vorbis Plugin
+
 - QFramework
 
 - SharpZipLib

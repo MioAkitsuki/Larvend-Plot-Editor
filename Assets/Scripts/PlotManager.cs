@@ -2,10 +2,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using QFramework;
-using Serialization;
 using UnityEngine;
+using Larvend.PlotEditor.Serialization;
+using Larvend.PlotEditor.DataSystem;
 
-namespace Larvend
+namespace Larvend.PlotEditor
 {
     public class PlotManager : MonoBehaviour , ISingleton
     {
@@ -39,7 +40,7 @@ namespace Larvend
         {
             if (Input.GetKeyUp(KeyCode.I))
             {
-                ResourceManager.ImportImageResource();
+                ResourceManager.ImportAudioResource();
             }
             if (Input.GetKeyUp(KeyCode.S))
             {

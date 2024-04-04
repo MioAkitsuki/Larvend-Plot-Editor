@@ -4,7 +4,7 @@ using QFramework;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Larvend
+namespace Larvend.PlotEditor
 {
     public struct NextCommandEvent {}
     public class StageController : MonoBehaviour , ISingleton

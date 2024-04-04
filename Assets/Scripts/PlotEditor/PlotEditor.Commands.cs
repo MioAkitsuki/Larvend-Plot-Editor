@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using QFramework;
 using Schwarzer.Windows;
-using Serialization;
+using Larvend.PlotEditor.Serialization;
 using UnityEngine;
 
 namespace Larvend.PlotEditor
@@ -20,6 +20,8 @@ namespace Larvend.PlotEditor
             if (ProjectHelper.NewProject(out ProjectManager.GUID))
             {
                 ProjectManager.ProjectFilePath = null;
+                
+                TypeEventSystem.Global.Send<PlotEditorUIRefreshEvent>();
             }
             else ProjectManager.GUID = null;
         }
@@ -40,6 +42,8 @@ namespace Larvend.PlotEditor
             if (ProjectHelper.OpenProject(_path, out ProjectManager.GUID))
             {
                 ProjectManager.ProjectFilePath = _path;
+                
+                TypeEventSystem.Global.Send<PlotEditorUIRefreshEvent>();
             }
             else ProjectManager.GUID = null;
         }
