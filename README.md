@@ -18,13 +18,13 @@ I won't include the plugins into this repo. If you want to build by yourself, ma
 
 - TextMesh Pro
 
-- YamlDotNet
+- [YamlDotNet](https://github.com/aaubry/YamlDotNet)
 
-- Vorbis Plugin
+- [Vorbis Plugin](https://github.com/gindemit/unity-wrapper-vorbis)
 
-- QFramework
+- [QFramework](https://github.com/liangxiegame/QFramework)
 
-- SharpZipLib
+- [SharpZipLib](https://github.com/icsharpcode/SharpZipLib)
 
 ## Contact
 
