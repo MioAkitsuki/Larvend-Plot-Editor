@@ -41,8 +41,6 @@ namespace Larvend.PlotEditor.Serialization
                 if (string.IsNullOrEmpty(_guid)) return false;
 
                 SerializationHelper.DeSerializeProject(_guid);
-            
-                EditorUtility.RevealInFinder(Path.Combine(Application.temporaryCachePath, _guid));
 
                 return true;
             }
@@ -182,7 +180,8 @@ namespace Larvend.PlotEditor.Serialization
 
             try
             {
-                DeSerializeMeta(Path.Combine(ProjectManager.ProjectFolderPath, "meta.yaml"));
+                DeSerializeProjectData(Path.Combine(path, "base.yaml"));
+                DeSerializeMeta(Path.Combine(path, "meta.yaml"));
                 DeSerializeResources(Path.Combine(path, "resources"));
 
                 ProjectManager.GUID = _guid;
@@ -196,17 +195,69 @@ namespace Larvend.PlotEditor.Serialization
 
         public static void SerializeProject()
         {
-            if (string.IsNullOrEmpty(ProjectManager.GUID)) return;
+            if (!ProjectManager.IsProjectExist()) return;
 
             try
             {
                 ResourceManager.SaveAllResources();
 
                 SerializeMeta();
+                SerializeProjectData();
             }
             catch (System.Exception _e)
             {
                 Debug.LogError("[SerializationHelper.SerializeProject]: " + _e.ToString());
+                return;
+            }
+        }
+
+        public static void SerializeProjectData(string _path = null)
+        {
+            _path ??= Path.Combine(ProjectManager.ProjectFolderPath, "base.yaml");
+
+            if (File.Exists(_path)) File.Delete(_path);
+            File.Create(_path).Dispose();
+
+            try
+            {
+                var serializer = new SerializerBuilder()
+                    .WithNamingConvention(CamelCaseNamingConvention.Instance)
+                    .WithTagMapping("!text", typeof(TextData))
+                    .WithIndentedSequences()
+                    .Build();
+                
+                var yaml = serializer.Serialize(ProjectManager.Project);
+
+                File.WriteAllText(_path, yaml);
+            }
+            catch (System.Exception _e)
+            {
+                Debug.LogError("[SerializationHelper.SerializeProjectData]: " + _e.ToString());
+                return;
+            }
+        }
+
+        public static void DeSerializeProjectData(string _path = null)
+        {
+            _path ??= Path.Combine(ProjectManager.ProjectFolderPath, "base.yaml");
+
+            if (!File.Exists(_path)) return;
+
+            try
+            {
+                var deserializer = new DeserializerBuilder()
+                    .WithNamingConvention(CamelCaseNamingConvention.Instance)
+                    .WithTagMapping("!text", typeof(TextData))
+                    .IgnoreUnmatchedProperties()
+                    .Build();
+                
+                var yaml = File.ReadAllText(_path);
+
+                ProjectManager.InitializeProject(deserializer.Deserialize<ProjectData>(yaml));
+            }
+            catch (YamlException _e)
+            {
+                Debug.LogError("[SerializationHelper.DeSerializeProjectData]: " + $" {_e.Message}\n{_e.InnerException.Message}");
                 return;
             }
         }

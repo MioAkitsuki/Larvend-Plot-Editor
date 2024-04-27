@@ -13,9 +13,11 @@ namespace Larvend.PlotEditor.UI
     public class AddCommandCommand : AbstractCommand
     {
         public CommandType Type;
-        public AddCommandCommand(CommandType _type)
+        public CommandData Data;
+        public AddCommandCommand(CommandType _type, CommandData _data = null)
         {
             Type = _type;
+            Data = _data;
         }
 
         protected override void OnExecute()
@@ -23,18 +25,21 @@ namespace Larvend.PlotEditor.UI
             switch (Type)
             {
                 case CommandType.Text:
-                    AddTextCommand();
+                    AddTextCommand(Data);
                     break;
             }
         }
 
-        private void AddTextCommand()
+        private void AddTextCommand(CommandData _data = null)
         {
             var model = this.GetModel<PlotEditorModel>();
+            var data = _data == null ? TextData.Default : _data as TextData;
+
             var command = GameObject.Instantiate(PlotEditorController.Instance.CommandPrefabs[CommandType.Text], CommandListController.CommandListParent)
-                .GetComponent<CommandControllerBase>().Initialize(model.CommandControllers.Count);
+                .GetComponent<CommandControllerBase>().Initialize(model.CommandControllers.Count, data);
             
             model.CommandControllers.AddLast(command);
+            ProjectManager.AddCommand(data);
         }
     }
 
@@ -82,6 +87,8 @@ namespace Larvend.PlotEditor.UI
             }
 
             model.CommandControllers.Remove(pointer);
+            ProjectManager.RemoveCommand(pointer.Value.Data);
+
             GameObject.Destroy(pointer.Value.gameObject);
         }
 

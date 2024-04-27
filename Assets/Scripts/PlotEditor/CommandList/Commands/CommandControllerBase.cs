@@ -13,6 +13,7 @@ namespace Larvend.PlotEditor.UI
     {
         public int Id;
         public abstract CommandType Type { get; }
+        public CommandData Data;
 
         public bool IsCurrent = false;
 
@@ -23,7 +24,7 @@ namespace Larvend.PlotEditor.UI
         internal TMP_Text idText;
         internal TMP_Text typeText;
 
-        internal void Awake()
+        internal virtual void Awake()
         {
             model = this.GetModel<PlotEditorModel>();
             button = GetComponent<ButtonExtension>();
@@ -41,6 +42,7 @@ namespace Larvend.PlotEditor.UI
         }
 
         public abstract CommandControllerBase Initialize(int _id);
+        public abstract CommandControllerBase Initialize(int _id, CommandData _data);
         public abstract void Refresh();
         public void Select()
         {
