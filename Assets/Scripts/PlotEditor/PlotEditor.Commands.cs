@@ -36,7 +36,7 @@ namespace Larvend.PlotEditor.UI
                 Debug.LogWarning("You have already opened a project. Cleaning temp file...");
             }
 
-            var _path = Dialog.OpenFileDialog(Title: "Open Project", InitPath: Application.dataPath, Filter: "lpf");
+            var _path = Dialog.OpenFileDialog(Title: "Open Project", InitPath: Application.dataPath);
             if (_path == null || !File.Exists(_path)) return;
             
             if (ProjectHelper.OpenProject(_path, out ProjectManager.GUID))
