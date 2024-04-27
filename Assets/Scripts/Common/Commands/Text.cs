@@ -6,7 +6,7 @@ using Larvend.PlotEditor.DataSystem;
 namespace Larvend.PlotEditor
 {
     [Serializable]
-    public class Text : CommandBase
+    public class Text : Command
     {
         public enum TextType
         {

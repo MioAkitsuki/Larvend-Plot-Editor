@@ -9,7 +9,7 @@ namespace Larvend.PlotEditor
     {
         protected override void Init()
         {
-            
+            this.RegisterModel(new PlotEditorModel());
         }
     }
 }

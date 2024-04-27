@@ -15,7 +15,7 @@ namespace Larvend.PlotEditor
         public PlotHeader Header;
 
         [SerializeReference]
-        public List<CommandBase> Data = new List<CommandBase>();
+        public List<Command> Data = new List<Command>();
 
         #if UNITY_EDITOR
         [CustomEditor(typeof(PlotData))]
@@ -30,7 +30,7 @@ namespace Larvend.PlotEditor
             {
                 var assemblies = AppDomain.CurrentDomain.GetAssemblies();
                 var types = assemblies.SelectMany(assembly => assembly.GetTypes());
-                var filterTypes = types.Where(type => type.IsSubclassOf(typeof(CommandBase)) && !type.ContainsGenericParameters && type.IsClass);
+                var filterTypes = types.Where(type => type.IsSubclassOf(typeof(Command)) && !type.ContainsGenericParameters && type.IsClass);
                 commandTypes = filterTypes.ToList();
             }
 
@@ -54,7 +54,7 @@ namespace Larvend.PlotEditor
 
                 if (GUILayout.Button("Add"))
                 {
-                    var obj = Activator.CreateInstance(commandType) as CommandBase;
+                    var obj = Activator.CreateInstance(commandType) as Command;
                     if (obj == null) return;
                     plotData.Data.Add(obj);
                 }

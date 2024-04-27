@@ -23,7 +23,7 @@ namespace Larvend.PlotEditor
             DontDestroyOnLoad(gameObject);
 
             Application.wantsToQuit += WantsToQuit;
-            Application.targetFrameRate = 60;
+            Application.targetFrameRate = 120;
         }
         
         void Update()

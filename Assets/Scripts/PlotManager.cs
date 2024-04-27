@@ -21,7 +21,7 @@ namespace Larvend.PlotEditor
         private AudioSource voiceSource;
         public PlotData plotData;
 
-        private Queue<CommandBase> commands = new Queue<CommandBase>();
+        private Queue<Command> commands = new Queue<Command>();
 
         public static CommandGroup currentGroup = new CommandGroup();
         public static CommandGroup automaticGroup = new CommandGroup();
@@ -83,15 +83,15 @@ namespace Larvend.PlotEditor
                 currentGroup.commandGroup.Clear();
                 automaticGroup.commandGroup.Clear();
                 currentGroup.commandGroup.Add(commands.Dequeue());
-                while (commands.Count > 0 && commands.Peek().appearTiming == CommandBase.AppearTiming.Simultaneously)
+                while (commands.Count > 0 && commands.Peek().appearTiming == Command.AppearTiming.Simultaneously)
                 {
                     currentGroup.commandGroup.Add(commands.Dequeue());
                 }
 
-                if (commands.Count > 0 && commands.Peek().appearTiming == CommandBase.AppearTiming.AfterPreviousFinished)
+                if (commands.Count > 0 && commands.Peek().appearTiming == Command.AppearTiming.AfterPreviousFinished)
                 {
                     automaticGroup.commandGroup.Add(commands.Dequeue());
-                    while (commands.Count > 0 && commands.Peek().appearTiming == CommandBase.AppearTiming.Simultaneously)
+                    while (commands.Count > 0 && commands.Peek().appearTiming == Command.AppearTiming.Simultaneously)
                     {
                         automaticGroup.commandGroup.Add(commands.Dequeue());
                     }

@@ -6,7 +6,7 @@ using Schwarzer.Windows;
 using Larvend.PlotEditor.Serialization;
 using UnityEngine;
 
-namespace Larvend.PlotEditor
+namespace Larvend.PlotEditor.UI
 {
     public class NewProjectCommand : AbstractCommand
     {

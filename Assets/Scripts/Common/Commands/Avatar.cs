@@ -5,7 +5,7 @@ using Larvend.PlotEditor.DataSystem;
 namespace Larvend.PlotEditor
 {
     [Serializable]
-    public class Avatar : CommandBase
+    public class Avatar : Command
     {
         public enum AvatarType
         {

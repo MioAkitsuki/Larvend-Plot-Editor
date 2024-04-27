@@ -14,8 +14,13 @@ namespace Larvend.PlotEditor.DataSystem
         Background
     }
 
-    public class Command
+    public abstract class CommandData
     {
         
+    }
+
+    public abstract class CommandSettings
+    {
+
     }
 }

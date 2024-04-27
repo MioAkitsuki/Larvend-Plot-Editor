@@ -5,7 +5,7 @@ using Larvend.PlotEditor.DataSystem;
 namespace Larvend.PlotEditor
 {
     [Serializable]
-    public class Background : CommandBase
+    public class Background : Command
     {
         public enum BackgroundType
         {

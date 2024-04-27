@@ -5,7 +5,7 @@ using Larvend.PlotEditor.DataSystem;
 namespace Larvend.PlotEditor
 {
     [Serializable]
-    public abstract class CommandBase
+    public abstract class Command
     {
         public enum AppearTiming
         {
@@ -30,7 +30,7 @@ namespace Larvend.PlotEditor
 
     public class CommandGroup
     {
-        public List<CommandBase> commandGroup = new List<CommandBase>();
+        public List<Command> commandGroup = new List<Command>();
         public void OnEnter()
         {
             foreach (var command in commandGroup)
