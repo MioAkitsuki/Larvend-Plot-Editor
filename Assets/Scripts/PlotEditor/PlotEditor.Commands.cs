@@ -5,6 +5,7 @@ using QFramework;
 using Schwarzer.Windows;
 using Larvend.PlotEditor.Serialization;
 using UnityEngine;
+using UnityEditor;
 
 namespace Larvend.PlotEditor.UI
 {
@@ -36,7 +37,11 @@ namespace Larvend.PlotEditor.UI
                 Debug.LogWarning("You have already opened a project. Cleaning temp file...");
             }
 
-            var _path = Dialog.OpenFileDialog(Title: "Open Project", InitPath: Application.dataPath);
+# if UNITY_EDITOR
+            var _path = EditorUtility.OpenFilePanelWithFilters(title: "Open Project", directory: Application.dataPath, filters: new string[] {"Larvend Plot File", "lpf"});
+# else
+            var _path = Dialog.OpenFileDialog(Title: "Open Project", InitPath: Application.dataPath, Filter: "Larvend Plot File (*.lpf)|*.lpf|All Files|*.*");
+# endif
             ProjectManager.OpenProject(_path);
         }
     }
@@ -49,7 +54,11 @@ namespace Larvend.PlotEditor.UI
 
             if (string.IsNullOrEmpty(ProjectManager.ProjectFilePath))
             {
-                var _targetPath = Dialog.SaveFileDialog(Title: "Save", Filename: "New Plot.lpf", InitPath: Application.dataPath, Filter: "lpf");
+# if UNITY_EDITOR
+                var _targetPath = EditorUtility.OpenFilePanelWithFilters(title: "Save", directory: Application.dataPath, filters: new string[] {"Larvend Plot File", "lpf"});
+# else
+                var _targetPath = Dialog.SaveFileDialog(Title: "Save", Filename: "New Plot.lpf", InitPath: Application.dataPath, Filter: "Larvend Plot File (*.lpf)|*.lpf|All Files|*.*");
+# endif
                 if (string.IsNullOrEmpty(_targetPath)) return;
 
                 ProjectHelper.SaveProject(_targetPath);
@@ -67,7 +76,11 @@ namespace Larvend.PlotEditor.UI
         {
             if (string.IsNullOrEmpty(ProjectManager.GUID)) return;
 
-            var _targetPath = Dialog.SaveFileDialog(Title: "Save As", Filename: "New Plot.lpf", InitPath: Application.dataPath, Filter: "lpf");
+# if UNITY_EDITOR
+                var _targetPath = EditorUtility.OpenFilePanelWithFilters(title: "Save As", directory: Application.dataPath, filters: new string[] {"Larvend Plot File", "lpf"});
+# else
+                var _targetPath = Dialog.SaveFileDialog(Title: "Save As", Filename: "New Plot.lpf", InitPath: Application.dataPath, Filter: "Larvend Plot File (*.lpf)|*.lpf|All Files|*.*");
+# endif
             if (string.IsNullOrEmpty(_targetPath)) return;
 
             ProjectHelper.SaveProject(_targetPath);

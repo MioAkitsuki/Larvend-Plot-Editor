@@ -34,9 +34,9 @@ namespace Larvend.PlotEditor.DataSystem
             if (string.IsNullOrEmpty(ProjectManager.ProjectFolderPath)) return;
 
 # if UNITY_EDITOR
-            var _path = EditorUtility.OpenFilePanelWithFilters(title: "Select File", directory: Application.dataPath, filters: new string[] {"Image files", "png,jpg,jpeg"});
+            var _path = EditorUtility.OpenFilePanelWithFilters(title: "Select File", directory: Application.dataPath, filters: new string[] {"Supported Image Format", "png,jpg,jpeg"});
 # else
-            var _path = Dialog.OpenFileDialog(Title: "Select File", InitPath: Application.dataPath, Filter: "png|jpg|jpeg");
+            var _path = Dialog.OpenFileDialog(Title: "Select File", InitPath: Application.dataPath, Filter: "Supported Image Format (*.png, *.jpg, *.jpeg)|*.png;*.jpg;*.jpeg");
 #endif
 
             if (ResourceHelper.OpenImageResource(_path, out var _resource))
@@ -64,7 +64,7 @@ namespace Larvend.PlotEditor.DataSystem
 # if UNITY_EDITOR
             var _path = EditorUtility.OpenFilePanelWithFilters(title: "Select File", directory: Application.dataPath, filters: new string[] {"Ogg Vorbis", "ogg"});
 # else
-            var _path = Dialog.OpenFileDialog(Title: "Select File", InitPath: Application.dataPath, Filter: "ogg");
+            var _path = Dialog.OpenFileDialog(Title: "Select File", InitPath: Application.dataPath, Filter: "Ogg Vorbis (*.ogg)|*.ogg");
 #endif
 
             if (ResourceHelper.OpenAudioResource(_path, out var _resource))
