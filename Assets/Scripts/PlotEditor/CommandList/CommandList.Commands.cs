@@ -25,21 +25,99 @@ namespace Larvend.PlotEditor.UI
             switch (Type)
             {
                 case CommandType.Text:
-                    AddTextCommand(Data);
+                    AddTextCommand();
                     break;
             }
         }
 
-        private void AddTextCommand(CommandData _data = null)
+        private void AddTextCommand()
         {
             var model = this.GetModel<PlotEditorModel>();
-            var data = _data == null ? TextData.Default : _data as TextData;
+            var data = Data == null ? TextData.Default : Data as TextData;
+
+            ProjectManager.AddCommand(data);
 
             var command = GameObject.Instantiate(PlotEditorController.Instance.CommandPrefabs[CommandType.Text], CommandListController.CommandListParent)
-                .GetComponent<CommandControllerBase>().Initialize(model.CommandControllers.Count, data);
-            
+                .GetComponent<CommandControllerBase>().Initialize(data);
             model.CommandControllers.AddLast(command);
-            ProjectManager.AddCommand(data);
+
+            TypeEventSystem.Global.Send<OnCommandRefreshEvent>();
+        }
+    }
+
+    public class InsertCommandBeforeCommand : AbstractCommand
+    {
+        public CommandType Type;
+        public CommandData Data;
+        public InsertCommandBeforeCommand(CommandType _type, CommandData _data = null)
+        {
+            Type = _type;
+            Data = _data;
+        }
+
+        protected override void OnExecute()
+        {
+            switch (Type)
+            {
+                case CommandType.Text:
+                    InsertTextCommand();
+                    break;
+            }
+        }
+
+        private void InsertTextCommand()
+        {
+            var model = this.GetModel<PlotEditorModel>();
+            var data = Data == null ? TextData.Default : Data as TextData;
+
+            if (model.CurrentCommandController == null) return;
+
+            ProjectManager.InsertCommand(data, model.CurrentCommandController.Value.Data.Id);
+
+            var command = GameObject.Instantiate(PlotEditorController.Instance.CommandPrefabs[CommandType.Text], CommandListController.CommandListParent)
+                .GetComponent<CommandControllerBase>().Initialize(data);
+            model.CommandControllers.AddAfter(model.CurrentCommandController, command);
+            command.transform.SetSiblingIndex(data.Id);
+
+            TypeEventSystem.Global.Send<OnCommandRefreshEvent>();
+        }
+    }
+
+    public class InsertCommandAfterCommand : AbstractCommand
+    {
+        public CommandType Type;
+        public CommandData Data;
+        public InsertCommandAfterCommand(CommandType _type, CommandData _data = null)
+        {
+            Type = _type;
+            Data = _data;
+        }
+
+        protected override void OnExecute()
+        {
+            switch (Type)
+            {
+                case CommandType.Text:
+                    InsertTextCommand();
+                    break;
+            }
+        }
+
+        private void InsertTextCommand()
+        {
+            var model = this.GetModel<PlotEditorModel>();
+            var data = Data == null ? TextData.Default : Data as TextData;
+
+            if (model.CurrentCommandController == null) return;
+
+            ProjectManager.InsertCommand(data, model.CurrentCommandController.Value.Data.Id + 1);
+
+            var command = GameObject.Instantiate(PlotEditorController.Instance.CommandPrefabs[CommandType.Text], CommandListController.CommandListParent)
+                .GetComponent<CommandControllerBase>().Initialize(data);
+            model.CommandControllers.AddAfter(model.CurrentCommandController, command);
+            command.transform.SetSiblingIndex(data.Id);
+
+            TypeEventSystem.Global.Send<OnCommandRefreshEvent>();
         }
     }
 
@@ -62,6 +140,44 @@ namespace Larvend.PlotEditor.UI
             }
             model.CurrentCommandController = model.CommandControllers.Find(Command);
             model.CurrentCommandController.Value.Select();
+
+            TypeEventSystem.Global.Send<OnCommandChangedEvent>();
+        }
+    }
+
+    public class NextCommandCommand : AbstractCommand
+    {
+        protected override void OnExecute()
+        {
+            var model = this.GetModel<PlotEditorModel>();
+            
+            if (model.CurrentCommandController == null || model.CurrentCommandController.Next == null)
+            {
+                return;
+            }
+            model.CurrentCommandController.Value.DeSelect();
+            model.CurrentCommandController = model.CurrentCommandController.Next;
+            model.CurrentCommandController.Value.Select();
+
+            TypeEventSystem.Global.Send<OnCommandChangedEvent>();
+        }
+    }
+
+    public class PrevCommandCommand : AbstractCommand
+    {
+        protected override void OnExecute()
+        {
+            var model = this.GetModel<PlotEditorModel>();
+            
+            if (model.CurrentCommandController == null || model.CurrentCommandController.Previous == null)
+            {
+                return;
+            }
+            model.CurrentCommandController.Value.DeSelect();
+            model.CurrentCommandController = model.CurrentCommandController.Previous;
+            model.CurrentCommandController.Value.Select();
+
+            TypeEventSystem.Global.Send<OnCommandChangedEvent>();
         }
     }
 
@@ -72,37 +188,24 @@ namespace Larvend.PlotEditor.UI
             var model = this.GetModel<PlotEditorModel>();
             if (model.CurrentCommandController == null) return;
 
-            UpdateFollowingsId();
-
             var pointer = model.CurrentCommandController;
-            if (model.CurrentCommandController.Previous != null)
-            {
-                model.CurrentCommandController.Previous.Value.Select();
-                model.CurrentCommandController = model.CurrentCommandController.Previous;
-            }
-            else if (model.CurrentCommandController.Next != null)
+            if (model.CurrentCommandController.Next != null)
             {
                 model.CurrentCommandController.Next.Value.Select();
                 model.CurrentCommandController = model.CurrentCommandController.Next;
+            }
+            else if (model.CurrentCommandController.Previous != null)
+            {
+                model.CurrentCommandController.Previous.Value.Select();
+                model.CurrentCommandController = model.CurrentCommandController.Previous;
             }
 
             model.CommandControllers.Remove(pointer);
             ProjectManager.RemoveCommand(pointer.Value.Data);
 
             GameObject.Destroy(pointer.Value.gameObject);
-        }
 
-        private void UpdateFollowingsId()
-        {
-            var model = this.GetModel<PlotEditorModel>();
-            
-            var pointer = model.CurrentCommandController;
-            while (pointer.Next != null)
-            {
-                pointer.Next.Value.Id--;
-                pointer = pointer.Next;
-                pointer.Value.Refresh();
-            }
+            TypeEventSystem.Global.Send<OnCommandChangedEvent>();
         }
     }
 }

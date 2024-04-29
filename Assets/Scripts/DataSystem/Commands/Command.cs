@@ -18,7 +18,9 @@ namespace Larvend.PlotEditor.DataSystem
     [YamlSerializable]
     public abstract class CommandData
     {
+        public int Id { get; set; }
         public abstract CommandType Type { get; }
+        public abstract void Update(CommandData data);
     }
 
     public abstract class CommandSettings

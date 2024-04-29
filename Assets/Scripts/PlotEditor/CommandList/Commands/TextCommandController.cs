@@ -22,18 +22,8 @@ namespace Larvend.PlotEditor.UI
             contentText = transform.Find("Content/Content").GetComponent<TMP_Text>();
         }
 
-        public override CommandControllerBase Initialize(int _id)
+        public override CommandControllerBase Initialize(CommandData _data)
         {
-            Id = _id;
-
-            Refresh();
-
-            return this;
-        }
-
-        public override CommandControllerBase Initialize(int _id, CommandData _data)
-        {
-            Id = _id;
             Data = _data as TextData;
 
             Refresh();
@@ -43,8 +33,8 @@ namespace Larvend.PlotEditor.UI
 
         public override void Refresh()
         {
-            idText.SetText($"ID: {Id}");
-            typeText.SetText($"Type: {Type}");
+            idText.SetText($"ID: {_.Id}");
+            typeText.SetText($"Type: {_.Type}");
 
             if (Data != null)
             {

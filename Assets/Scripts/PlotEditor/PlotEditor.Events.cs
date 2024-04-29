@@ -9,4 +9,6 @@ using UnityEngine;
 namespace Larvend.PlotEditor.UI
 {
     public struct PlotEditorUIRefreshEvent {}
+    public struct OnCommandChangedEvent {}
+    public struct OnCommandRefreshEvent {}
 }

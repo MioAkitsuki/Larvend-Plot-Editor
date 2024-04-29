@@ -38,7 +38,7 @@ namespace Larvend.PlotEditor.UI
         private void AddTextCommand(TextData data)
         {
             var command = Instantiate(PlotEditorController.Instance.CommandPrefabs[CommandType.Text], CommandListParent)
-                .GetComponent<CommandControllerBase>().Initialize(mModel.CommandControllers.Count, data);
+                .GetComponent<CommandControllerBase>().Initialize(data);
             
             mModel.CommandControllers.AddLast(command);
         }

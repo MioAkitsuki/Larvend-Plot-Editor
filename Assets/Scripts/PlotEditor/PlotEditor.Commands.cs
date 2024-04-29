@@ -37,15 +37,7 @@ namespace Larvend.PlotEditor.UI
             }
 
             var _path = Dialog.OpenFileDialog(Title: "Open Project", InitPath: Application.dataPath);
-            if (_path == null || !File.Exists(_path)) return;
-            
-            if (ProjectHelper.OpenProject(_path, out ProjectManager.GUID))
-            {
-                ProjectManager.ProjectFilePath = _path;
-                
-                TypeEventSystem.Global.Send<PlotEditorUIRefreshEvent>();
-            }
-            else ProjectManager.GUID = null;
+            ProjectManager.OpenProject(_path);
         }
     }
 

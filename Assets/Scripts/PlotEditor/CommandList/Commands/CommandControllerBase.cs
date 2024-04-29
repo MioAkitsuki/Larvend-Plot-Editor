@@ -11,7 +11,6 @@ namespace Larvend.PlotEditor.UI
 {
     public abstract class CommandControllerBase : MonoBehaviour, IController
     {
-        public int Id;
         public abstract CommandType Type { get; }
         public CommandData Data;
 
@@ -39,10 +38,15 @@ namespace Larvend.PlotEditor.UI
             button.OnRightClick += () => {
                 Debug.Log("Right Click");
             };
+            button.OnDoubleClick += () => {
+                this.SendCommand(new SelectCommandCommand(this));
+                CommandPropertyController.Instance.Show();
+            };
+
+            TypeEventSystem.Global.Register<OnCommandRefreshEvent>(e => Refresh()).UnRegisterWhenGameObjectDestroyed(gameObject);
         }
 
-        public abstract CommandControllerBase Initialize(int _id);
-        public abstract CommandControllerBase Initialize(int _id, CommandData _data);
+        public abstract CommandControllerBase Initialize(CommandData _data);
         public abstract void Refresh();
         public void Select()
         {
