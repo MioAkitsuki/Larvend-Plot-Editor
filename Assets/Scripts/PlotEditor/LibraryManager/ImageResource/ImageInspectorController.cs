@@ -51,7 +51,16 @@ namespace Larvend.PlotEditor.UI
 
         public void Refresh()
         {
-            if (mModel.CurrentImageResourceController == null) return;
+            if (mModel.CurrentImageResourceController == null)
+            {
+                mGuid.SetTextWithoutNotify("");
+                mName.SetTextWithoutNotify("");
+                mDescription.SetTextWithoutNotify("");
+                mImage.sprite = null;
+                mSize.SetText("");
+
+                return;
+            }
             mImageResource = mModel.CurrentImageResourceController.Data;
 
             mGuid.SetTextWithoutNotify(mImageResource.Guid);

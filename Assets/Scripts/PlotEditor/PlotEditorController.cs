@@ -11,7 +11,7 @@ namespace Larvend.PlotEditor
 {
     public class PlotEditorController : MonoSingleton<PlotEditorController>
     {
-        public SerializableDictionary<CommandType, GameObject> CommandPrefabs;
+        
     }
 
 }

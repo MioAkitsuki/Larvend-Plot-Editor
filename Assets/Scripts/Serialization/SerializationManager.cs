@@ -223,6 +223,7 @@ namespace Larvend.PlotEditor.Serialization
                 var serializer = new SerializerBuilder()
                     .WithNamingConvention(CamelCaseNamingConvention.Instance)
                     .WithTagMapping("!text", typeof(TextData))
+                    .WithTagMapping("!background", typeof(BackgroundData))
                     .WithIndentedSequences()
                     .Build();
                 
@@ -248,6 +249,7 @@ namespace Larvend.PlotEditor.Serialization
                 var deserializer = new DeserializerBuilder()
                     .WithNamingConvention(CamelCaseNamingConvention.Instance)
                     .WithTagMapping("!text", typeof(TextData))
+                    .WithTagMapping("!background", typeof(BackgroundData))
                     .IgnoreUnmatchedProperties()
                     .Build();
                 

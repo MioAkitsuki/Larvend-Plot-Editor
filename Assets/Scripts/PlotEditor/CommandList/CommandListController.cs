@@ -4,13 +4,16 @@ using QFramework;
 using UnityEngine;
 using Larvend.PlotEditor;
 using Larvend.PlotEditor.DataSystem;
+using Kuchinashi;
 
 namespace Larvend.PlotEditor.UI
 {
-    public class CommandListController : MonoBehaviour , IController
+    public class CommandListController : MonoSingleton<CommandListController> , IController
     {
         private PlotEditorModel mModel;
         public static Transform CommandListParent;
+
+        public SerializableDictionary<CommandType, GameObject> CommandPrefabs;
 
         void Awake()
         {
@@ -29,18 +32,15 @@ namespace Larvend.PlotEditor.UI
                 switch (command)
                 {
                     case TextData data:
-                        AddTextCommand(data);
+                        mModel.CommandControllers.AddLast(Instantiate(CommandPrefabs[CommandType.Text], CommandListParent)
+                            .GetComponent<CommandControllerBase>().Initialize(data));
+                        break;
+                    case BackgroundData data:
+                        mModel.CommandControllers.AddLast(Instantiate(CommandPrefabs[CommandType.Background], CommandListParent)
+                            .GetComponent<CommandControllerBase>().Initialize(data));
                         break;
                 }
             }
-        }
-
-        private void AddTextCommand(TextData data)
-        {
-            var command = Instantiate(PlotEditorController.Instance.CommandPrefabs[CommandType.Text], CommandListParent)
-                .GetComponent<CommandControllerBase>().Initialize(data);
-            
-            mModel.CommandControllers.AddLast(command);
         }
 
         public IArchitecture GetArchitecture()

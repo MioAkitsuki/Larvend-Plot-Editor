@@ -57,5 +57,23 @@ namespace Larvend.PlotEditor.DataSystem
                 Instance.Audios.Add(_resource.Guid, _resource);
             }
         }
+
+        public static bool TryGetResource<T>(string _guid, out T _resource) where T : ResourceBase
+        {
+            if (Instance.Images.TryGetValue(_guid, out var image) && image is T)
+            {
+                _resource = image as T;
+                return true;
+            }
+
+            if (Instance.Audios.TryGetValue(_guid, out var audio) && audio is T)
+            {
+                _resource = audio as T;
+                return true;
+            }
+
+            _resource = null;
+            return false;
+        }
     }
 }

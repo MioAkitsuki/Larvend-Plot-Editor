@@ -55,7 +55,7 @@ namespace Larvend.PlotEditor.UI
             if (string.IsNullOrEmpty(ProjectManager.ProjectFilePath))
             {
 # if UNITY_EDITOR
-                var _targetPath = EditorUtility.OpenFilePanelWithFilters(title: "Save", directory: Application.dataPath, filters: new string[] {"Larvend Plot File", "lpf"});
+                var _targetPath = EditorUtility.SaveFilePanel(title: "Save", directory: Application.dataPath, defaultName: "New Plot", extension: "lpf");
 # else
                 var _targetPath = Dialog.SaveFileDialog(Title: "Save", Filename: "New Plot.lpf", InitPath: Application.dataPath, Filter: "Larvend Plot File (*.lpf)|*.lpf|All Files|*.*");
 # endif
@@ -77,7 +77,7 @@ namespace Larvend.PlotEditor.UI
             if (string.IsNullOrEmpty(ProjectManager.GUID)) return;
 
 # if UNITY_EDITOR
-                var _targetPath = EditorUtility.OpenFilePanelWithFilters(title: "Save As", directory: Application.dataPath, filters: new string[] {"Larvend Plot File", "lpf"});
+                var _targetPath = EditorUtility.SaveFilePanel(title: "Save As", directory: Application.dataPath, defaultName: "New Plot", extension: "lpf");
 # else
                 var _targetPath = Dialog.SaveFileDialog(Title: "Save As", Filename: "New Plot.lpf", InitPath: Application.dataPath, Filter: "Larvend Plot File (*.lpf)|*.lpf|All Files|*.*");
 # endif

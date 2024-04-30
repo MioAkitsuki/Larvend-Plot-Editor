@@ -58,5 +58,24 @@ namespace Larvend.PlotEditor
 
             return Project.Commands[_id];
         }
+
+        public static bool FindNearestCommand<T>(int _id, out T _data) where T : CommandData
+        {
+            _data = null;
+            if (!IsProjectExist()) return false;
+
+            if (Project.Commands.Count == 0 || _id < 0 || _id >= Project.Commands.Count) return false;
+
+            for (int i = _id; i >= 0; i--)
+            {
+                if (Project.Commands[i] is T)
+                {
+                    _data = Project.Commands[i] as T;
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
 }

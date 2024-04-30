@@ -15,11 +15,19 @@ namespace Larvend.PlotEditor.DataSystem
         Background
     }
 
+    public enum CommandTiming
+    {
+        OnClick = 0,
+        WithPrevious = 1,
+        AfterPrevious = 2
+    }
+
     [YamlSerializable]
     public abstract class CommandData
     {
         public int Id { get; set; }
         public abstract CommandType Type { get; }
+        public CommandTiming Timing { get; set; }
         public abstract void Update(CommandData data);
     }
 

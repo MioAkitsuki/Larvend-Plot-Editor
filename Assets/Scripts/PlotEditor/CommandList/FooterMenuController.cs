@@ -47,7 +47,7 @@ namespace Larvend.PlotEditor.UI
             
             addBackgroundCommandButton = transform.Find("AddCommand/Dropdown/Background").GetComponent<Button>();
             addBackgroundCommandButton.onClick.AddListener(() => {
-                Debug.Log("Add Background");
+                this.SendCommand(new AddCommandCommand(DataSystem.CommandType.Background));
             });
 
             addAvatarCommandButton = transform.Find("AddCommand/Dropdown/Avatar").GetComponent<Button>();

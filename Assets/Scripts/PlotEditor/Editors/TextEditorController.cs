@@ -59,11 +59,11 @@ namespace Larvend.PlotEditor.UI
             });
 
             TypeEventSystem.Global.Register<OnCommandRefreshEvent>(e => {
-                Refresh(mModel.CurrentCommandController.Value.Data as TextData);
+                Refresh();
             }).UnRegisterWhenGameObjectDestroyed(gameObject);
 
             TypeEventSystem.Global.Register<OnCommandChangedEvent>(e => {
-                Refresh(mModel.CurrentCommandController.Value.Data as TextData);
+                Refresh();
             }).UnRegisterWhenGameObjectDestroyed(gameObject);
 
             stateMachine.AddState(States.None, new NoneState(stateMachine, this));
@@ -78,8 +78,18 @@ namespace Larvend.PlotEditor.UI
             stateMachine.CurrentState.Update();
         }
 
-        private void Refresh(TextData _data)
+        private void Refresh()
         {
+            if (mModel.CurrentCommandController == null)
+            {
+                stateMachine.ChangeState(States.None);
+                return;
+            }
+            if (!ProjectManager.FindNearestCommand<TextData>(mModel.CurrentCommandController.Value.Data.Id, out var _data))
+            {
+                stateMachine.ChangeState(States.None);
+                return;
+            }
             mTextData = _data;
 
             if (_data.TextType == TextType.Bottom)
@@ -155,7 +165,7 @@ namespace Larvend.PlotEditor.UI
 
                 if (!mTarget.mBottomTextSpeaker.isFocused && !mTarget.mBottomTextContent.isFocused)
                 {
-                    if (Input.GetKeyUp(KeyCode.DownArrow) || Input.GetKeyUp(KeyCode.Return)) mTarget.SendCommand<NextCommandCommand>();
+                    if (Input.GetKeyUp(KeyCode.DownArrow)) mTarget.SendCommand<NextCommandCommand>();
                     else if (Input.GetKeyUp(KeyCode.UpArrow)) mTarget.SendCommand<PrevCommandCommand>();
                 }
             }
@@ -195,7 +205,7 @@ namespace Larvend.PlotEditor.UI
 
                 if (!mTarget.mBottomTextSpeaker.isFocused && !mTarget.mBottomTextContent.isFocused)
                 {
-                    if (Input.GetKeyUp(KeyCode.DownArrow) || Input.GetKeyUp(KeyCode.Return)) mTarget.SendCommand<NextCommandCommand>();
+                    if (Input.GetKeyUp(KeyCode.DownArrow)) mTarget.SendCommand<NextCommandCommand>();
                     else if (Input.GetKeyUp(KeyCode.UpArrow)) mTarget.SendCommand<PrevCommandCommand>();
                 }
             }

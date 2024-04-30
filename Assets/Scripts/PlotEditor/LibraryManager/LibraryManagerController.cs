@@ -33,6 +33,8 @@ namespace Larvend.PlotEditor.UI
         private Toggle mImageManagerToggle;
         private Toggle mAudioManagerToggle;
 
+        public static bool IsOnSelection = false;
+
         void Awake()
         {
             mModel = this.GetModel<PlotEditorModel>();
@@ -70,6 +72,29 @@ namespace Larvend.PlotEditor.UI
             stateMachine.AddState(States.Audio, new AudioState(stateMachine, this));
 
             stateMachine.StartState(States.None);
+        }
+
+        public static void SelectResource<T>()
+        {
+            IsOnSelection = true;
+
+            switch (typeof(T))
+            {
+                case var type when type == typeof(ImageResource):
+                    StateMachine.ChangeState(States.Image);
+                    break;
+                case var type when type == typeof(AudioResource):
+                    StateMachine.ChangeState(States.Audio);
+                    break;
+            }
+
+            Instance.StartCoroutine(Instance.SelectResourceCoroutine());
+        }
+
+        private IEnumerator SelectResourceCoroutine()
+        {
+            yield return new WaitUntil(() => StateMachine.CurrentStateId == States.None);
+            IsOnSelection = false;
         }
 
         private void Refresh()

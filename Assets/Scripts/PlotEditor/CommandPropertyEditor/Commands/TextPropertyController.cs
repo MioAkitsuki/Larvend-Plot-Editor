@@ -15,7 +15,8 @@ namespace Larvend.PlotEditor.UI
         private TextData mTextData;
 
         private TMP_InputField mId;
-        private TMP_Dropdown mType;
+        private TMP_Dropdown mTiming;
+        private TMP_Dropdown mTextType;
         private TMP_InputField mSpeaker;
         private TMP_InputField mContent;
 
@@ -27,8 +28,13 @@ namespace Larvend.PlotEditor.UI
             mCanvasGroup.alpha = 0;
 
             mId = transform.Find("Content/ID/InputField").GetComponent<TMP_InputField>();
-            mType = transform.Find("Content/Type/Dropdown").GetComponent<TMP_Dropdown>();
-            mType.onValueChanged.AddListener(value => {
+            mTiming = transform.Find("Content/Timing/Dropdown").GetComponent<TMP_Dropdown>();
+            mTiming.onValueChanged.AddListener(value => {
+                mTextData.Timing = (CommandTiming) value;
+                TypeEventSystem.Global.Send<OnCommandRefreshEvent>();
+            });
+            mTextType = transform.Find("Content/TextType/Dropdown").GetComponent<TMP_Dropdown>();
+            mTextType.onValueChanged.AddListener(value => {
                 mTextData.TextType = (TextType) value;
                 TypeEventSystem.Global.Send<OnCommandRefreshEvent>();
             });
@@ -60,7 +66,8 @@ namespace Larvend.PlotEditor.UI
 
             mId.SetTextWithoutNotify(mModel.CurrentCommandController.Value.Data.Id.ToString());
             
-            mType.SetValueWithoutNotify((int) mTextData.TextType);
+            mTiming.SetValueWithoutNotify((int) mTextData.Timing);
+            mTextType.SetValueWithoutNotify((int) mTextData.TextType);
             mSpeaker.SetTextWithoutNotify(mTextData.Speaker);
             mContent.SetTextWithoutNotify(mTextData.Content);
         }

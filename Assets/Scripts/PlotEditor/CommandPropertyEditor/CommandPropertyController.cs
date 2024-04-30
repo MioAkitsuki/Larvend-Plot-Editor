@@ -2,10 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using QFramework;
 using UnityEngine;
-using Larvend.PlotEditor;
 using Larvend.PlotEditor.DataSystem;
 using UnityEngine.UI;
-using Kuchinashi;
 
 namespace Larvend.PlotEditor.UI
 {
@@ -14,7 +12,8 @@ namespace Larvend.PlotEditor.UI
         public enum States
         {
             None,
-            Text
+            Text,
+            Background
         }
 
         private PlotEditorModel mModel;
@@ -22,6 +21,7 @@ namespace Larvend.PlotEditor.UI
         private FSM<States> stateMachine = new FSM<States>();
 
         private TextPropertyController mTextPropertyController;
+        private BackgroundPropertyController mBackgroundPropertyController;
 
         private Button mHideButton;
 
@@ -32,6 +32,7 @@ namespace Larvend.PlotEditor.UI
             mModel = this.GetModel<PlotEditorModel>();
 
             mTextPropertyController = transform.Find("TextProperty").GetComponent<TextPropertyController>();
+            mBackgroundPropertyController = transform.Find("BackgroundProperty").GetComponent<BackgroundPropertyController>();
 
             mHideButton = transform.Find("HideButton").GetComponent<Button>();
             mHideButton.onClick.AddListener(() => {
@@ -47,18 +48,33 @@ namespace Larvend.PlotEditor.UI
 
             stateMachine.AddState(States.None, new NoneState(stateMachine, this));
             stateMachine.AddState(States.Text, new TextState(stateMachine, this));
+            stateMachine.AddState(States.Background, new BackgroundState(stateMachine, this));
 
             stateMachine.StartState(States.None);
         }
 
         public void Refresh()
         {
+            if (mModel.CurrentCommandController == null)
+            {
+                stateMachine.ChangeState(States.None);
+                return;
+            }
+
             var command = mModel.CurrentCommandController.Value;
             switch (command.Type)
             {
                 case CommandType.Text:
                     mTextPropertyController.Refresh();
                     break;
+                case CommandType.Background:
+                    mBackgroundPropertyController.Refresh();
+                    break;
+            }
+
+            if (stateMachine.CurrentStateId != States.None)
+            {
+                Show();
             }
         }
 
@@ -69,6 +85,12 @@ namespace Larvend.PlotEditor.UI
             {
                 case CommandType.Text:
                     stateMachine.ChangeState(States.Text);
+                    break;
+                case CommandType.Background:
+                    stateMachine.ChangeState(States.Background);
+                    break;
+                default:
+                    stateMachine.ChangeState(States.None);
                     break;
             }
         }
@@ -152,6 +174,26 @@ namespace Larvend.PlotEditor.UI
                 mTarget.mTextPropertyController.mCanvasGroup.alpha = 0f;
                 mTarget.mTextPropertyController.mCanvasGroup.interactable = false;
                 mTarget.mTextPropertyController.mCanvasGroup.blocksRaycasts = false;
+            }
+        }
+
+        public class BackgroundState : AbstractState<States, CommandPropertyController>
+        {
+            public BackgroundState(FSM<States> fsm, CommandPropertyController target) : base(fsm, target) {}
+            protected override bool OnCondition() => mFSM.CurrentStateId != States.Background;
+
+            protected override void OnEnter()
+            {
+                mTarget.mBackgroundPropertyController.mCanvasGroup.alpha = 1f;
+                mTarget.mBackgroundPropertyController.mCanvasGroup.interactable = true;
+                mTarget.mBackgroundPropertyController.mCanvasGroup.blocksRaycasts = true;
+            }
+
+            protected override void OnExit()
+            {
+                mTarget.mBackgroundPropertyController.mCanvasGroup.alpha = 0f;
+                mTarget.mBackgroundPropertyController.mCanvasGroup.interactable = false;
+                mTarget.mBackgroundPropertyController.mCanvasGroup.blocksRaycasts = false;
             }
         }
     }

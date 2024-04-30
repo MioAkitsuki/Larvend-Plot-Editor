@@ -14,4 +14,8 @@ namespace Larvend.PlotEditor.UI
     public struct OnResourcesChangedEvent {}
     public struct OnCurrentImageResourceChangedEvent {}
     public struct OnResourceRefreshEvent {}
+
+    public struct OnImageResourceSelectedEvent {
+        public string Guid;
+    }
 }

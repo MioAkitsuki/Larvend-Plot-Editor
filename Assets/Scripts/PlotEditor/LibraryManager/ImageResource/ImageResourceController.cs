@@ -34,6 +34,13 @@ namespace Larvend.PlotEditor.UI
             button.OnLeftClick += () => {
                 this.SendCommand(new SelectImageResourceCommand(this));
             };
+            button.OnDoubleClick += () => {
+                if (LibraryManagerController.IsOnSelection)
+                {
+                    TypeEventSystem.Global.Send(new OnImageResourceSelectedEvent() { Guid = Data.Guid });
+                    LibraryManagerController.StateMachine.ChangeState(LibraryManagerController.States.None);
+                }
+            };
 
             TypeEventSystem.Global.Register<OnResourceRefreshEvent>(e => Refresh()).UnRegisterWhenGameObjectDestroyed(gameObject);
         }
@@ -66,7 +73,11 @@ namespace Larvend.PlotEditor.UI
 
         public void Dispose()
         {
-            if (IsCurrent) model.CurrentImageResourceController = null;
+            if (IsCurrent)
+            {
+                model.CurrentImageResourceController = null;
+                TypeEventSystem.Global.Send<OnCurrentImageResourceChangedEvent>();
+            }
             model.ImageResourceControllers.Remove(this);
 
             Destroy(gameObject);

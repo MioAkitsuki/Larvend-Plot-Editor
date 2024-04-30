@@ -22,22 +22,20 @@ namespace Larvend.PlotEditor.UI
 
         protected override void OnExecute()
         {
+            var model = this.GetModel<PlotEditorModel>();
+            var data = Data;
             switch (Type)
             {
                 case CommandType.Text:
-                    AddTextCommand();
+                    data = Data == null ? TextData.Default : Data as TextData;
+                    break;
+                case CommandType.Background:
+                    data = Data == null ? BackgroundData.Default : Data as BackgroundData;
                     break;
             }
-        }
-
-        private void AddTextCommand()
-        {
-            var model = this.GetModel<PlotEditorModel>();
-            var data = Data == null ? TextData.Default : Data as TextData;
-
             ProjectManager.AddCommand(data);
 
-            var command = GameObject.Instantiate(PlotEditorController.Instance.CommandPrefabs[CommandType.Text], CommandListController.CommandListParent)
+            var command = GameObject.Instantiate(CommandListController.Instance.CommandPrefabs[Type], CommandListController.CommandListParent)
                 .GetComponent<CommandControllerBase>().Initialize(data);
             model.CommandControllers.AddLast(command);
 
@@ -74,7 +72,7 @@ namespace Larvend.PlotEditor.UI
 
             ProjectManager.InsertCommand(data, model.CurrentCommandController.Value.Data.Id);
 
-            var command = GameObject.Instantiate(PlotEditorController.Instance.CommandPrefabs[CommandType.Text], CommandListController.CommandListParent)
+            var command = GameObject.Instantiate(CommandListController.Instance.CommandPrefabs[CommandType.Text], CommandListController.CommandListParent)
                 .GetComponent<CommandControllerBase>().Initialize(data);
             model.CommandControllers.AddAfter(model.CurrentCommandController, command);
             command.transform.SetSiblingIndex(data.Id);
@@ -112,7 +110,7 @@ namespace Larvend.PlotEditor.UI
 
             ProjectManager.InsertCommand(data, model.CurrentCommandController.Value.Data.Id + 1);
 
-            var command = GameObject.Instantiate(PlotEditorController.Instance.CommandPrefabs[CommandType.Text], CommandListController.CommandListParent)
+            var command = GameObject.Instantiate(CommandListController.Instance.CommandPrefabs[CommandType.Text], CommandListController.CommandListParent)
                 .GetComponent<CommandControllerBase>().Initialize(data);
             model.CommandControllers.AddAfter(model.CurrentCommandController, command);
             command.transform.SetSiblingIndex(data.Id);
@@ -198,6 +196,10 @@ namespace Larvend.PlotEditor.UI
             {
                 model.CurrentCommandController.Previous.Value.Select();
                 model.CurrentCommandController = model.CurrentCommandController.Previous;
+            }
+            else
+            {
+                model.CurrentCommandController = null;
             }
 
             model.CommandControllers.Remove(pointer);
