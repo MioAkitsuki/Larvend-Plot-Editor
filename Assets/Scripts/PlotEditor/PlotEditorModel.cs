@@ -10,6 +10,9 @@ namespace Larvend.PlotEditor
     {
         public LinkedList<CommandControllerBase> CommandControllers = new();
         public LinkedListNode<CommandControllerBase> CurrentCommandController = null;
+
+        public List<ImageResourceController> ImageResourceControllers = new();
+        public ImageResourceController CurrentImageResourceController = null;
         
         protected override void OnInit() {}
     }

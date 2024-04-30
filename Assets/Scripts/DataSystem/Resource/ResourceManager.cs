@@ -6,6 +6,7 @@ using UnityEditor;
 using UnityEngine;
 using YamlDotNet.Serialization;
 using Larvend.PlotEditor.Serialization;
+using Larvend.PlotEditor.UI;
 
 namespace Larvend.PlotEditor.DataSystem
 {
@@ -41,8 +42,10 @@ namespace Larvend.PlotEditor.DataSystem
 
             if (ResourceHelper.OpenImageResource(_path, out var _resource))
             {
-                Instance.Images.Add(_resource.guid, _resource);
+                Instance.Images.Add(_resource.Guid, _resource);
                 ResourceHelper.SaveImageResource(_resource);
+
+                TypeEventSystem.Global.Send<OnResourcesChangedEvent>();
             }
         }
 
@@ -69,8 +72,10 @@ namespace Larvend.PlotEditor.DataSystem
 
             if (ResourceHelper.OpenAudioResource(_path, out var _resource))
             {
-                Instance.Audios.Add(_resource.guid, _resource);
+                Instance.Audios.Add(_resource.Guid, _resource);
                 ResourceHelper.SaveAudioResource(_resource);
+
+                TypeEventSystem.Global.Send<OnResourcesChangedEvent>();
             }
         }
 

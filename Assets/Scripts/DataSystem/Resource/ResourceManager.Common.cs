@@ -34,25 +34,27 @@ namespace Larvend.PlotEditor.DataSystem
 
         public static void TryLinkResource(ImageResource _resource)
         {
-            if (Instance.Images.TryGetValue(_resource.guid, out var image))
+            if (Instance.Images.TryGetValue(_resource.Guid, out var image))
             {
+                image.Guid = _resource.Guid;
                 image.texture = _resource.texture;
             }
             else
             {
-                Instance.Images.Add(_resource.guid, _resource);
+                Instance.Images.Add(_resource.Guid, _resource);
             }
         }
 
         public static void TryLinkResource(AudioResource _resource)
         {
-            if (Instance.Audios.TryGetValue(_resource.guid, out var audio))
+            if (Instance.Audios.TryGetValue(_resource.Guid, out var audio))
             {
+                audio.Guid = _resource.Guid;
                 audio.audioClip = _resource.audioClip;
             }
             else
             {
-                Instance.Audios.Add(_resource.guid, _resource);
+                Instance.Audios.Add(_resource.Guid, _resource);
             }
         }
     }

@@ -9,9 +9,9 @@ namespace Larvend.PlotEditor.DataSystem
     [System.Serializable, YamlSerializable]
     public abstract class ResourceBase
     {
-        [YamlIgnore] public string guid { get; set; }
-        public string name { get; set; }
-        public string description { get; set; }
+        [YamlIgnore] public string Guid { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
     }
 
     [System.Serializable, YamlSerializable]
@@ -22,8 +22,8 @@ namespace Larvend.PlotEditor.DataSystem
         public ImageResource() {}
         public ImageResource(string _guid, string _name, Texture2D _texture)
         {
-            guid = _guid;
-            name = _name;
+            Guid = _guid;
+            Name = _name;
             texture = _texture;
         }
 
@@ -41,8 +41,8 @@ namespace Larvend.PlotEditor.DataSystem
         public AudioResource() {}
         public AudioResource(string _guid, string _name, AudioClip _audioClip)
         {
-            guid = _guid;
-            name = _name;
+            Guid = _guid;
+            Name = _name;
             audioClip = _audioClip;
         }
     }
@@ -54,8 +54,8 @@ namespace Larvend.PlotEditor.DataSystem
 
         public VideoResource(string _guid, string _name, VideoClip _videoClip)
         {
-            guid = _guid;
-            name = _name;
+            Guid = _guid;
+            Name = _name;
             videoClip = _videoClip;
         }
     }

@@ -36,14 +36,6 @@ namespace Larvend.PlotEditor
             if (args.Length > 1) OpenProject(args[1]);
         }
 
-        private void Update()
-        {
-            if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyUp(KeyCode.I))
-            {
-                ResourceManager.ImportImageResource();
-            }
-        }
-
         public static bool IsProjectExist() => !string.IsNullOrEmpty(GUID) & Project != null;
 
         static bool WantsToQuit()

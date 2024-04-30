@@ -112,7 +112,7 @@ namespace Larvend.PlotEditor.Serialization
 
             try
             {
-                var _imagePath = Path.Combine(_directoryPath, $"{_resource.guid}.png");
+                var _imagePath = Path.Combine(_directoryPath, $"{_resource.Guid}.png");
                 ImageHelper.SaveImage(_resource.texture, _imagePath);
 
                 return true;
@@ -155,7 +155,7 @@ namespace Larvend.PlotEditor.Serialization
 
             try
             {
-                var _audioPath = Path.Combine(_directoryPath, $"{_resource.guid}.wav");
+                var _audioPath = Path.Combine(_directoryPath, $"{_resource.Guid}.ogg");
 
                 if (File.Exists(_audioPath)) File.Delete(_audioPath);
                 OggVorbis.VorbisPlugin.Save(_audioPath, _resource.audioClip, 1);

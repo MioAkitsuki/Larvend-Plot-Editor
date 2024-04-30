@@ -11,7 +11,7 @@ namespace Larvend.PlotEditor.UI
     {
         private PlotEditorModel mModel;
 
-        public CanvasGroup mCanvasGroup;
+        [HideInInspector] public CanvasGroup mCanvasGroup;
         private TextData mTextData;
 
         private TMP_InputField mId;

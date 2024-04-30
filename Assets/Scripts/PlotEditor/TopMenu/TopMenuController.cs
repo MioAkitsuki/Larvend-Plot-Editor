@@ -4,6 +4,7 @@ using QFramework;
 using UnityEngine;
 using UnityEngine.UI;
 using Kuchinashi.UI;
+using Larvend.PlotEditor.DataSystem;
 
 namespace Larvend.PlotEditor.UI
 {
@@ -21,6 +22,14 @@ namespace Larvend.PlotEditor.UI
         #region Edit
 
         private Button newCommandButton;
+
+        #endregion
+
+        #region Library
+
+        private Button libraryManagerButton;
+        private Button importImageButton;
+        private Button importAudioButton;
 
         #endregion
 
@@ -53,25 +62,43 @@ namespace Larvend.PlotEditor.UI
             openProjectButton = transform.Find("Files/Dropdown/Open").GetComponent<Button>();
             openProjectButton.onClick.AddListener(() => {
                 this.SendCommand<OpenProjectCommand>();
-                newProjectButton.GetComponentInParent<DropdownMenu>().toggle.onClick.Invoke();
+                openProjectButton.GetComponentInParent<DropdownMenu>().toggle.onClick.Invoke();
             });
 
             saveProjectButton = transform.Find("Files/Dropdown/Save").GetComponent<Button>();
             saveProjectButton.onClick.AddListener(() => {
                 this.SendCommand<SaveProjectCommand>();
-                newProjectButton.GetComponentInParent<DropdownMenu>().toggle.onClick.Invoke();
+                saveProjectButton.GetComponentInParent<DropdownMenu>().toggle.onClick.Invoke();
             });
 
             saveAsProjectButton = transform.Find("Files/Dropdown/SaveAs").GetComponent<Button>();
             saveAsProjectButton.onClick.AddListener(() => {
                 this.SendCommand<SaveAsProjectCommand>();
-                newProjectButton.GetComponentInParent<DropdownMenu>().toggle.onClick.Invoke();
+                saveAsProjectButton.GetComponentInParent<DropdownMenu>().toggle.onClick.Invoke();
             });
 
             newCommandButton = transform.Find("Edit/Dropdown/NewCommand").GetComponent<Button>();
             newCommandButton.onClick.AddListener(() => {
                 // this.SendCommand<NewCommandCommand>();
                 newCommandButton.GetComponentInParent<DropdownMenu>().toggle.onClick.Invoke();
+            });
+
+            libraryManagerButton = transform.Find("Library/Dropdown/LibraryManager").GetComponent<Button>();
+            libraryManagerButton.onClick.AddListener(() => {
+                LibraryManagerController.StateMachine.ChangeState(LibraryManagerController.States.Image);
+                libraryManagerButton.GetComponentInParent<DropdownMenu>().toggle.onClick.Invoke();
+            });
+
+            importImageButton = transform.Find("Library/Dropdown/ImportImage").GetComponent<Button>();
+            importImageButton.onClick.AddListener(() => {
+                ResourceManager.ImportImageResource();
+                importImageButton.GetComponentInParent<DropdownMenu>().toggle.onClick.Invoke();
+            });
+
+            importAudioButton = transform.Find("Library/Dropdown/ImportAudio").GetComponent<Button>();
+            importAudioButton.onClick.AddListener(() => {
+                ResourceManager.ImportAudioResource();
+                importAudioButton.GetComponentInParent<DropdownMenu>().toggle.onClick.Invoke();
             });
         }
 
