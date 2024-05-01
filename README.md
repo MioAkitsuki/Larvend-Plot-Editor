@@ -2,6 +2,8 @@
 
 The Plot Editor for Larvend: Kanata
 
+![alt Preview of Editor](./Preview.png)
+
 However, the purpose of creating a plot editor is trying to create a completely independent and reuseable system for plot displaying.
 
 Unauthorized use of assets in this repo is strictly prohibited.
