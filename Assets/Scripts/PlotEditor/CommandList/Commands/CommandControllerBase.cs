@@ -35,8 +35,10 @@ namespace Larvend.PlotEditor.UI
             button.OnLeftClick += () => {
                 this.SendCommand(new SelectCommandCommand(this));
             };
-            button.OnRightClick += () => {
-                Debug.Log("Right Click");
+            button.OnRightClick += (e) => {
+                this.SendCommand(new SelectCommandCommand(this));
+                Instantiate(CommandListController.Instance.CommandMenuPrefab, transform.root.GetComponentInChildren<Canvas>().transform)
+                    .GetComponent<CommandMenuController>().Initialize(e.position);
             };
             button.OnDoubleClick += () => {
                 this.SendCommand(new SelectCommandCommand(this));

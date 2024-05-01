@@ -4,6 +4,7 @@ using QFramework;
 using UnityEngine;
 using Larvend.PlotEditor.DataSystem;
 using UnityEngine.UI;
+using Kuchinashi;
 
 namespace Larvend.PlotEditor.UI
 {
@@ -13,15 +14,19 @@ namespace Larvend.PlotEditor.UI
         {
             None,
             Text,
-            Background
+            Background,
+            Avatar
         }
 
         private PlotEditorModel mModel;
         public static FSM<States> StateMachine => Instance.stateMachine;
         private FSM<States> stateMachine = new FSM<States>();
 
+        private CanvasGroup mMaskCanvasGroup;
+
         private TextPropertyController mTextPropertyController;
         private BackgroundPropertyController mBackgroundPropertyController;
+        private AvatarPropertyController mAvatarPropertyController;
 
         private Button mHideButton;
 
@@ -31,8 +36,14 @@ namespace Larvend.PlotEditor.UI
         {
             mModel = this.GetModel<PlotEditorModel>();
 
+            mMaskCanvasGroup = transform.Find("Mask").GetComponent<CanvasGroup>();
+            mMaskCanvasGroup.GetComponent<Button>().onClick.AddListener(() => {
+                stateMachine.ChangeState(States.None);
+            });
+
             mTextPropertyController = transform.Find("TextProperty").GetComponent<TextPropertyController>();
             mBackgroundPropertyController = transform.Find("BackgroundProperty").GetComponent<BackgroundPropertyController>();
+            mAvatarPropertyController = transform.Find("AvatarProperty").GetComponent<AvatarPropertyController>();
 
             mHideButton = transform.Find("HideButton").GetComponent<Button>();
             mHideButton.onClick.AddListener(() => {
@@ -49,6 +60,7 @@ namespace Larvend.PlotEditor.UI
             stateMachine.AddState(States.None, new NoneState(stateMachine, this));
             stateMachine.AddState(States.Text, new TextState(stateMachine, this));
             stateMachine.AddState(States.Background, new BackgroundState(stateMachine, this));
+            stateMachine.AddState(States.Avatar, new AvatarState(stateMachine, this));
 
             stateMachine.StartState(States.None);
         }
@@ -70,6 +82,9 @@ namespace Larvend.PlotEditor.UI
                 case CommandType.Background:
                     mBackgroundPropertyController.Refresh();
                     break;
+                case CommandType.Avatar:
+                    mAvatarPropertyController.Refresh();
+                    break;
             }
 
             if (stateMachine.CurrentStateId != States.None)
@@ -88,6 +103,9 @@ namespace Larvend.PlotEditor.UI
                     break;
                 case CommandType.Background:
                     stateMachine.ChangeState(States.Background);
+                    break;
+                case CommandType.Avatar:
+                    stateMachine.ChangeState(States.Avatar);
                     break;
                 default:
                     stateMachine.ChangeState(States.None);
@@ -131,9 +149,10 @@ namespace Larvend.PlotEditor.UI
                 var rect = mTarget.GetComponent<RectTransform>();
                 var targetPos = new Vector2(0f, -30f);
 
+                mTarget.StartCoroutine(CanvasGroupHelper.FadeCanvasGroup(mTarget.mMaskCanvasGroup, 0f, 0.15f));
                 while (!Mathf.Approximately(rect.anchoredPosition.x, 0f))
                 {
-                    rect.anchoredPosition = Vector2.Lerp(rect.anchoredPosition, targetPos, 0.15f);
+                    rect.anchoredPosition = Vector2.Lerp(rect.anchoredPosition, targetPos, 0.2f);
                     yield return new WaitForFixedUpdate();
                 }
                 rect.anchoredPosition = targetPos;
@@ -146,9 +165,10 @@ namespace Larvend.PlotEditor.UI
                 var rect = mTarget.GetComponent<RectTransform>();
                 var targetPos = new Vector2(400f, -30f);
 
+                mTarget.StartCoroutine(CanvasGroupHelper.FadeCanvasGroup(mTarget.mMaskCanvasGroup, 1f, 0.15f));
                 while (!Mathf.Approximately(rect.anchoredPosition.x, 400f))
                 {
-                    rect.anchoredPosition = Vector2.Lerp(rect.anchoredPosition, targetPos, 0.15f);
+                    rect.anchoredPosition = Vector2.Lerp(rect.anchoredPosition, targetPos, 0.2f);
                     yield return new WaitForFixedUpdate();
                 }
                 rect.anchoredPosition = targetPos;
@@ -194,6 +214,26 @@ namespace Larvend.PlotEditor.UI
                 mTarget.mBackgroundPropertyController.mCanvasGroup.alpha = 0f;
                 mTarget.mBackgroundPropertyController.mCanvasGroup.interactable = false;
                 mTarget.mBackgroundPropertyController.mCanvasGroup.blocksRaycasts = false;
+            }
+        }
+
+        public class AvatarState : AbstractState<States, CommandPropertyController>
+        {
+            public AvatarState(FSM<States> fsm, CommandPropertyController target) : base(fsm, target) {}
+            protected override bool OnCondition() => mFSM.CurrentStateId != States.Avatar;
+
+            protected override void OnEnter()
+            {
+                mTarget.mAvatarPropertyController.mCanvasGroup.alpha = 1f;
+                mTarget.mAvatarPropertyController.mCanvasGroup.interactable = true;
+                mTarget.mAvatarPropertyController.mCanvasGroup.blocksRaycasts = true;
+            }
+
+            protected override void OnExit()
+            {
+                mTarget.mAvatarPropertyController.mCanvasGroup.alpha = 0f;
+                mTarget.mAvatarPropertyController.mCanvasGroup.interactable = false;
+                mTarget.mAvatarPropertyController.mCanvasGroup.blocksRaycasts = false;
             }
         }
     }

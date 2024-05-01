@@ -28,9 +28,11 @@ namespace Kuchinashi
         [SerializeField] private float mPressBeginTime = 0.3f;
         [SerializeField] private float mPressIntervalTime = 0.2f;
         private float mPressCacheTime = 0f;
+
+        private PointerEventData pointerEventData = null;
     
         public Action OnLeftClick { get; set; }
-        public Action OnRightClick { get; set; }
+        public Action<PointerEventData> OnRightClick { get; set; }
         public Action OnDoubleClick { get; set; }
         public Action OnPressBegin { get; set; }
         public Action OnPress { get; set; }
@@ -84,6 +86,8 @@ namespace Kuchinashi
                 mButtonState = EnumExButtonState.PointerDown;
                 mPressedButton = 1;
             }
+
+            pointerEventData = eventData;
         }
     
         public override void OnPointerUp(PointerEventData eventData)
@@ -122,6 +126,8 @@ namespace Kuchinashi
                 if (mButtonState == EnumExButtonState.PointerDown)
                     mButtonState = EnumExButtonState.PointerUp;
             }
+
+            pointerEventData = eventData;
         }
     
         private void Update()
@@ -190,7 +196,7 @@ namespace Kuchinashi
                     mButtonState = EnumExButtonState.None;
                     break;
                 case EnumExButtonState.RightClick:
-                    OnRightClick?.Invoke();
+                    OnRightClick?.Invoke(pointerEventData);
                     mButtonState = EnumExButtonState.None;
                     break;
                 case EnumExButtonState.DoubleClick:

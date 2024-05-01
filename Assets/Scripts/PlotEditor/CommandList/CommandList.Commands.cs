@@ -32,6 +32,9 @@ namespace Larvend.PlotEditor.UI
                 case CommandType.Background:
                     data = Data == null ? BackgroundData.Default : Data as BackgroundData;
                     break;
+                case CommandType.Avatar:
+                    data = Data == null ? AvatarData.Default : Data as AvatarData;
+                    break;
             }
             ProjectManager.AddCommand(data);
 
@@ -55,24 +58,27 @@ namespace Larvend.PlotEditor.UI
 
         protected override void OnExecute()
         {
-            switch (Type)
-            {
-                case CommandType.Text:
-                    InsertTextCommand();
-                    break;
-            }
-        }
-
-        private void InsertTextCommand()
-        {
             var model = this.GetModel<PlotEditorModel>();
-            var data = Data == null ? TextData.Default : Data as TextData;
+            var data = Data;
 
             if (model.CurrentCommandController == null) return;
 
+            switch (Type)
+            {
+                case CommandType.Text:
+                    data = Data == null ? TextData.Default : Data as TextData;
+                    break;
+                case CommandType.Background:
+                    data = Data == null ? BackgroundData.Default : Data as BackgroundData;
+                    break;
+                case CommandType.Avatar:
+                    data = Data == null ? AvatarData.Default : Data as AvatarData;
+                    break;
+            }
+
             ProjectManager.InsertCommand(data, model.CurrentCommandController.Value.Data.Id);
 
-            var command = GameObject.Instantiate(CommandListController.Instance.CommandPrefabs[CommandType.Text], CommandListController.CommandListParent)
+            var command = GameObject.Instantiate(CommandListController.Instance.CommandPrefabs[Type], CommandListController.CommandListParent)
                 .GetComponent<CommandControllerBase>().Initialize(data);
             model.CommandControllers.AddAfter(model.CurrentCommandController, command);
             command.transform.SetSiblingIndex(data.Id);
@@ -93,24 +99,27 @@ namespace Larvend.PlotEditor.UI
 
         protected override void OnExecute()
         {
-            switch (Type)
-            {
-                case CommandType.Text:
-                    InsertTextCommand();
-                    break;
-            }
-        }
-
-        private void InsertTextCommand()
-        {
             var model = this.GetModel<PlotEditorModel>();
-            var data = Data == null ? TextData.Default : Data as TextData;
+            var data = Data;
 
             if (model.CurrentCommandController == null) return;
 
+            switch (Type)
+            {
+                case CommandType.Text:
+                    data = Data == null ? TextData.Default : Data as TextData;
+                    break;
+                case CommandType.Background:
+                    data = Data == null ? BackgroundData.Default : Data as BackgroundData;
+                    break;
+                case CommandType.Avatar:
+                    data = Data == null ? AvatarData.Default : Data as AvatarData;
+                    break;
+            }
+
             ProjectManager.InsertCommand(data, model.CurrentCommandController.Value.Data.Id + 1);
 
-            var command = GameObject.Instantiate(CommandListController.Instance.CommandPrefabs[CommandType.Text], CommandListController.CommandListParent)
+            var command = GameObject.Instantiate(CommandListController.Instance.CommandPrefabs[Type], CommandListController.CommandListParent)
                 .GetComponent<CommandControllerBase>().Initialize(data);
             model.CommandControllers.AddAfter(model.CurrentCommandController, command);
             command.transform.SetSiblingIndex(data.Id);
@@ -208,6 +217,7 @@ namespace Larvend.PlotEditor.UI
             GameObject.Destroy(pointer.Value.gameObject);
 
             TypeEventSystem.Global.Send<OnCommandChangedEvent>();
+            TypeEventSystem.Global.Send<OnCommandRefreshEvent>();
         }
     }
 }

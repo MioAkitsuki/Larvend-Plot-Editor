@@ -16,6 +16,7 @@ namespace Larvend.PlotEditor.UI
 
         private CanvasGroup mBackCanvasGroup;
         private Image mBackBackground;
+        private AspectRatioFitter mBackAspectRatioFitter;
         private CanvasGroup mMiddleCanvasGroup;
         private Image mMiddleBackground;
         private CanvasGroup mFrontCanvasGroup;
@@ -27,6 +28,8 @@ namespace Larvend.PlotEditor.UI
 
             mBackCanvasGroup = transform.Find("BackBackground").GetComponent<CanvasGroup>();
             mBackBackground = transform.Find("BackBackground/Image").GetComponent<Image>();
+            mBackAspectRatioFitter = mBackBackground.GetComponent<AspectRatioFitter>();
+
             mMiddleCanvasGroup = transform.Find("MiddleBackground").GetComponent<CanvasGroup>();
             mMiddleBackground = transform.Find("MiddleBackground/Image").GetComponent<Image>();
             mFrontCanvasGroup = transform.Find("FrontBackground").GetComponent<CanvasGroup>();
@@ -52,7 +55,6 @@ namespace Larvend.PlotEditor.UI
 
                 return;
             }
-            mBackgroundData = _data;
 
             if (_data.BackgroundType == BackgroundType.None)
             {
@@ -69,18 +71,24 @@ namespace Larvend.PlotEditor.UI
                 {
                     case BackgroundType.Back:
                         mBackCanvasGroup.alpha = 1;
+                        if (mBackgroundData == _data) return;
                         mBackBackground.sprite = _res.GetSprite();
+                        mBackAspectRatioFitter.aspectRatio = _res.GetSprite().rect.width / _res.GetSprite().rect.height;
                         break;
                     case BackgroundType.Middle:
                         mMiddleCanvasGroup.alpha = 1;
+                        if (mBackgroundData == _data) return;
                         mMiddleBackground.sprite = _res.GetSprite();
                         break;
                     case BackgroundType.Front:
                         mFrontCanvasGroup.alpha = 1;
+                        if (mBackgroundData == _data) return;
                         mFrontBackground.sprite = _res.GetSprite();
                         break;
                 }
             }
+
+            mBackgroundData = _data;
         }
 
         public IArchitecture GetArchitecture()

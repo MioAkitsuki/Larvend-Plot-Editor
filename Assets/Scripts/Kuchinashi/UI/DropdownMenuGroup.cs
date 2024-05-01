@@ -30,11 +30,17 @@ namespace Kuchinashi.UI
 
         private void CreateCanvas()
         {
-            var canvas = gameObject.AddComponent<Canvas>();
+            if (!TryGetComponent<Canvas>(out var canvas))
+            {
+                canvas = gameObject.AddComponent<Canvas>();
+            }
             canvas.overrideSorting = true;
             canvas.sortingOrder = 10000;
 
-            gameObject.AddComponent<GraphicRaycaster>();
+            if (!TryGetComponent<GraphicRaycaster>(out var raycaster))
+            {
+                gameObject.AddComponent<GraphicRaycaster>();
+            }
         }
 
         private void RemoveCanvas()

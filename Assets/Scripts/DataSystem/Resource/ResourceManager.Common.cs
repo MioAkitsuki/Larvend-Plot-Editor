@@ -58,6 +58,21 @@ namespace Larvend.PlotEditor.DataSystem
             }
         }
 
+        public static string GetResourceName(string _guid)
+        {
+            if (Instance.Images.TryGetValue(_guid, out var image))
+            {
+                return image.Name;
+            }
+
+            if (Instance.Audios.TryGetValue(_guid, out var audio))
+            {
+                return audio.Name;
+            }
+
+            return "";
+        }
+
         public static bool TryGetResource<T>(string _guid, out T _resource) where T : ResourceBase
         {
             if (Instance.Images.TryGetValue(_guid, out var image) && image is T)

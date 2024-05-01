@@ -14,6 +14,7 @@ namespace Larvend.PlotEditor.UI
         public static Transform CommandListParent;
 
         public SerializableDictionary<CommandType, GameObject> CommandPrefabs;
+        public GameObject CommandMenuPrefab;
 
         void Awake()
         {
@@ -37,6 +38,10 @@ namespace Larvend.PlotEditor.UI
                         break;
                     case BackgroundData data:
                         mModel.CommandControllers.AddLast(Instantiate(CommandPrefabs[CommandType.Background], CommandListParent)
+                            .GetComponent<CommandControllerBase>().Initialize(data));
+                        break;
+                    case AvatarData data:
+                        mModel.CommandControllers.AddLast(Instantiate(CommandPrefabs[CommandType.Avatar], CommandListParent)
                             .GetComponent<CommandControllerBase>().Initialize(data));
                         break;
                 }

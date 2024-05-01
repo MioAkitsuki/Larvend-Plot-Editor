@@ -8,18 +8,17 @@ using UnityEngine;
 
 namespace Larvend.PlotEditor.UI
 {
-    public class BackgroundPropertyController : MonoSingleton<BackgroundPropertyController>, IController
+    public class AvatarPropertyController : MonoSingleton<AvatarPropertyController>, IController
     {
         private PlotEditorModel mModel;
 
         [HideInInspector] public CanvasGroup mCanvasGroup;
-        private BackgroundData mBackgroundData;
+        private AvatarData mAvatarData;
 
         private TMP_InputField mId;
         private TMP_Dropdown mTiming;
-        private TMP_Dropdown mBackgroundType;
+        private TMP_Dropdown mAvatarType;
         private TMP_InputField mSourceGuid;
-        private TMP_InputField mDuration;
 
         private Coroutine CurrentCoroutine = null;
 
@@ -33,12 +32,12 @@ namespace Larvend.PlotEditor.UI
             mId = transform.Find("Content/ID/InputField").GetComponent<TMP_InputField>();
             mTiming = transform.Find("Content/Timing/Dropdown").GetComponent<TMP_Dropdown>();
             mTiming.onValueChanged.AddListener(value => {
-                mBackgroundData.Timing = (CommandTiming) value;
+                mAvatarData.Timing = (CommandTiming) value;
                 TypeEventSystem.Global.Send<OnCommandRefreshEvent>();
             });
-            mBackgroundType = transform.Find("Content/BackgroundType/Dropdown").GetComponent<TMP_Dropdown>();
-            mBackgroundType.onValueChanged.AddListener(value => {
-                mBackgroundData.BackgroundType = (BackgroundType) value;
+            mAvatarType = transform.Find("Content/AvatarType/Dropdown").GetComponent<TMP_Dropdown>();
+            mAvatarType.onValueChanged.AddListener(value => {
+                mAvatarData.AvatarType = (AvatarType) value;
                 TypeEventSystem.Global.Send<OnCommandRefreshEvent>();
             });
             mSourceGuid = transform.Find("Content/SourceGuid/InputField").GetComponent<TMP_InputField>();
@@ -46,36 +45,30 @@ namespace Larvend.PlotEditor.UI
                 if (CurrentCoroutine != null) return;
                 CurrentCoroutine = StartCoroutine(WaitForResourceGuid());
             });
-            mDuration = transform.Find("Content/Duration/InputField").GetComponent<TMP_InputField>();
-            mDuration.onEndEdit.AddListener(value => {
-                mBackgroundData.Duration = float.Parse(value);
-                TypeEventSystem.Global.Send<OnCommandRefreshEvent>();
-            });
         }
 
         public void Refresh()
         {
-            if (mModel.CurrentCommandController.Value.Type != CommandType.Background) return;
-            mBackgroundData = mModel.CurrentCommandController.Value.Data as BackgroundData;
+            if (mModel.CurrentCommandController.Value.Type != CommandType.Avatar) return;
+            mAvatarData = mModel.CurrentCommandController.Value.Data as AvatarData;
 
             mId.SetTextWithoutNotify(mModel.CurrentCommandController.Value.Data.Id.ToString());
             
-            mTiming.SetValueWithoutNotify((int) mBackgroundData.Timing);
-            mBackgroundType.SetValueWithoutNotify((int) mBackgroundData.BackgroundType);
-            mSourceGuid.SetTextWithoutNotify(mBackgroundData.SourceGuid);
-            mDuration.SetTextWithoutNotify(mBackgroundData.Duration.ToString("N2"));
+            mTiming.SetValueWithoutNotify((int) mAvatarData.Timing);
+            mAvatarType.SetValueWithoutNotify((int) mAvatarData.AvatarType);
+            mSourceGuid.SetTextWithoutNotify(mAvatarData.SourceGuid);
         }
 
         IEnumerator WaitForResourceGuid()
         {
-            if (mModel.CurrentCommandController == null || mModel.CurrentCommandController.Value.Type != CommandType.Background)
+            if (mModel.CurrentCommandController == null || mModel.CurrentCommandController.Value.Type != CommandType.Avatar)
             {
                 CurrentCoroutine = null;
                 yield break;
             }
 
             Action<OnImageResourceSelectedEvent> action = (e) => {
-                mBackgroundData.SourceGuid = e.Guid;
+                mAvatarData.SourceGuid = e.Guid;
             };
             TypeEventSystem.Global.Register(action);
 

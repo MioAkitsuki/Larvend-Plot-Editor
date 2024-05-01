@@ -185,6 +185,8 @@ namespace Larvend.PlotEditor.Serialization
                 DeSerializeResources(Path.Combine(path, "resources"));
 
                 ProjectManager.GUID = _guid;
+                
+                TypeEventSystem.Global.Send<OnProjectInitializedEvent>();
             }
             catch (System.Exception _e)
             {
@@ -224,6 +226,7 @@ namespace Larvend.PlotEditor.Serialization
                     .WithNamingConvention(CamelCaseNamingConvention.Instance)
                     .WithTagMapping("!text", typeof(TextData))
                     .WithTagMapping("!background", typeof(BackgroundData))
+                    .WithTagMapping("!avatar", typeof(AvatarData))
                     .WithIndentedSequences()
                     .Build();
                 
@@ -250,6 +253,7 @@ namespace Larvend.PlotEditor.Serialization
                     .WithNamingConvention(CamelCaseNamingConvention.Instance)
                     .WithTagMapping("!text", typeof(TextData))
                     .WithTagMapping("!background", typeof(BackgroundData))
+                    .WithTagMapping("!avatar", typeof(AvatarData))
                     .IgnoreUnmatchedProperties()
                     .Build();
                 

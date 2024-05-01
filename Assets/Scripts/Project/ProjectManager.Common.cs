@@ -12,8 +12,6 @@ namespace Larvend.PlotEditor
         public static void InitializeProject(ProjectData _data)
         {
             Project = _data;
-
-            TypeEventSystem.Global.Send<OnProjectInitializedEvent>();
         }
 
         public static void AddCommand(CommandData _data)
@@ -65,6 +63,16 @@ namespace Larvend.PlotEditor
             if (!IsProjectExist()) return false;
 
             if (Project.Commands.Count == 0 || _id < 0 || _id >= Project.Commands.Count) return false;
+
+            for (int i = _id + 1; i < Project.Commands.Count; i++)
+            {
+                if (Project.Commands[i].Timing != CommandTiming.WithPrevious) break;
+                if (Project.Commands[i] is T)
+                {
+                    _data = Project.Commands[i] as T;
+                    return true;
+                }
+            }
 
             for (int i = _id; i >= 0; i--)
             {

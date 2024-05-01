@@ -90,6 +90,7 @@ namespace Larvend.PlotEditor.UI
                 stateMachine.ChangeState(States.None);
                 return;
             }
+            if (mTextData == _data) return;
             mTextData = _data;
 
             if (_data.TextType == TextType.Bottom)
