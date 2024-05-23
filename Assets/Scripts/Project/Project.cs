@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,7 +7,7 @@ using YamlDotNet.Serialization;
 
 namespace Larvend.PlotEditor.DataSystem
 {
-    [YamlSerializable]
+    [YamlSerializable, Serializable]
     public class ProjectData
     {
         [YamlMember] public string Name { get; set; }

@@ -52,7 +52,7 @@ namespace Larvend.PlotEditor.UI
             if (mModel.CurrentCommandController.Value.Type != CommandType.Avatar) return;
             mAvatarData = mModel.CurrentCommandController.Value.Data as AvatarData;
 
-            mId.SetTextWithoutNotify(mModel.CurrentCommandController.Value.Data.Id.ToString());
+            mId.SetTextWithoutNotify(mModel.CurrentCommandController.Value.Data.Guid.ToString());
             
             mTiming.SetValueWithoutNotify((int) mAvatarData.Timing);
             mAvatarType.SetValueWithoutNotify((int) mAvatarData.AvatarType);

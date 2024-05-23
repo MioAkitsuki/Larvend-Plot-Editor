@@ -58,7 +58,7 @@ namespace Larvend.PlotEditor.UI
             if (mModel.CurrentCommandController.Value.Type != CommandType.Background) return;
             mBackgroundData = mModel.CurrentCommandController.Value.Data as BackgroundData;
 
-            mId.SetTextWithoutNotify(mModel.CurrentCommandController.Value.Data.Id.ToString());
+            mId.SetTextWithoutNotify(mModel.CurrentCommandController.Value.Data.Guid.ToString());
             
             mTiming.SetValueWithoutNotify((int) mBackgroundData.Timing);
             mBackgroundType.SetValueWithoutNotify((int) mBackgroundData.BackgroundType);

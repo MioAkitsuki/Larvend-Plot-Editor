@@ -7,6 +7,7 @@ using Larvend.PlotEditor.Serialization;
 using UnityEngine;
 using Larvend.PlotEditor.DataSystem;
 using System.Linq;
+using System;
 
 namespace Larvend.PlotEditor.UI
 {
@@ -34,6 +35,9 @@ namespace Larvend.PlotEditor.UI
                     break;
                 case CommandType.Avatar:
                     data = Data == null ? AvatarData.Default : Data as AvatarData;
+                    break;
+                case CommandType.Selection:
+                    data = Data == null ? SelectionData.Default : Data as SelectionData;
                     break;
             }
             ProjectManager.AddCommand(data);
@@ -74,14 +78,17 @@ namespace Larvend.PlotEditor.UI
                 case CommandType.Avatar:
                     data = Data == null ? AvatarData.Default : Data as AvatarData;
                     break;
+                case CommandType.Selection:
+                    data = Data == null ? SelectionData.Default : Data as SelectionData;
+                    break;
             }
 
-            ProjectManager.InsertCommand(data, model.CurrentCommandController.Value.Data.Id);
+            var index = ProjectManager.InsertCommand(data, model.CurrentCommandController.Value.Data.Guid, false);
 
             var command = GameObject.Instantiate(CommandListController.Instance.CommandPrefabs[Type], CommandListController.CommandListParent)
                 .GetComponent<CommandControllerBase>().Initialize(data);
             model.CommandControllers.AddAfter(model.CurrentCommandController, command);
-            command.transform.SetSiblingIndex(data.Id);
+            command.transform.SetSiblingIndex(index);
 
             TypeEventSystem.Global.Send<OnCommandRefreshEvent>();
         }
@@ -115,14 +122,17 @@ namespace Larvend.PlotEditor.UI
                 case CommandType.Avatar:
                     data = Data == null ? AvatarData.Default : Data as AvatarData;
                     break;
+                case CommandType.Selection:
+                    data = Data == null ? SelectionData.Default : Data as SelectionData;
+                    break;
             }
 
-            ProjectManager.InsertCommand(data, model.CurrentCommandController.Value.Data.Id + 1);
+            var index = ProjectManager.InsertCommand(data, model.CurrentCommandController.Value.Data.Guid);
 
             var command = GameObject.Instantiate(CommandListController.Instance.CommandPrefabs[Type], CommandListController.CommandListParent)
                 .GetComponent<CommandControllerBase>().Initialize(data);
             model.CommandControllers.AddAfter(model.CurrentCommandController, command);
-            command.transform.SetSiblingIndex(data.Id);
+            command.transform.SetSiblingIndex(index);
 
             TypeEventSystem.Global.Send<OnCommandRefreshEvent>();
         }
@@ -146,6 +156,36 @@ namespace Larvend.PlotEditor.UI
                 model.CurrentCommandController.Value.DeSelect();
             }
             model.CurrentCommandController = model.CommandControllers.Find(Command);
+            model.CurrentCommandController.Value.Select();
+
+            TypeEventSystem.Global.Send<OnCommandChangedEvent>();
+        }
+    }
+
+    public class JumpToCommandCommand : AbstractCommand
+    {
+        public Guid CommandGuid;
+        public JumpToCommandCommand(Guid _id)
+        {
+            CommandGuid = _id;
+        }
+
+        protected override void OnExecute()
+        {
+            var model = this.GetModel<PlotEditorModel>();
+
+            var command = model.CommandControllers.First;
+            for (var i = command.Value.Data.Id; i > 0; i--)
+            {
+                command = command.Next;
+            }
+
+            if (model.CurrentCommandController != null)
+            {
+                if (model.CurrentCommandController == command) return;
+                model.CurrentCommandController.Value.DeSelect();
+            }
+            model.CurrentCommandController = command;
             model.CurrentCommandController.Value.Select();
 
             TypeEventSystem.Global.Send<OnCommandChangedEvent>();

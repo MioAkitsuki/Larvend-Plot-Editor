@@ -40,15 +40,6 @@ namespace Larvend.PlotEditor
 
         void Update()
         {
-            if (Input.GetKeyUp(KeyCode.I))
-            {
-                ResourceManager.ImportAudioResource();
-            }
-            if (Input.GetKeyUp(KeyCode.S))
-            {
-                SerializationHelper.SerializeProject();
-            }
-
             currentGroup?.OnUpdate();
 
             if (currentGroup.IsFinished() && !automaticGroup.IsEmpty)

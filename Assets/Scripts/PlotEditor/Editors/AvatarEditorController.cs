@@ -36,7 +36,7 @@ namespace Larvend.PlotEditor.UI
         private void Refresh()
         {
             if (mModel.CurrentCommandController == null) return;
-            if (!ProjectManager.FindNearestCommand<AvatarData>(mModel.CurrentCommandController.Value.Data.Id, out var _data))
+            if (!ProjectManager.FindNearestCommand<AvatarData>(mModel.CurrentCommandController.Value.Data.Guid, out var _data))
             {
                 mBottomLeftCanvasGroup.alpha = 0;
 

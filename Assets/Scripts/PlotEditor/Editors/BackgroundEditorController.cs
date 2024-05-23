@@ -47,7 +47,7 @@ namespace Larvend.PlotEditor.UI
         private void Refresh()
         {
             if (mModel.CurrentCommandController == null) return;
-            if (!ProjectManager.FindNearestCommand<BackgroundData>(mModel.CurrentCommandController.Value.Data.Id, out var _data))
+            if (!ProjectManager.FindNearestCommand<BackgroundData>(mModel.CurrentCommandController.Value.Data.Guid, out var _data))
             {
                 mBackCanvasGroup.alpha = 0;
                 mMiddleCanvasGroup.alpha = 0;
@@ -65,30 +65,27 @@ namespace Larvend.PlotEditor.UI
                 return;
             }
 
+            if (mBackgroundData != _data) mBackgroundData = _data;
             if (ResourceManager.TryGetResource<ImageResource>(_data.SourceGuid, out var _res))
             {
                 switch (_data.BackgroundType)
                 {
                     case BackgroundType.Back:
                         mBackCanvasGroup.alpha = 1;
-                        if (mBackgroundData == _data) return;
                         mBackBackground.sprite = _res.GetSprite();
                         mBackAspectRatioFitter.aspectRatio = _res.GetSprite().rect.width / _res.GetSprite().rect.height;
                         break;
                     case BackgroundType.Middle:
                         mMiddleCanvasGroup.alpha = 1;
-                        if (mBackgroundData == _data) return;
                         mMiddleBackground.sprite = _res.GetSprite();
                         break;
                     case BackgroundType.Front:
                         mFrontCanvasGroup.alpha = 1;
-                        if (mBackgroundData == _data) return;
                         mFrontBackground.sprite = _res.GetSprite();
                         break;
                 }
             }
 
-            mBackgroundData = _data;
         }
 
         public IArchitecture GetArchitecture()

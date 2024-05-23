@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -12,28 +13,45 @@ namespace Larvend.PlotEditor
         public static void InitializeProject(ProjectData _data)
         {
             Project = _data;
+
+            foreach (var item in Project.Commands)
+            {
+                ProjectManager.CommandDataDictionary.Add(item.Guid, item);
+            }
         }
 
         public static void AddCommand(CommandData _data)
         {
             if (!IsProjectExist()) return;
 
-            _data.Id = Project.Commands.Count;
+            _data.Guid = Guid.NewGuid();
+
             Project.Commands.Add(_data);
+            CommandDataDictionary.Add(_data.Guid, _data);
         }
 
-        public static void InsertCommand(CommandData _data, int _index)
+        public static int InsertCommand(CommandData _data, Guid _pos, bool insertAfter = true)
         {
-            if (!IsProjectExist() || _index > Project.Commands.Count) return;
+            if (!IsProjectExist() || !CommandDataDictionary.TryGetValue(_pos, out var command)) return -1;
 
-            _data.Id = _index;
+            _data.Guid = Guid.NewGuid();
+            var index = Project.Commands.IndexOf(command);
 
-            if (_index == Project.Commands.Count) Project.Commands.Add(_data);
-            else Project.Commands.Insert(_index, _data);
-
-            for (int i = _index + 1; i < Project.Commands.Count; i++)
+            if (insertAfter)
             {
-                Project.Commands[i].Id = i;
+                if (index == Project.Commands.Count - 1) Project.Commands.Add(_data);
+                else Project.Commands.Insert(index + 1, _data);
+
+                CommandDataDictionary.Add(_data.Guid, _data);
+
+                return index + 1;
+            }
+            else
+            {
+                Project.Commands.Insert(index, _data);
+                CommandDataDictionary.Add(_data.Guid, _data);
+
+                return index;
             }
         }
 
@@ -41,28 +59,30 @@ namespace Larvend.PlotEditor
         {
             if (!IsProjectExist()) return;
 
-            int index = _data.Id;
             Project.Commands.Remove(_data);
-
-            for (int i = index; i < Project.Commands.Count; i++)
-            {
-                Project.Commands[i].Id = i;
-            }
+            CommandDataDictionary.Remove(_data.Guid);
         }
 
-        public static CommandData GetCommand(int _id)
+        public static CommandData GetCommand(Guid _guid)
         {
             if (!IsProjectExist()) return null;
 
-            return Project.Commands[_id];
+            return CommandDataDictionary.TryGetValue(_guid, out var command) ? command : null;
         }
 
-        public static bool FindNearestCommand<T>(int _id, out T _data) where T : CommandData
+        public static int GetCommandIndex(CommandData _data)
+        {
+            if (!IsProjectExist()) return -1;
+
+            return Project.Commands.IndexOf(_data);
+        }
+
+        public static bool FindNearestCommand<T>(Guid _pos, out T _data) where T : CommandData
         {
             _data = null;
-            if (!IsProjectExist()) return false;
+            if (!IsProjectExist() || !CommandDataDictionary.TryGetValue(_pos, out var command) || Project.Commands.Count == 0) return false;
 
-            if (Project.Commands.Count == 0 || _id < 0 || _id >= Project.Commands.Count) return false;
+            var _id = Project.Commands.IndexOf(command);
 
             for (int i = _id + 1; i < Project.Commands.Count; i++)
             {

@@ -85,13 +85,12 @@ namespace Larvend.PlotEditor.UI
                 stateMachine.ChangeState(States.None);
                 return;
             }
-            if (!ProjectManager.FindNearestCommand<TextData>(mModel.CurrentCommandController.Value.Data.Id, out var _data))
+            if (!ProjectManager.FindNearestCommand<TextData>(mModel.CurrentCommandController.Value.Data.Guid, out var _data))
             {
                 stateMachine.ChangeState(States.None);
                 return;
             }
-            if (mTextData == _data) return;
-            mTextData = _data;
+            if (mTextData != _data) mTextData = _data;
 
             if (_data.TextType == TextType.Bottom)
             {
@@ -137,6 +136,12 @@ namespace Larvend.PlotEditor.UI
                 mTarget.mFullScreenText.interactable = false;
             }
 
+            protected override void OnUpdate()
+            {
+                if (Input.GetKeyUp(KeyCode.DownArrow)) mTarget.SendCommand<NextCommandCommand>();
+                else if (Input.GetKeyUp(KeyCode.UpArrow)) mTarget.SendCommand<PrevCommandCommand>();
+            }
+
             protected override void OnExit() {}
         }
 
@@ -160,11 +165,17 @@ namespace Larvend.PlotEditor.UI
             {
                 if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.Return))
                 {
-                    if (mTarget.mBottomTextSpeaker.isFocused) mTarget.mBottomTextSpeaker.DeactivateInputField();
-                    else if (mTarget.mBottomTextContent.isFocused) mTarget.mBottomTextContent.DeactivateInputField();
+                    if (mTarget.mFullScreenTextSpeaker.isFocused) mTarget.mFullScreenTextSpeaker.DeactivateInputField();
+                    else if (mTarget.mFullScreenTextContent.isFocused) mTarget.mFullScreenTextContent.DeactivateInputField();
+                }
+                
+                if (mTarget.mFullScreenTextContent.isFocused && Input.GetKeyUp(KeyCode.Tab))
+                {
+                    mTarget.mFullScreenTextContent.DeactivateInputField();
+                    mTarget.mFullScreenTextSpeaker.ActivateInputField();
                 }
 
-                if (!mTarget.mBottomTextSpeaker.isFocused && !mTarget.mBottomTextContent.isFocused)
+                if (!mTarget.mFullScreenTextContent.isFocused && !mTarget.mFullScreenTextSpeaker.isFocused)
                 {
                     if (Input.GetKeyUp(KeyCode.DownArrow)) mTarget.SendCommand<NextCommandCommand>();
                     else if (Input.GetKeyUp(KeyCode.UpArrow)) mTarget.SendCommand<PrevCommandCommand>();

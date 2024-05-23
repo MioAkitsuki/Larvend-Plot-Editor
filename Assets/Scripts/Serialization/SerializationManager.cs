@@ -227,6 +227,7 @@ namespace Larvend.PlotEditor.Serialization
                     .WithTagMapping("!text", typeof(TextData))
                     .WithTagMapping("!background", typeof(BackgroundData))
                     .WithTagMapping("!avatar", typeof(AvatarData))
+                    .WithTagMapping("!selection", typeof(SelectionData))
                     .WithIndentedSequences()
                     .Build();
                 
@@ -254,6 +255,7 @@ namespace Larvend.PlotEditor.Serialization
                     .WithTagMapping("!text", typeof(TextData))
                     .WithTagMapping("!background", typeof(BackgroundData))
                     .WithTagMapping("!avatar", typeof(AvatarData))
+                    .WithTagMapping("!selection", typeof(SelectionData))
                     .IgnoreUnmatchedProperties()
                     .Build();
                 

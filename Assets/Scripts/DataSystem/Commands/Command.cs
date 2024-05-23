@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,7 +13,8 @@ namespace Larvend.PlotEditor.DataSystem
         Sound,
         Avatar,
         Tachie,
-        Background
+        Background,
+        Selection
     }
 
     public enum CommandTiming
@@ -25,7 +27,8 @@ namespace Larvend.PlotEditor.DataSystem
     [YamlSerializable]
     public abstract class CommandData
     {
-        public int Id { get; set; }
+        public Guid Guid { get; set; }
+        [YamlIgnore] public int Id => ProjectManager.GetCommandIndex(this);
         public abstract CommandType Type { get; }
         public CommandTiming Timing { get; set; }
         public abstract void Update(CommandData data);

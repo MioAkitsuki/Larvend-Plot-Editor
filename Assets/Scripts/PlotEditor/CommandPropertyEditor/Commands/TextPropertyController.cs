@@ -64,7 +64,7 @@ namespace Larvend.PlotEditor.UI
             if (mModel.CurrentCommandController.Value.Type != CommandType.Text) return;
             mTextData = mModel.CurrentCommandController.Value.Data as TextData;
 
-            mId.SetTextWithoutNotify(mModel.CurrentCommandController.Value.Data.Id.ToString());
+            mId.SetTextWithoutNotify(mModel.CurrentCommandController.Value.Data.Guid.ToString());
             
             mTiming.SetValueWithoutNotify((int) mTextData.Timing);
             mTextType.SetValueWithoutNotify((int) mTextData.TextType);

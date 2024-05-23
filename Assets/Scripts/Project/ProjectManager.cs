@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -22,6 +23,8 @@ namespace Larvend.PlotEditor
             set => _project = value;
         }
         private static ProjectData _project;
+
+        public static Dictionary<Guid, CommandData> CommandDataDictionary = new();
 
         public static bool IsSaved = true;
 
