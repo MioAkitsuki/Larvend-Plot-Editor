@@ -44,7 +44,7 @@ namespace Larvend.PlotEditor.UI
 
             var command = GameObject.Instantiate(CommandListController.Instance.CommandPrefabs[Type], CommandListController.CommandListParent)
                 .GetComponent<CommandControllerBase>().Initialize(data);
-            model.CommandControllers.AddLast(command);
+            model.CommandControllerDictionary.Add(data.Guid, model.CommandControllers.AddLast(command));
 
             TypeEventSystem.Global.Send<OnCommandRefreshEvent>();
         }
@@ -87,7 +87,7 @@ namespace Larvend.PlotEditor.UI
 
             var command = GameObject.Instantiate(CommandListController.Instance.CommandPrefabs[Type], CommandListController.CommandListParent)
                 .GetComponent<CommandControllerBase>().Initialize(data);
-            model.CommandControllers.AddAfter(model.CurrentCommandController, command);
+            model.CommandControllerDictionary.Add(data.Guid, model.CommandControllers.AddAfter(model.CurrentCommandController, command));
             command.transform.SetSiblingIndex(index);
 
             TypeEventSystem.Global.Send<OnCommandRefreshEvent>();
@@ -131,7 +131,7 @@ namespace Larvend.PlotEditor.UI
 
             var command = GameObject.Instantiate(CommandListController.Instance.CommandPrefabs[Type], CommandListController.CommandListParent)
                 .GetComponent<CommandControllerBase>().Initialize(data);
-            model.CommandControllers.AddAfter(model.CurrentCommandController, command);
+            model.CommandControllerDictionary.Add(data.Guid, model.CommandControllers.AddAfter(model.CurrentCommandController, command));
             command.transform.SetSiblingIndex(index);
 
             TypeEventSystem.Global.Send<OnCommandRefreshEvent>();
@@ -174,11 +174,7 @@ namespace Larvend.PlotEditor.UI
         {
             var model = this.GetModel<PlotEditorModel>();
 
-            var command = model.CommandControllers.First;
-            for (var i = command.Value.Data.Id; i > 0; i--)
-            {
-                command = command.Next;
-            }
+            if (!model.CommandControllerDictionary.TryGetValue(CommandGuid, out var command)) return;
 
             if (model.CurrentCommandController != null)
             {
@@ -251,6 +247,7 @@ namespace Larvend.PlotEditor.UI
                 model.CurrentCommandController = null;
             }
 
+            model.CommandControllerDictionary.Remove(pointer.Value.Data.Guid);
             model.CommandControllers.Remove(pointer);
             ProjectManager.RemoveCommand(pointer.Value.Data);
 

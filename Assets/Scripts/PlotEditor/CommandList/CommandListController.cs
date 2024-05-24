@@ -33,16 +33,24 @@ namespace Larvend.PlotEditor.UI
                 switch (command)
                 {
                     case TextData data:
-                        mModel.CommandControllers.AddLast(Instantiate(CommandPrefabs[CommandType.Text], CommandListParent)
-                            .GetComponent<CommandControllerBase>().Initialize(data));
+                        mModel.CommandControllerDictionary.Add(data.Guid, mModel.CommandControllers.AddLast(
+                            Instantiate(CommandPrefabs[CommandType.Text], CommandListParent)
+                            .GetComponent<CommandControllerBase>().Initialize(data)));
                         break;
                     case BackgroundData data:
-                        mModel.CommandControllers.AddLast(Instantiate(CommandPrefabs[CommandType.Background], CommandListParent)
-                            .GetComponent<CommandControllerBase>().Initialize(data));
+                        mModel.CommandControllerDictionary.Add(data.Guid, mModel.CommandControllers.AddLast(
+                            Instantiate(CommandPrefabs[CommandType.Background], CommandListParent)
+                            .GetComponent<CommandControllerBase>().Initialize(data)));
                         break;
                     case AvatarData data:
-                        mModel.CommandControllers.AddLast(Instantiate(CommandPrefabs[CommandType.Avatar], CommandListParent)
-                            .GetComponent<CommandControllerBase>().Initialize(data));
+                        mModel.CommandControllerDictionary.Add(data.Guid, mModel.CommandControllers.AddLast(
+                            Instantiate(CommandPrefabs[CommandType.Avatar], CommandListParent)
+                            .GetComponent<CommandControllerBase>().Initialize(data)));
+                        break;
+                    case SelectionData data:
+                        mModel.CommandControllerDictionary.Add(data.Guid, mModel.CommandControllers.AddLast(
+                            Instantiate(CommandPrefabs[CommandType.Selection], CommandListParent)
+                            .GetComponent<CommandControllerBase>().Initialize(data)));
                         break;
                 }
             }

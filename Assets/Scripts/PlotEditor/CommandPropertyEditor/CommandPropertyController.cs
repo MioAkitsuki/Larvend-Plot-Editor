@@ -15,7 +15,8 @@ namespace Larvend.PlotEditor.UI
             None,
             Text,
             Background,
-            Avatar
+            Avatar,
+            Selection
         }
 
         private PlotEditorModel mModel;
@@ -23,11 +24,6 @@ namespace Larvend.PlotEditor.UI
         private FSM<States> stateMachine = new FSM<States>();
 
         private CanvasGroup mMaskCanvasGroup;
-
-        private TextPropertyController mTextPropertyController;
-        private BackgroundPropertyController mBackgroundPropertyController;
-        private AvatarPropertyController mAvatarPropertyController;
-
         private Button mHideButton;
 
         public Coroutine CurrentCoroutine;
@@ -40,10 +36,6 @@ namespace Larvend.PlotEditor.UI
             mMaskCanvasGroup.GetComponent<Button>().onClick.AddListener(() => {
                 stateMachine.ChangeState(States.None);
             });
-
-            mTextPropertyController = transform.Find("TextProperty").GetComponent<TextPropertyController>();
-            mBackgroundPropertyController = transform.Find("BackgroundProperty").GetComponent<BackgroundPropertyController>();
-            mAvatarPropertyController = transform.Find("AvatarProperty").GetComponent<AvatarPropertyController>();
 
             mHideButton = transform.Find("HideButton").GetComponent<Button>();
             mHideButton.onClick.AddListener(() => {
@@ -61,6 +53,7 @@ namespace Larvend.PlotEditor.UI
             stateMachine.AddState(States.Text, new TextState(stateMachine, this));
             stateMachine.AddState(States.Background, new BackgroundState(stateMachine, this));
             stateMachine.AddState(States.Avatar, new AvatarState(stateMachine, this));
+            stateMachine.AddState(States.Selection, new SelectionState(stateMachine, this));
 
             stateMachine.StartState(States.None);
         }
@@ -77,13 +70,16 @@ namespace Larvend.PlotEditor.UI
             switch (command.Type)
             {
                 case CommandType.Text:
-                    mTextPropertyController.Refresh();
+                    TextPropertyController.Instance.Refresh();
                     break;
                 case CommandType.Background:
-                    mBackgroundPropertyController.Refresh();
+                    BackgroundPropertyController.Instance.Refresh();
                     break;
                 case CommandType.Avatar:
-                    mAvatarPropertyController.Refresh();
+                    AvatarPropertyController.Instance.Refresh();
+                    break;
+                case CommandType.Selection:
+                    SelectionPropertyController.Instance.Refresh();
                     break;
             }
 
@@ -106,6 +102,9 @@ namespace Larvend.PlotEditor.UI
                     break;
                 case CommandType.Avatar:
                     stateMachine.ChangeState(States.Avatar);
+                    break;
+                case CommandType.Selection:
+                    stateMachine.ChangeState(States.Selection);
                     break;
                 default:
                     stateMachine.ChangeState(States.None);
@@ -184,16 +183,16 @@ namespace Larvend.PlotEditor.UI
 
             protected override void OnEnter()
             {
-                mTarget.mTextPropertyController.mCanvasGroup.alpha = 1f;
-                mTarget.mTextPropertyController.mCanvasGroup.interactable = true;
-                mTarget.mTextPropertyController.mCanvasGroup.blocksRaycasts = true;
+                TextPropertyController.Instance.mCanvasGroup.alpha = 1f;
+                TextPropertyController.Instance.mCanvasGroup.interactable = true;
+                TextPropertyController.Instance.mCanvasGroup.blocksRaycasts = true;
             }
 
             protected override void OnExit()
             {
-                mTarget.mTextPropertyController.mCanvasGroup.alpha = 0f;
-                mTarget.mTextPropertyController.mCanvasGroup.interactable = false;
-                mTarget.mTextPropertyController.mCanvasGroup.blocksRaycasts = false;
+                TextPropertyController.Instance.mCanvasGroup.alpha = 0f;
+                TextPropertyController.Instance.mCanvasGroup.interactable = false;
+                TextPropertyController.Instance.mCanvasGroup.blocksRaycasts = false;
             }
         }
 
@@ -204,16 +203,16 @@ namespace Larvend.PlotEditor.UI
 
             protected override void OnEnter()
             {
-                mTarget.mBackgroundPropertyController.mCanvasGroup.alpha = 1f;
-                mTarget.mBackgroundPropertyController.mCanvasGroup.interactable = true;
-                mTarget.mBackgroundPropertyController.mCanvasGroup.blocksRaycasts = true;
+                BackgroundPropertyController.Instance.mCanvasGroup.alpha = 1f;
+                BackgroundPropertyController.Instance.mCanvasGroup.interactable = true;
+                BackgroundPropertyController.Instance.mCanvasGroup.blocksRaycasts = true;
             }
 
             protected override void OnExit()
             {
-                mTarget.mBackgroundPropertyController.mCanvasGroup.alpha = 0f;
-                mTarget.mBackgroundPropertyController.mCanvasGroup.interactable = false;
-                mTarget.mBackgroundPropertyController.mCanvasGroup.blocksRaycasts = false;
+                BackgroundPropertyController.Instance.mCanvasGroup.alpha = 0f;
+                BackgroundPropertyController.Instance.mCanvasGroup.interactable = false;
+                BackgroundPropertyController.Instance.mCanvasGroup.blocksRaycasts = false;
             }
         }
 
@@ -224,16 +223,36 @@ namespace Larvend.PlotEditor.UI
 
             protected override void OnEnter()
             {
-                mTarget.mAvatarPropertyController.mCanvasGroup.alpha = 1f;
-                mTarget.mAvatarPropertyController.mCanvasGroup.interactable = true;
-                mTarget.mAvatarPropertyController.mCanvasGroup.blocksRaycasts = true;
+                AvatarPropertyController.Instance.mCanvasGroup.alpha = 1f;
+                AvatarPropertyController.Instance.mCanvasGroup.interactable = true;
+                AvatarPropertyController.Instance.mCanvasGroup.blocksRaycasts = true;
             }
 
             protected override void OnExit()
             {
-                mTarget.mAvatarPropertyController.mCanvasGroup.alpha = 0f;
-                mTarget.mAvatarPropertyController.mCanvasGroup.interactable = false;
-                mTarget.mAvatarPropertyController.mCanvasGroup.blocksRaycasts = false;
+                AvatarPropertyController.Instance.mCanvasGroup.alpha = 0f;
+                AvatarPropertyController.Instance.mCanvasGroup.interactable = false;
+                AvatarPropertyController.Instance.mCanvasGroup.blocksRaycasts = false;
+            }
+        }
+
+        public class SelectionState : AbstractState<States, CommandPropertyController>
+        {
+            public SelectionState(FSM<States> fsm, CommandPropertyController target) : base(fsm, target) {}
+            protected override bool OnCondition() => mFSM.CurrentStateId != States.Selection;
+
+            protected override void OnEnter()
+            {
+                SelectionPropertyController.Instance.mCanvasGroup.alpha = 1f;
+                SelectionPropertyController.Instance.mCanvasGroup.interactable = true;
+                SelectionPropertyController.Instance.mCanvasGroup.blocksRaycasts = true;
+            }
+
+            protected override void OnExit()
+            {
+                SelectionPropertyController.Instance.mCanvasGroup.alpha = 0f;
+                SelectionPropertyController.Instance.mCanvasGroup.interactable = false;
+                SelectionPropertyController.Instance.mCanvasGroup.blocksRaycasts = false;
             }
         }
     }

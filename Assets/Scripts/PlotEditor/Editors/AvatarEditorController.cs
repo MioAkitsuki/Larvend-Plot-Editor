@@ -49,20 +49,18 @@ namespace Larvend.PlotEditor.UI
 
                 return;
             }
-
+            
+            if (mAvatarData != _data) mAvatarData = _data;
             if (ResourceManager.TryGetResource<ImageResource>(_data.SourceGuid, out var _res))
             {
                 switch (_data.AvatarType)
                 {
                     case AvatarType.BottomLeft:
                         mBottomLeftCanvasGroup.alpha = 1;
-                        if (mAvatarData == _data) return;
                         mBottomLeftAvatar.sprite = _res.GetSprite();
                         break;
                 }
             }
-
-            mAvatarData = _data;
         }
 
         public IArchitecture GetArchitecture()

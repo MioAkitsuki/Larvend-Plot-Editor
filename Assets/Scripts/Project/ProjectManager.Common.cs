@@ -63,6 +63,13 @@ namespace Larvend.PlotEditor
             CommandDataDictionary.Remove(_data.Guid);
         }
 
+        public static CommandData GetCommand(int _index)
+        {
+            if (!IsProjectExist() || _index >= Project.Commands.Count) return null;
+
+            return Project.Commands[_index];
+        }
+
         public static CommandData GetCommand(Guid _guid)
         {
             if (!IsProjectExist()) return null;
@@ -72,9 +79,16 @@ namespace Larvend.PlotEditor
 
         public static int GetCommandIndex(CommandData _data)
         {
-            if (!IsProjectExist()) return -1;
+            if (!IsProjectExist() || _data == null) return -1;
 
             return Project.Commands.IndexOf(_data);
+        }
+
+        public static int GetCommandIndex(Guid _guid)
+        {
+            if (!IsProjectExist() || _guid == Guid.Empty) return -1;
+
+            return Project.Commands.IndexOf(CommandDataDictionary[_guid]);
         }
 
         public static bool FindNearestCommand<T>(Guid _pos, out T _data) where T : CommandData

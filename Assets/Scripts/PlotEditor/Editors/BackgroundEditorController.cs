@@ -85,7 +85,6 @@ namespace Larvend.PlotEditor.UI
                         break;
                 }
             }
-
         }
 
         public IArchitecture GetArchitecture()

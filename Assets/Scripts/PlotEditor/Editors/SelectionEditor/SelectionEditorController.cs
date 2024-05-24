@@ -44,7 +44,7 @@ namespace Larvend.PlotEditor.UI
         private void Refresh()
         {
             if (mModel.CurrentCommandController == null) return;
-            if (!ProjectManager.FindNearestCommand<SelectionData>(mModel.CurrentCommandController.Value.Data.Guid, out var _data))
+            if (mModel.CurrentCommandController.Value.Data.Type != CommandType.Selection)
             {
                 mFullScreenCanvasGroup.alpha = 0;
                 mRightCanvasGroup.alpha = 0;
@@ -52,10 +52,14 @@ namespace Larvend.PlotEditor.UI
                 return;
             }
 
+            var _data = mModel.CurrentCommandController.Value.Data as SelectionData;
+
             if (_data.SelectionType == SelectionType.None)
             {
                 mFullScreenCanvasGroup.alpha = 0;
+                mFullScreenCanvasGroup.blocksRaycasts = false;
                 mRightCanvasGroup.alpha = 0;
+                mRightCanvasGroup.blocksRaycasts = false;
 
                 return;
             }
@@ -71,7 +75,9 @@ namespace Larvend.PlotEditor.UI
                 }
 
                 mFullScreenCanvasGroup.interactable = _data.Options.Count > 0;
+                mFullScreenCanvasGroup.blocksRaycasts = _data.Options.Count > 0;
                 mRightCanvasGroup.interactable = false;
+                mRightCanvasGroup.blocksRaycasts = false;
             }
             else if (_data.SelectionType == SelectionType.Right)
             {
@@ -85,7 +91,9 @@ namespace Larvend.PlotEditor.UI
                 }
 
                 mFullScreenCanvasGroup.interactable = false;
+                mFullScreenCanvasGroup.blocksRaycasts = false;
                 mRightCanvasGroup.interactable = _data.Options.Count > 0;
+                mRightCanvasGroup.blocksRaycasts = _data.Options.Count > 0;
             }
 
             mSelectionData = _data;
