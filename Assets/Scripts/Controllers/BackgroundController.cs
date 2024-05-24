@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Larvend.PlotEditor.DataSystem;
 using QFramework;
 using TMPro;
 using UnityEngine;
@@ -7,30 +8,33 @@ using UnityEngine.UI;
 
 namespace Larvend.PlotEditor
 {
-    public class BackgroundController : MonoBehaviour , ISingleton
+    public class BackgroundController : MonoSingleton<BackgroundController>
     {
-        public static BackgroundController Instance
-        {
-            get { return MonoSingletonProperty<BackgroundController>.Instance; }
-        }
-
         private CanvasGroup mFrontCanvasGroup;
         private Image mFrontImage;
+        private AspectRatioFitter mFrontRatio;
         private Image mFrontOldImage;
+        private AspectRatioFitter mFrontOldRatio;
 
         private CanvasGroup mMiddleCanvasGroup;
         private Image mMiddleImage;
+        private AspectRatioFitter mMiddleRatio;
         private Image mMiddleOldImage;
+        private AspectRatioFitter mMiddleOldRatio;
 
         private CanvasGroup mBackCanvasGroup;
         private Image mBackImage;
+        private AspectRatioFitter mBackRatio;
         private Image mBackOldImage;
+        private AspectRatioFitter mBackOldRatio;
 
         public static Background mCurrentBackground;
-        public static Background.BackgroundType mCurrentType = Background.BackgroundType.None;
+        public static BackgroundType mCurrentType = BackgroundType.None;
         public static CanvasGroup mCurrentCanvasGroup;
         public static Image mCurrentImage;
+        public static AspectRatioFitter mCurrentRatio;
         public static Image mCurrentOldImage;
+        public static AspectRatioFitter mCurrentOldRatio;
 
         private static Coroutine mCurrentCoroutine;
 
@@ -38,15 +42,21 @@ namespace Larvend.PlotEditor
         {
             mFrontCanvasGroup = transform.Find("Front").GetComponent<CanvasGroup>();
             mFrontImage = mFrontCanvasGroup.transform.Find("Image").GetComponent<Image>();
+            mFrontRatio = mFrontImage.GetComponent<AspectRatioFitter>();
             mFrontOldImage = mFrontCanvasGroup.transform.Find("Old").GetComponent<Image>();
+            mFrontOldRatio = mFrontOldImage.GetComponent<AspectRatioFitter>();
 
             mMiddleCanvasGroup = transform.Find("Middle").GetComponent<CanvasGroup>();
             mMiddleImage = mMiddleCanvasGroup.transform.Find("Image").GetComponent<Image>();
-            mFrontOldImage = mMiddleCanvasGroup.transform.Find("Old").GetComponent<Image>();
+            mMiddleRatio = mMiddleImage.GetComponent<AspectRatioFitter>();
+            mMiddleOldImage = mMiddleCanvasGroup.transform.Find("Old").GetComponent<Image>();
+            mMiddleOldRatio = mMiddleOldImage.GetComponent<AspectRatioFitter>();
 
             mBackCanvasGroup = transform.Find("Back").GetComponent<CanvasGroup>();
             mBackImage = mBackCanvasGroup.transform.Find("Image").GetComponent<Image>();
+            mBackRatio = mBackImage.GetComponent<AspectRatioFitter>();
             mBackOldImage = mBackCanvasGroup.transform.Find("Old").GetComponent<Image>();
+            mBackOldRatio = mBackOldImage.GetComponent<AspectRatioFitter>();
         }
 
         private void Initialize()
@@ -56,27 +66,33 @@ namespace Larvend.PlotEditor
             mBackCanvasGroup.alpha = 0;
         }
 
-        private void SwitchType(Background.BackgroundType type)
+        private void SwitchType(BackgroundType type)
         {
             mCurrentType = type;
             if (mCurrentCanvasGroup) StartCoroutine(Fade(mCurrentCanvasGroup, 0, 0.2f));
 
             switch (mCurrentType)
             {
-                case Background.BackgroundType.Front:
+                case BackgroundType.Front:
                     mCurrentCanvasGroup = mFrontCanvasGroup;
                     mCurrentImage = mFrontImage;
+                    mCurrentRatio = mFrontRatio;
                     mCurrentOldImage = mFrontOldImage;
+                    mCurrentOldRatio = mFrontOldRatio;
                     break;
-                case Background.BackgroundType.Middle:
+                case BackgroundType.Middle:
                     mCurrentCanvasGroup = mMiddleCanvasGroup;
                     mCurrentImage = mMiddleImage;
+                    mCurrentRatio = mMiddleRatio;
                     mCurrentOldImage = mMiddleOldImage;
+                    mCurrentOldRatio = mMiddleOldRatio;
                     break;
-                case Background.BackgroundType.Back:
+                case BackgroundType.Back:
                     mCurrentCanvasGroup = mBackCanvasGroup;
                     mCurrentImage = mBackImage;
+                    mCurrentRatio = mBackRatio;
                     mCurrentOldImage = mBackOldImage;
+                    mCurrentOldRatio = mBackOldRatio;
                     break;
                 default:
                     mCurrentCanvasGroup = null;
@@ -88,38 +104,24 @@ namespace Larvend.PlotEditor
 
         public static void Execute(Background background)
         {
-            if (background.backgroundType == Background.BackgroundType.None) throw new System.Exception("BackgroundType is None");
+            if (background.backgroundType == BackgroundType.None) throw new System.Exception("BackgroundType is None");
             mCurrentBackground = background;
             if (mCurrentType != background.backgroundType) Instance.SwitchType(background.backgroundType);
 
-            if (background.appearMethod == Background.AppearMethod.Appear)
-            {
-                mCurrentImage.sprite = mCurrentBackground.sprite ?? null;
-                mCurrentCanvasGroup.alpha = 1;
+            // if (background.appearMethod == Background.AppearMethod.Appear)
+            // {
+            //     mCurrentImage.sprite = mCurrentBackground.sprite ?? null;
+            //     mCurrentCanvasGroup.alpha = 1;
 
-                mCurrentBackground.Finish();
-                return;
-            }
+            //     mCurrentBackground.Finish();
+            //     return;
+            // }
 
             if (mCurrentCoroutine != null)
             {
                 Instance.StopCoroutine(mCurrentCoroutine);
             }
-            switch (background.appearMethod)
-            {
-                case Background.AppearMethod.CrossFade:
-                    mCurrentCoroutine = Instance.StartCoroutine(Instance.CrossFadeBackground());
-                    break;
-                case Background.AppearMethod.FadeFromBlack:
-                    mCurrentCoroutine = Instance.StartCoroutine(Instance.FadeFromBlackBackground());
-                    break;
-                case Background.AppearMethod.FadeFromWhite:
-                    mCurrentCoroutine = Instance.StartCoroutine(Instance.FadeFromWhiteBackground());
-                    break;
-                case Background.AppearMethod.FadeFromTransparent:
-                    mCurrentCoroutine = Instance.StartCoroutine(Instance.FadeFromTransparentBackground());
-                    break;
-            }
+            mCurrentCoroutine = Instance.StartCoroutine(Instance.FadeFromTransparentBackground());
             Instance.StartCoroutine(Instance.Fade(mCurrentCanvasGroup, 1f, 0.2f));
         }
 
@@ -194,7 +196,10 @@ namespace Larvend.PlotEditor
             var time = mCurrentBackground.time == 0f ? 1f / mCurrentBackground.displaySpeed : mCurrentBackground.time;
 
             yield return Fade(mCurrentImage, 0, 0.1f / time);
+
             mCurrentImage.sprite = mCurrentBackground.sprite ?? null;
+            mCurrentRatio.aspectRatio = mCurrentBackground.sprite.rect.width / mCurrentBackground.sprite.rect.height;
+            
             yield return Fade(mCurrentImage, 1, 0.1f / time);
 
             mCurrentCoroutine = null;
@@ -217,11 +222,6 @@ namespace Larvend.PlotEditor
 
             mCurrentCoroutine = null;
             mCurrentBackground.Finish();
-        }
-
-        public void OnSingletonInit()
-        {
-            
         }
     }
 }

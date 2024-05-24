@@ -22,8 +22,6 @@ namespace Larvend.PlotEditor.UI
         private Transform mOptions;
         private TMP_InputField mOptionsCount;
 
-        private Coroutine CurrentCoroutine = null;
-
         void Awake()
         {
             mModel = this.GetModel<PlotEditorModel>();

@@ -1,18 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
+using Larvend.PlotEditor.DataSystem;
 using QFramework;
 using TMPro;
 using UnityEngine;
 
 namespace Larvend.PlotEditor
 {
-    public class TextController : MonoBehaviour , ISingleton
+    public class TextController : MonoSingleton<TextController>
     {
-        public static TextController Instance
-        {
-            get { return MonoSingletonProperty<TextController>.Instance; }
-        }
-
         private CanvasGroup mFullScreenCanvasGroup;
         private TMP_Text mFullScreenText;
         private TMP_Text mFullScreenSpeaker;
@@ -22,7 +18,7 @@ namespace Larvend.PlotEditor
         private TMP_Text mByBarSpeaker;
 
         public static Text mCurrentText;
-        public static Text.TextType mCurrentType = Text.TextType.None;
+        public static TextType mCurrentType = TextType.None;
         public static CanvasGroup mCurrentCanvasGroup;
         public static TMP_Text mCurrentSpeakerField;
         public static TMP_Text mCurrentTextField;
@@ -51,7 +47,7 @@ namespace Larvend.PlotEditor
             mByBarText.text = "";
         }
 
-        private void SwitchType(Text.TextType type)
+        private void SwitchType(TextType type)
         {
             mCurrentType = type;
             if (mCurrentCanvasGroup) StartCoroutine(Fade(mCurrentCanvasGroup, 0, 0.1f));
@@ -62,20 +58,20 @@ namespace Larvend.PlotEditor
             TextConfig textConfig, speakerConfig;
             switch (mCurrentType)
             {
-                case Text.TextType.None:
+                case TextType.None:
                     mCurrentCanvasGroup = null;
                     mCurrentSpeakerField = null;
                     mCurrentTextField = null;
                     mCurrentText.Finish();
                     break;
-                case Text.TextType.FullScreen:
+                case TextType.FullScreen:
                     mCurrentCanvasGroup = mFullScreenCanvasGroup;
                     mCurrentSpeakerField = mFullScreenSpeaker;
                     mCurrentTextField = mFullScreenText;
                     textConfig = TextConfig.DefaultFullScreen;
                     speakerConfig = TextConfig.DefaultFullScreenSpeaker;
                     break;
-                case Text.TextType.ByBar:
+                case TextType.Bottom:
                     mCurrentCanvasGroup = mByBarCanvasGroup;
                     mCurrentSpeakerField = mByBarSpeaker;
                     mCurrentTextField = mByBarText;
@@ -109,7 +105,7 @@ namespace Larvend.PlotEditor
             mCurrentText = text;
             if (mCurrentType != text.textType) Instance.SwitchType(text.textType);
 
-            if (text.appearMethod == Text.AppearMethod.TypeWriter)
+            if (mCurrentType == TextType.Bottom)
             {
                 mCurrentSpeakerField.SetText(text.speaker);
                 mCurrentTextField.SetText("");
@@ -122,19 +118,7 @@ namespace Larvend.PlotEditor
 
                 mCurrentCoroutine = Instance.StartCoroutine(Instance.TypeText());
             }
-
-            if (text.appearMethod == Text.AppearMethod.Fade)
-            {
-                Instance.StartCoroutine(Instance.Fade(mCurrentCanvasGroup, 1f, 0.2f));
-                if (mCurrentCoroutine != null)
-                {
-                    Instance.StopCoroutine(mCurrentCoroutine);
-                }
-
-                mCurrentCoroutine = Instance.StartCoroutine(Instance.FadeText());
-            }
-
-            if (text.appearMethod == Text.AppearMethod.FadeFromBlank)
+            else if (mCurrentType == TextType.FullScreen)
             {
                 Instance.StartCoroutine(Instance.Fade(mCurrentCanvasGroup, 1f, 0.2f));
                 if (mCurrentCoroutine != null)
@@ -144,6 +128,19 @@ namespace Larvend.PlotEditor
 
                 mCurrentCoroutine = Instance.StartCoroutine(Instance.FadeFromBlankText());
             }
+
+            // if (text.appearMethod == Text.AppearMethod.Fade)
+            // {
+            //     Instance.StartCoroutine(Instance.Fade(mCurrentCanvasGroup, 1f, 0.2f));
+            //     if (mCurrentCoroutine != null)
+            //     {
+            //         Instance.StopCoroutine(mCurrentCoroutine);
+            //     }
+
+            //     mCurrentCoroutine = Instance.StartCoroutine(Instance.FadeText());
+            // }
+
+            
         }
 
         private IEnumerator Fade(CanvasGroup canvasGroup, float targetAlpha, float speed)
@@ -164,7 +161,7 @@ namespace Larvend.PlotEditor
                 Instance.StopCoroutine(mCurrentCoroutine);
             mCurrentCoroutine = null;
 
-            if (mCurrentType != Text.TextType.None) mCurrentTextField.text = mCurrentText.text;
+            if (mCurrentType != TextType.None) mCurrentTextField.text = mCurrentText.text;
         }
 
         public IEnumerator FadeText()
@@ -235,11 +232,6 @@ namespace Larvend.PlotEditor
 
             mCurrentCoroutine = null;
             mCurrentText.Finish();
-        }
-
-        public void OnSingletonInit()
-        {
-            
         }
     }
 }

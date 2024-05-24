@@ -10,11 +10,12 @@ namespace Larvend.PlotEditor.DataSystem
     {
         Text,
         Animation,
-        Sound,
         Avatar,
-        Tachie,
         Background,
-        Selection
+        Music,
+        Selection,
+        Sleep,
+        Tachie
     }
 
     public enum CommandTiming

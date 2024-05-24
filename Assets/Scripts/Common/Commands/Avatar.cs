@@ -7,21 +7,14 @@ namespace Larvend.PlotEditor
     [Serializable]
     public class Avatar : Command
     {
-        public enum AvatarType
-        {
-            None,
-            Left,
-            Right
-        }
+        // public enum AppearMethod
+        // {
+        //     Appear,
+        //     CrossFade,
+        //     FadeFromTransparent
+        // }
 
-        public enum AppearMethod
-        {
-            Appear,
-            CrossFade,
-            FadeFromTransparent
-        }
-
-        public AppearMethod appearMethod;
+        // public AppearMethod appearMethod;
         public AvatarType avatarType;
         public Sprite sprite;
 
@@ -31,9 +24,13 @@ namespace Larvend.PlotEditor
 
         private bool isFinished = false;
 
-        public override CommandType GetCommandType()
+        public override CommandType GetCommandType() => CommandType.Avatar;
+        public Avatar(AvatarData _data)
         {
-            return CommandType.Avatar;
+            Data = _data;
+
+            sprite = ResourceManager.TryGetResource<ImageResource>(_data.SourceGuid, out var res) ? res.GetSprite() : null;
+            avatarType = _data.AvatarType;
         }
 
         public override void OnEnter()

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Larvend.PlotEditor.DataSystem;
 using QFramework;
 using TMPro;
 using UnityEngine;
@@ -7,13 +8,8 @@ using UnityEngine.UI;
 
 namespace Larvend.PlotEditor
 {
-    public class AvatarController : MonoBehaviour , ISingleton
+    public class AvatarController : MonoSingleton<AvatarController>
     {
-        public static AvatarController Instance
-        {
-            get { return MonoSingletonProperty<AvatarController>.Instance; }
-        }
-
         private CanvasGroup mLeftCanvasGroup;
         private Image mLeftImage;
         private Image mLeftOldImage;
@@ -23,7 +19,7 @@ namespace Larvend.PlotEditor
         private Image mRightOldImage;
 
         public static Avatar mCurrentAvatar;
-        public static Avatar.AvatarType mCurrentType = Avatar.AvatarType.None;
+        public static AvatarType mCurrentType = AvatarType.None;
         public static CanvasGroup mCurrentCanvasGroup;
         public static Image mCurrentImage;
         public static Image mCurrentOldImage;
@@ -47,22 +43,17 @@ namespace Larvend.PlotEditor
             mRightCanvasGroup.alpha = 0;
         }
 
-        private void SwitchType(Avatar.AvatarType type)
+        private void SwitchType(AvatarType type)
         {
             mCurrentType = type;
             if (mCurrentCanvasGroup) StartCoroutine(Fade(mCurrentCanvasGroup, 0, 0.2f));
 
             switch (mCurrentType)
             {
-                case Avatar.AvatarType.Left:
+                case AvatarType.BottomLeft:
                     mCurrentCanvasGroup = mLeftCanvasGroup;
                     mCurrentImage = mLeftImage;
                     mCurrentOldImage = mLeftOldImage;
-                    break;
-                case Avatar.AvatarType.Right:
-                    mCurrentCanvasGroup = mRightCanvasGroup;
-                    mCurrentImage = mRightImage;
-                    mCurrentOldImage = mRightOldImage;
                     break;
                 default:
                     mCurrentCanvasGroup = null;
@@ -74,7 +65,7 @@ namespace Larvend.PlotEditor
 
         public static void Execute(Avatar avatar)
         {
-            if (avatar.avatarType == Avatar.AvatarType.None)
+            if (avatar.avatarType == AvatarType.None)
             {
                 Instance.StartCoroutine(Instance.Fade(mCurrentCanvasGroup, 0f, 0.2f));
                 mCurrentAvatar.Finish();
@@ -84,28 +75,20 @@ namespace Larvend.PlotEditor
             mCurrentAvatar = avatar;
             if (mCurrentType != avatar.avatarType) Instance.SwitchType(avatar.avatarType);
 
-            if (avatar.appearMethod == Avatar.AppearMethod.Appear)
-            {
-                mCurrentImage.sprite = mCurrentAvatar.sprite ?? null;
-                mCurrentCanvasGroup.alpha = 1;
+            // if (avatar.appearMethod == Avatar.AppearMethod.Appear)
+            // {
+            //     mCurrentImage.sprite = mCurrentAvatar.sprite ?? null;
+            //     mCurrentCanvasGroup.alpha = 1;
 
-                mCurrentAvatar.Finish();
-                return;
-            }
+            //     mCurrentAvatar.Finish();
+            //     return;
+            // }
 
             if (mCurrentCoroutine != null)
             {
                 Instance.StopCoroutine(mCurrentCoroutine);
             }
-            switch (avatar.appearMethod)
-            {
-                case Avatar.AppearMethod.CrossFade:
-                    mCurrentCoroutine = Instance.StartCoroutine(Instance.CrossFadeAvatar());
-                    break;
-                case Avatar.AppearMethod.FadeFromTransparent:
-                    mCurrentCoroutine = Instance.StartCoroutine(Instance.FadeFromTransparentAvatar());
-                    break;
-            }
+            mCurrentCoroutine = Instance.StartCoroutine(Instance.FadeFromTransparentAvatar());
             Instance.StartCoroutine(Instance.Fade(mCurrentCanvasGroup, 1f, 0.2f));
         }
 
@@ -173,11 +156,6 @@ namespace Larvend.PlotEditor
 
             mCurrentCoroutine = null;
             mCurrentAvatar.Finish();
-        }
-
-        public void OnSingletonInit()
-        {
-            
         }
     }
 }

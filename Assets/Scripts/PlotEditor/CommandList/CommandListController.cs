@@ -52,6 +52,11 @@ namespace Larvend.PlotEditor.UI
                             Instantiate(CommandPrefabs[CommandType.Selection], CommandListParent)
                             .GetComponent<CommandControllerBase>().Initialize(data)));
                         break;
+                    case SleepData data:
+                        mModel.CommandControllerDictionary.Add(data.Guid, mModel.CommandControllers.AddLast(
+                            Instantiate(CommandPrefabs[CommandType.Sleep], CommandListParent)
+                            .GetComponent<CommandControllerBase>().Initialize(data)));
+                        break;
                 }
             }
         }

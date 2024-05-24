@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Kuchinashi.UI;
 using Larvend.PlotEditor.DataSystem;
+using UnityEngine.SceneManagement;
 
 namespace Larvend.PlotEditor.UI
 {
@@ -32,6 +33,8 @@ namespace Larvend.PlotEditor.UI
         private Button importAudioButton;
 
         #endregion
+        
+        private Button previewButton;
 
         void Awake()
         {
@@ -45,10 +48,16 @@ namespace Larvend.PlotEditor.UI
 
         private void RefreshUIStatus()
         {
-            saveProjectButton.interactable = !string.IsNullOrEmpty(ProjectManager.GUID);
-            saveAsProjectButton.interactable = !string.IsNullOrEmpty(ProjectManager.GUID);
+            saveProjectButton.interactable = ProjectManager.IsProjectExist();
+            saveAsProjectButton.interactable = ProjectManager.IsProjectExist();
 
-            newCommandButton.interactable = !string.IsNullOrEmpty(ProjectManager.GUID);
+            newCommandButton.interactable = ProjectManager.IsProjectExist();
+
+            libraryManagerButton.interactable = ProjectManager.IsProjectExist();
+            importAudioButton.interactable = ProjectManager.IsProjectExist();
+            importImageButton.interactable = ProjectManager.IsProjectExist();
+
+            previewButton.interactable = ProjectManager.IsProjectExist();
         }
 
         private void Initialize()
@@ -99,6 +108,11 @@ namespace Larvend.PlotEditor.UI
             importAudioButton.onClick.AddListener(() => {
                 ResourceManager.ImportAudioResource();
                 importAudioButton.GetComponentInParent<DropdownMenu>().toggle.onClick.Invoke();
+            });
+
+            previewButton = transform.Find("Preview").GetComponent<Button>();
+            previewButton.onClick.AddListener(() => {
+                SceneManager.LoadScene("PreviewScene", LoadSceneMode.Single);
             });
         }
 

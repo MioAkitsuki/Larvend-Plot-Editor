@@ -7,13 +7,8 @@ using UnityEngine.UI;
 namespace Larvend.PlotEditor
 {
     public struct NextCommandEvent {}
-    public class StageController : MonoBehaviour , ISingleton
+    public class StageController : MonoSingleton<StageController>
     {
-        public static StageController Instance
-        {
-            get { return MonoSingletonProperty<StageController>.Instance; }
-        }
-
         private Button panel;
 
         void Awake()
@@ -23,11 +18,6 @@ namespace Larvend.PlotEditor
             {
                 TypeEventSystem.Global.Send<NextCommandEvent>();
             });
-        }
-
-        public void OnSingletonInit()
-        {
-            
         }
     }
 }

@@ -18,12 +18,16 @@ namespace Larvend.PlotEditor.UI
         private Button addTextCommandBeforeButton;
         private Button addBackgroundCommandBeforeButton;
         private Button addAvatarCommandBeforeButton;
+        private Button addSelectionCommandBeforeButton;
+        private Button addSleepCommandBeforeButton;
 
         private DropdownMenu insertAfterToggle;
 
         private Button addTextCommandAfterButton;
         private Button addBackgroundCommandAfterButton;
         private Button addAvatarCommandAfterButton;
+        private Button addSelectionCommandAfterButton;
+        private Button addSleepCommandAfterButton;
 
         private Button deleteCommandButton;
 
@@ -56,6 +60,20 @@ namespace Larvend.PlotEditor.UI
                 insertBeforeToggle.toggle.onClick.Invoke();
                 mMenu.Toggle();
             });
+            addSelectionCommandBeforeButton = transform.Find("InsertBefore/Dropdown/Selection").GetComponent<Button>();
+            addSelectionCommandBeforeButton.onClick.AddListener(() => {
+                this.SendCommand(new InsertCommandBeforeCommand(DataSystem.CommandType.Selection));
+
+                insertBeforeToggle.toggle.onClick.Invoke();
+                mMenu.Toggle();
+            });
+            addSleepCommandBeforeButton = transform.Find("InsertBefore/Dropdown/Sleep").GetComponent<Button>();
+            addSleepCommandBeforeButton.onClick.AddListener(() => {
+                this.SendCommand(new InsertCommandBeforeCommand(DataSystem.CommandType.Sleep));
+
+                insertBeforeToggle.toggle.onClick.Invoke();
+                mMenu.Toggle();
+            });
 
             insertAfterToggle = transform.Find("InsertAfter").GetComponent<DropdownMenu>();
 
@@ -76,6 +94,20 @@ namespace Larvend.PlotEditor.UI
             addAvatarCommandAfterButton = transform.Find("InsertAfter/Dropdown/Avatar").GetComponent<Button>();
             addAvatarCommandAfterButton.onClick.AddListener(() => {
                 this.SendCommand(new InsertCommandAfterCommand(DataSystem.CommandType.Avatar));
+
+                insertAfterToggle.toggle.onClick.Invoke();
+                mMenu.Toggle();
+            });
+            addSelectionCommandAfterButton = transform.Find("InsertAfter/Dropdown/Selection").GetComponent<Button>();
+            addSelectionCommandAfterButton.onClick.AddListener(() => {
+                this.SendCommand(new InsertCommandAfterCommand(DataSystem.CommandType.Selection));
+
+                insertAfterToggle.toggle.onClick.Invoke();
+                mMenu.Toggle();
+            });
+            addSleepCommandAfterButton = transform.Find("InsertAfter/Dropdown/Sleep").GetComponent<Button>();
+            addSleepCommandAfterButton.onClick.AddListener(() => {
+                this.SendCommand(new InsertCommandAfterCommand(DataSystem.CommandType.Sleep));
 
                 insertAfterToggle.toggle.onClick.Invoke();
                 mMenu.Toggle();

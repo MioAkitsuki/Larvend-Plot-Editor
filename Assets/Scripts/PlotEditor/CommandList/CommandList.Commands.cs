@@ -2,8 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using QFramework;
-using Schwarzer.Windows;
-using Larvend.PlotEditor.Serialization;
 using UnityEngine;
 using Larvend.PlotEditor.DataSystem;
 using System.Linq;
@@ -38,6 +36,9 @@ namespace Larvend.PlotEditor.UI
                     break;
                 case CommandType.Selection:
                     data = Data == null ? SelectionData.Default : Data as SelectionData;
+                    break;
+                case CommandType.Sleep:
+                    data = Data == null ? SleepData.Default : Data as SleepData;
                     break;
             }
             ProjectManager.AddCommand(data);
@@ -80,6 +81,9 @@ namespace Larvend.PlotEditor.UI
                     break;
                 case CommandType.Selection:
                     data = Data == null ? SelectionData.Default : Data as SelectionData;
+                    break;
+                case CommandType.Sleep:
+                    data = Data == null ? SleepData.Default : Data as SleepData;
                     break;
             }
 

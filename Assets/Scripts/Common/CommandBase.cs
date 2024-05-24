@@ -7,17 +7,10 @@ namespace Larvend.PlotEditor
     [Serializable]
     public abstract class Command
     {
-        public enum AppearTiming
-        {
-            BySequence,
-            Simultaneously,
-            AfterPreviousFinished
-        }
-
         public bool skippable = true;
-        public AppearTiming appearTiming;
         public float time;
 
+        public CommandData Data { get; set; }
         abstract public CommandType GetCommandType();
 
         abstract public void OnEnter();
@@ -26,6 +19,17 @@ namespace Larvend.PlotEditor
         abstract public void Skip();
 
         abstract public bool IsFinished();
+
+        public static Command Parse(CommandData _data)
+        {
+            return _data switch
+            {
+                TextData textData => new Text(textData),
+                BackgroundData backgroundData => new Background(backgroundData),
+                AvatarData avatarData => new Avatar(avatarData),
+                _ => null,
+            };
+        }
     }
 
     public class CommandGroup

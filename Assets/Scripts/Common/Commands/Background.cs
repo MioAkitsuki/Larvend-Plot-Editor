@@ -7,24 +7,16 @@ namespace Larvend.PlotEditor
     [Serializable]
     public class Background : Command
     {
-        public enum BackgroundType
-        {
-            None,
-            Front,
-            Middle,
-            Back
-        }
+        // public enum AppearMethod
+        // {
+        //     Appear,
+        //     CrossFade,
+        //     FadeFromBlack,
+        //     FadeFromWhite,
+        //     FadeFromTransparent
+        // }
 
-        public enum AppearMethod
-        {
-            Appear,
-            CrossFade,
-            FadeFromBlack,
-            FadeFromWhite,
-            FadeFromTransparent
-        }
-
-        public AppearMethod appearMethod;
+        // public AppearMethod appearMethod;
         public BackgroundType backgroundType;
         public Sprite sprite;
 
@@ -34,9 +26,13 @@ namespace Larvend.PlotEditor
 
         private bool isFinished = false;
 
-        public override CommandType GetCommandType()
+        public override CommandType GetCommandType() => CommandType.Background;
+        public Background(BackgroundData _data)
         {
-            return CommandType.Background;
+            Data = _data;
+
+            sprite = ResourceManager.TryGetResource<ImageResource>(_data.SourceGuid, out var res) ? res.GetSprite() : null;
+            backgroundType = _data.BackgroundType;
         }
 
         public override void OnEnter()
