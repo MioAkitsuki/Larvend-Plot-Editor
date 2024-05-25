@@ -19,5 +19,24 @@ namespace Larvend.PlotEditor
         public ImageResourceController CurrentImageResourceController = null;
         
         protected override void OnInit() {}
+
+        public void CloseProject()
+        {
+            foreach(var controller in CommandControllers)
+            {
+                controller.gameObject.DestroySelf();
+            }
+            CommandControllers = new();
+            CurrentCommandController = null;
+
+            CommandControllerDictionary.Clear();
+
+            foreach(var controller in ImageResourceControllers)
+            {
+                controller.gameObject.DestroySelf();
+            }
+            ImageResourceControllers = new();
+            CurrentImageResourceController = null;
+        }
     }
 }

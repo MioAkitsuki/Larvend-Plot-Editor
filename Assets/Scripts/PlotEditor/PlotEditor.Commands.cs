@@ -6,6 +6,7 @@ using Schwarzer.Windows;
 using Larvend.PlotEditor.Serialization;
 using UnityEngine;
 using UnityEditor;
+using Larvend.PlotEditor.DataSystem;
 
 namespace Larvend.PlotEditor.UI
 {
@@ -16,6 +17,10 @@ namespace Larvend.PlotEditor.UI
             if (!string.IsNullOrEmpty(ProjectManager.GUID))
             {
                 Debug.LogWarning("You have already opened a project. Cleaning temp file...");
+
+                this.GetModel<PlotEditorModel>().CloseProject();
+                ResourceManager.ClearAllResources();
+                ProjectManager.CloseProject();
             }
 
             if (ProjectHelper.NewProject(out ProjectManager.GUID))
@@ -35,6 +40,10 @@ namespace Larvend.PlotEditor.UI
             if (!string.IsNullOrEmpty(ProjectManager.GUID))
             {
                 Debug.LogWarning("You have already opened a project. Cleaning temp file...");
+
+                this.GetModel<PlotEditorModel>().CloseProject();
+                ResourceManager.ClearAllResources();
+                ProjectManager.CloseProject();
             }
 
 # if UNITY_EDITOR

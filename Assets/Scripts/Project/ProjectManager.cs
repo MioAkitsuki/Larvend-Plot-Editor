@@ -43,7 +43,10 @@ namespace Larvend.PlotEditor
 
         static bool WantsToQuit()
         {
-            if (!string.IsNullOrEmpty(GUID)) Directory.Delete(ProjectFolderPath, true);
+            if (!string.IsNullOrEmpty(GUID))
+            {
+                if (Directory.Exists(ProjectFolderPath)) Directory.Delete(ProjectFolderPath, true);
+            }
             return true;
         }
 
@@ -58,6 +61,18 @@ namespace Larvend.PlotEditor
                 TypeEventSystem.Global.Send<PlotEditorUIRefreshEvent>();
             }
             else GUID = null;
+        }
+
+        public static void CloseProject()
+        {
+            if (!IsProjectExist()) return;
+
+            Directory.Delete(ProjectFolderPath, true);
+
+            ProjectFilePath = null;
+            GUID = null;
+            Project = new();
+            CommandDataDictionary = new();
         }
 
         public IArchitecture GetArchitecture()

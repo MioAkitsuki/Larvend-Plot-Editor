@@ -4,21 +4,9 @@ using Larvend.PlotEditor.DataSystem;
 
 namespace Larvend.PlotEditor
 {
-    [Serializable]
-    public class Background : Command
+    public class Selection : Command
     {
-        // public enum AppearMethod
-        // {
-        //     Appear,
-        //     CrossFade,
-        //     FadeFromBlack,
-        //     FadeFromWhite,
-        //     FadeFromTransparent
-        // }
-
-        // public AppearMethod appearMethod;
-        public BackgroundType backgroundType;
-        public Sprite sprite;
+        public SelectionType selectionType;
 
         public Vector2 positionOffset;
         public Vector2 scaleOffset;
@@ -26,19 +14,17 @@ namespace Larvend.PlotEditor
 
         private bool isFinished = false;
 
-        public override CommandType GetCommandType() => CommandType.Background;
-        public Background(BackgroundData _data)
+        public override CommandType GetCommandType() => CommandType.Avatar;
+        public Selection(SelectionData _data)
         {
             Data = _data;
 
-            sprite = ResourceManager.TryGetResource<ImageResource>(_data.SourceGuid, out var res) ? res.GetSprite() : null;
-            backgroundType = _data.BackgroundType;
+            selectionType = _data.SelectionType;
         }
 
         public override void OnEnter()
         {
             isFinished = false;
-            BackgroundController.Instance.Execute(this);
         }
 
         public override void OnUpdate()
@@ -53,7 +39,7 @@ namespace Larvend.PlotEditor
 
         public override void Skip()
         {
-            BackgroundController.Instance.Skip();
+            Finish();
         }
 
         public override bool IsFinished()

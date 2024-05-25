@@ -17,13 +17,13 @@ namespace Larvend.PlotEditor
         private TMP_Text mByBarText;
         private TMP_Text mByBarSpeaker;
 
-        public static Text mCurrentText;
-        public static TextType mCurrentType = TextType.None;
-        public static CanvasGroup mCurrentCanvasGroup;
-        public static TMP_Text mCurrentSpeakerField;
-        public static TMP_Text mCurrentTextField;
+        public Text mCurrentText;
+        public TextType mCurrentType = TextType.None;
+        public CanvasGroup mCurrentCanvasGroup;
+        public TMP_Text mCurrentSpeakerField;
+        public TMP_Text mCurrentTextField;
 
-        private static Coroutine mCurrentCoroutine;
+        private Coroutine mCurrentCoroutine;
 
         void Awake()
         {
@@ -87,7 +87,7 @@ namespace Larvend.PlotEditor
             // SetConfig(textConfig, speakerConfig);
         }
 
-        public static void SetConfig(TextConfig textConfig, TextConfig speakerConfig)
+        public void SetConfig(TextConfig textConfig, TextConfig speakerConfig)
         {
             mCurrentTextField.alignment = textConfig.TextAlignmentOption;
             mCurrentTextField.fontSize = textConfig.FontSize;
@@ -100,7 +100,7 @@ namespace Larvend.PlotEditor
             mCurrentSpeakerField.color = speakerConfig.Color;
         }
 
-        public static void Execute(Text text)
+        public void Execute(Text text)
         {
             mCurrentText = text;
             if (mCurrentType != text.textType) Instance.SwitchType(text.textType);
@@ -155,7 +155,7 @@ namespace Larvend.PlotEditor
             canvasGroup.alpha = targetAlpha;
         }
 
-        public static void Skip()
+        public void Skip()
         {
             if (mCurrentCoroutine != null)
                 Instance.StopCoroutine(mCurrentCoroutine);

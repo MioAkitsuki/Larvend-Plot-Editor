@@ -19,6 +19,12 @@ namespace Larvend.PlotEditor.DataSystem
             }
         }
 
+        public static void ClearAllResources()
+        {
+            Instance.Images.Clear();
+            Instance.Audios.Clear();
+        }
+
         public static void AddResource(ResourceBase _resource)
         {
             switch (_resource)

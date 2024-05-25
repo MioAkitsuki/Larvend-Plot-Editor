@@ -43,7 +43,7 @@ namespace Larvend.PlotEditor
         public override void OnEnter()
         {
             isFinished = false;
-            TextController.Execute(this);
+            TextController.Instance.Execute(this);
         }
 
         public override void OnUpdate()
@@ -58,7 +58,7 @@ namespace Larvend.PlotEditor
 
         public override void Skip()
         {
-            TextController.Skip();
+            TextController.Instance.Skip();
             Finish();
         }
 

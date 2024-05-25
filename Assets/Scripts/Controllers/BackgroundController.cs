@@ -28,15 +28,15 @@ namespace Larvend.PlotEditor
         private Image mBackOldImage;
         private AspectRatioFitter mBackOldRatio;
 
-        public static Background mCurrentBackground;
-        public static BackgroundType mCurrentType = BackgroundType.None;
-        public static CanvasGroup mCurrentCanvasGroup;
-        public static Image mCurrentImage;
-        public static AspectRatioFitter mCurrentRatio;
-        public static Image mCurrentOldImage;
-        public static AspectRatioFitter mCurrentOldRatio;
+        public Background mCurrentBackground;
+        public BackgroundType mCurrentType = BackgroundType.None;
+        public CanvasGroup mCurrentCanvasGroup;
+        public Image mCurrentImage;
+        public AspectRatioFitter mCurrentRatio;
+        public Image mCurrentOldImage;
+        public AspectRatioFitter mCurrentOldRatio;
 
-        private static Coroutine mCurrentCoroutine;
+        private Coroutine mCurrentCoroutine;
 
         void Awake()
         {
@@ -102,7 +102,7 @@ namespace Larvend.PlotEditor
             }
         }
 
-        public static void Execute(Background background)
+        public void Execute(Background background)
         {
             if (background.backgroundType == BackgroundType.None) throw new System.Exception("BackgroundType is None");
             mCurrentBackground = background;
@@ -149,7 +149,7 @@ namespace Larvend.PlotEditor
             image.color = new Color(image.color.r, image.color.g, image.color.b, targetAlpha);
         }
 
-        public static void Skip()
+        public void Skip()
         {
             if (mCurrentCoroutine != null)
                 Instance.StopCoroutine(mCurrentCoroutine);

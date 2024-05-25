@@ -112,8 +112,19 @@ namespace Larvend.PlotEditor.UI
 
             previewButton = transform.Find("Preview").GetComponent<Button>();
             previewButton.onClick.AddListener(() => {
-                SceneManager.LoadScene("PreviewScene", LoadSceneMode.Single);
+                StartCoroutine(LoadPreviewCoroutine());
             });
+        }
+
+        IEnumerator LoadPreviewCoroutine()
+        {
+            var mAsyncOperation = SceneManager.LoadSceneAsync("PreviewScene", LoadSceneMode.Additive);
+            mAsyncOperation.allowSceneActivation = true;
+
+            yield return mAsyncOperation;
+            yield return new WaitForEndOfFrame();
+
+            SceneManager.SetActiveScene(SceneManager.GetSceneByName("PreviewScene"));
         }
 
         public IArchitecture GetArchitecture()
