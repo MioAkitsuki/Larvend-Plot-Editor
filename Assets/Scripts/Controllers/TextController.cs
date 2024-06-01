@@ -161,7 +161,12 @@ namespace Larvend.PlotEditor
                 Instance.StopCoroutine(mCurrentCoroutine);
             mCurrentCoroutine = null;
 
-            if (mCurrentType != TextType.None) mCurrentTextField.text = mCurrentText.text;
+            if (mCurrentType != TextType.None)
+            {
+                mCurrentTextField.text = mCurrentText.text;
+                mCurrentTextField.alpha = 1f;
+                mCurrentCanvasGroup.alpha = 1f;
+            }
         }
 
         public IEnumerator FadeText()

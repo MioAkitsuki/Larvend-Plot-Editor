@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 using Larvend.PlotEditor.DataSystem;
 
 namespace Larvend.PlotEditor
@@ -9,6 +10,14 @@ namespace Larvend.PlotEditor
     {
         public bool skippable = true;
         public float time;
+
+        public Command(CommandData _data)
+        {
+            Data = _data;
+            
+            time = _data.Time;
+            skippable = _data.Skippable;
+        }
 
         public CommandData Data { get; set; }
         abstract public CommandType GetCommandType();
@@ -36,6 +45,20 @@ namespace Larvend.PlotEditor
     public class CommandGroup
     {
         public List<Command> commandGroup = new List<Command>();
+        public float time;
+
+        public void Add(Command command)
+        {
+            commandGroup.Add(command);
+            if (time < command.time) time = command.time;
+        }
+
+        public void Clear()
+        {
+            commandGroup.Clear();
+            time = 0f;
+        }
+
         public void OnEnter()
         {
             foreach (var command in commandGroup)

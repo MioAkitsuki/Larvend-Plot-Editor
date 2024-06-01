@@ -151,11 +151,13 @@ namespace Larvend.PlotEditor
 
         public void Skip()
         {
-            if (mCurrentCoroutine != null)
-                Instance.StopCoroutine(mCurrentCoroutine);
+            if (mCurrentCoroutine != null) Instance.StopCoroutine(mCurrentCoroutine);
             mCurrentCoroutine = null;
 
             mCurrentImage.sprite = mCurrentBackground.sprite ?? null;
+            mCurrentRatio.aspectRatio = mCurrentImage.sprite.rect.width / mCurrentImage.sprite.rect.height;
+            mCurrentImage.color = new Color(1, 1, 1, 1);
+            mCurrentCanvasGroup.alpha = 1f;
         }
 
         public IEnumerator FadeFromBlackBackground()

@@ -14,6 +14,8 @@ namespace Larvend.PlotEditor
 
         private Button backButton;
 
+        private Button finish;
+
         void Awake()
         {
             panel = transform.Find("Panel").GetComponent<Button>();
@@ -24,6 +26,12 @@ namespace Larvend.PlotEditor
 
             backButton = transform.Find("Menu/Back").GetComponent<Button>();
             backButton.onClick.AddListener(() =>
+            {
+                SceneManager.UnloadSceneAsync(SceneManager.GetActiveScene());
+            });
+
+            finish = transform.Find("Finish").GetComponent<Button>();
+            finish.onClick.AddListener(() =>
             {
                 SceneManager.UnloadSceneAsync(SceneManager.GetActiveScene());
             });

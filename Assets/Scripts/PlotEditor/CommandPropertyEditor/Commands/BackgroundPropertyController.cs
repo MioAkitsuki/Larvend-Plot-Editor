@@ -5,6 +5,7 @@ using Larvend.PlotEditor.DataSystem;
 using QFramework;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Larvend.PlotEditor.UI
 {
@@ -17,6 +18,8 @@ namespace Larvend.PlotEditor.UI
 
         private TMP_InputField mId;
         private TMP_Dropdown mTiming;
+        private TMP_InputField mTime;
+        private Toggle mSkippable;
         private TMP_Dropdown mBackgroundType;
         private TMP_InputField mSourceGuid;
         private TMP_InputField mDuration;
@@ -36,6 +39,16 @@ namespace Larvend.PlotEditor.UI
                 mBackgroundData.Timing = (CommandTiming) value;
                 TypeEventSystem.Global.Send<OnCommandRefreshEvent>();
             });
+            mTime = transform.Find("Content/Time/InputField").GetComponent<TMP_InputField>();
+            mTime.onEndEdit.AddListener(value => {
+                mBackgroundData.Time = float.Parse(value);
+                TypeEventSystem.Global.Send<OnCommandRefreshEvent>();
+            });
+            mSkippable = transform.Find("Content/Time/Skippable").GetComponent<Toggle>();
+            mSkippable.onValueChanged.AddListener(value => {
+                mBackgroundData.Skippable = value;
+                TypeEventSystem.Global.Send<OnCommandRefreshEvent>();
+            });
             mBackgroundType = transform.Find("Content/BackgroundType/Dropdown").GetComponent<TMP_Dropdown>();
             mBackgroundType.onValueChanged.AddListener(value => {
                 mBackgroundData.BackgroundType = (BackgroundType) value;
@@ -45,11 +58,6 @@ namespace Larvend.PlotEditor.UI
             mSourceGuid.onSelect.AddListener(value => {
                 if (CurrentCoroutine != null) return;
                 CurrentCoroutine = StartCoroutine(WaitForResourceGuid());
-            });
-            mDuration = transform.Find("Content/Duration/InputField").GetComponent<TMP_InputField>();
-            mDuration.onEndEdit.AddListener(value => {
-                mBackgroundData.Duration = float.Parse(value);
-                TypeEventSystem.Global.Send<OnCommandRefreshEvent>();
             });
         }
 
@@ -61,9 +69,10 @@ namespace Larvend.PlotEditor.UI
             mId.SetTextWithoutNotify(mModel.CurrentCommandController.Value.Data.Guid.ToString());
             
             mTiming.SetValueWithoutNotify((int) mBackgroundData.Timing);
+            mTime.SetTextWithoutNotify(mBackgroundData.Time.ToString("N2"));
+            mSkippable.SetIsOnWithoutNotify(mBackgroundData.Skippable);
             mBackgroundType.SetValueWithoutNotify((int) mBackgroundData.BackgroundType);
             mSourceGuid.SetTextWithoutNotify(mBackgroundData.SourceGuid);
-            mDuration.SetTextWithoutNotify(mBackgroundData.Duration.ToString("N2"));
         }
 
         IEnumerator WaitForResourceGuid()

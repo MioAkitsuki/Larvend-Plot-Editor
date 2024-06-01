@@ -4,6 +4,7 @@ using Larvend.PlotEditor.DataSystem;
 using QFramework;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Larvend.PlotEditor.UI
 {
@@ -16,6 +17,8 @@ namespace Larvend.PlotEditor.UI
 
         private TMP_InputField mId;
         private TMP_Dropdown mTiming;
+        private TMP_InputField mTime;
+        private Toggle mSkippable;
         private TMP_Dropdown mTextType;
         private TMP_InputField mSpeaker;
         private TMP_InputField mContent;
@@ -31,6 +34,16 @@ namespace Larvend.PlotEditor.UI
             mTiming = transform.Find("Content/Timing/Dropdown").GetComponent<TMP_Dropdown>();
             mTiming.onValueChanged.AddListener(value => {
                 mTextData.Timing = (CommandTiming) value;
+                TypeEventSystem.Global.Send<OnCommandRefreshEvent>();
+            });
+            mTime = transform.Find("Content/Time/InputField").GetComponent<TMP_InputField>();
+            mTime.onEndEdit.AddListener(value => {
+                mTextData.Time = float.Parse(value);
+                TypeEventSystem.Global.Send<OnCommandRefreshEvent>();
+            });
+            mSkippable = transform.Find("Content/Time/Skippable").GetComponent<Toggle>();
+            mSkippable.onValueChanged.AddListener(value => {
+                mTextData.Skippable = value;
                 TypeEventSystem.Global.Send<OnCommandRefreshEvent>();
             });
             mTextType = transform.Find("Content/TextType/Dropdown").GetComponent<TMP_Dropdown>();
@@ -67,6 +80,8 @@ namespace Larvend.PlotEditor.UI
             mId.SetTextWithoutNotify(mModel.CurrentCommandController.Value.Data.Guid.ToString());
             
             mTiming.SetValueWithoutNotify((int) mTextData.Timing);
+            mTime.SetTextWithoutNotify(mTextData.Time.ToString("N2"));
+            mSkippable.SetIsOnWithoutNotify(mTextData.Skippable);
             mTextType.SetValueWithoutNotify((int) mTextData.TextType);
             mSpeaker.SetTextWithoutNotify(mTextData.Speaker);
             mContent.SetTextWithoutNotify(mTextData.Content);

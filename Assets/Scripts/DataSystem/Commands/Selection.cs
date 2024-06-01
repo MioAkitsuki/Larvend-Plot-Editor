@@ -47,6 +47,7 @@ namespace Larvend.PlotEditor.DataSystem
         {
             SelectionType = SelectionType.FullScreen,
             Timing = CommandTiming.OnClick,
+            Skippable = false,
             Count = 0,
             Options = new List<OptionData>()
         };

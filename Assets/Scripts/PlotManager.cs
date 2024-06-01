@@ -20,15 +20,19 @@ namespace Larvend.PlotEditor
         public static CommandGroup currentGroup = new CommandGroup();
         public static CommandGroup automaticGroup = new CommandGroup();
 
+        public bool IsCountingDown = false;
+        private Coroutine CurrentCoroutine = null;
+
         void Awake()
         {
             // musicSource = transform.Find("MusicSource").GetComponent<AudioSource>();
             // voiceSource = transform.Find("VoiceSource").GetComponent<AudioSource>();
 
             TypeEventSystem.Global.Register<NextCommandEvent>(e => {
-                if (HasPlot) NextCommand();
+                NextCommand();
             }).UnRegisterWhenGameObjectDestroyed(gameObject);
 
+            transform.Find("Finish").gameObject.SetActive(false);
             ReadAndStart();
         }
 
@@ -36,7 +40,7 @@ namespace Larvend.PlotEditor
         {
             currentGroup?.OnUpdate();
 
-            if (currentGroup.IsFinished() && !automaticGroup.IsEmpty)
+            if (currentGroup.IsFinished() && !automaticGroup.IsEmpty && !IsCountingDown)
             {
                 currentGroup.OnExit();
                 currentGroup = automaticGroup;
@@ -48,6 +52,14 @@ namespace Larvend.PlotEditor
 
         private void ReadAndStart()
         {
+            commands = new();
+            currentGroup = new();
+            automaticGroup = new();
+
+            IsCountingDown = false;
+            CurrentCoroutine = null;
+            StopAllCoroutines();
+
             foreach (var command in ProjectManager.Project.Commands)
             {
                 commands.Enqueue(Command.Parse(command));
@@ -58,36 +70,59 @@ namespace Larvend.PlotEditor
 
         private void NextCommand()
         {
-            if (!currentGroup.IsEmpty && !currentGroup.IsFinished())
+            if (!currentGroup.IsEmpty && (!currentGroup.IsFinished() || IsCountingDown))
             {
-                if (currentGroup.IsSkippable()) currentGroup.Skip();
+                if (currentGroup.IsSkippable())
+                {
+                    currentGroup.Skip();
+
+                    if (CurrentCoroutine != null) StopCoroutine(CurrentCoroutine);
+                    IsCountingDown = false;
+
+                    currentGroup.Clear();
+                }
                 else return;
             }
-            else
+            else if (!IsCountingDown)
             {
                 currentGroup?.OnExit();
+
+                if (commands.Count == 0)
+                {
+                    transform.Find("Finish").gameObject.SetActive(true);
+                    return;
+                }
                 
-                currentGroup.commandGroup.Clear();
-                automaticGroup.commandGroup.Clear();
-                currentGroup.commandGroup.Add(commands.Dequeue());
+                currentGroup.Clear();
+                automaticGroup.Clear();
+
+                currentGroup.Add(commands.Dequeue());
                 while (commands.Count > 0 && commands.Peek().Data.Timing == CommandTiming.WithPrevious)
                 {
-                    currentGroup.commandGroup.Add(commands.Dequeue());
+                    currentGroup.Add(commands.Dequeue());
                 }
 
                 if (commands.Count > 0 && commands.Peek().Data.Timing == CommandTiming.AfterPrevious)
                 {
-                    automaticGroup.commandGroup.Add(commands.Dequeue());
+                    automaticGroup.Add(commands.Dequeue());
                     while (commands.Count > 0 && commands.Peek().Data.Timing == CommandTiming.WithPrevious)
                     {
-                        automaticGroup.commandGroup.Add(commands.Dequeue());
+                        automaticGroup.Add(commands.Dequeue());
                     }
                 }
 
                 currentGroup?.OnEnter();
+                CurrentCoroutine = currentGroup.time == 0f ? null : StartCoroutine(Countdown(currentGroup.time));
             }
+        }
 
-            if (commands.Count == 0) HasPlot = false;
+        IEnumerator Countdown(float time)
+        {
+            IsCountingDown = true;
+            yield return new WaitForSeconds(time);
+
+            IsCountingDown = false;
+            CurrentCoroutine = null;
         }
     }
 

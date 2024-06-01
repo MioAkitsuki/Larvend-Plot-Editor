@@ -5,6 +5,7 @@ using Larvend.PlotEditor.DataSystem;
 using QFramework;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Larvend.PlotEditor.UI
 {
@@ -17,6 +18,8 @@ namespace Larvend.PlotEditor.UI
 
         private TMP_InputField mId;
         private TMP_Dropdown mTiming;
+        private TMP_InputField mTime;
+        private Toggle mSkippable;
         private TMP_Dropdown mAvatarType;
         private TMP_InputField mSourceGuid;
 
@@ -33,6 +36,16 @@ namespace Larvend.PlotEditor.UI
             mTiming = transform.Find("Content/Timing/Dropdown").GetComponent<TMP_Dropdown>();
             mTiming.onValueChanged.AddListener(value => {
                 mAvatarData.Timing = (CommandTiming) value;
+                TypeEventSystem.Global.Send<OnCommandRefreshEvent>();
+            });
+            mTime = transform.Find("Content/Time/InputField").GetComponent<TMP_InputField>();
+            mTime.onEndEdit.AddListener(value => {
+                mAvatarData.Time = float.Parse(value);
+                TypeEventSystem.Global.Send<OnCommandRefreshEvent>();
+            });
+            mSkippable = transform.Find("Content/Time/Skippable").GetComponent<Toggle>();
+            mSkippable.onValueChanged.AddListener(value => {
+                mAvatarData.Skippable = value;
                 TypeEventSystem.Global.Send<OnCommandRefreshEvent>();
             });
             mAvatarType = transform.Find("Content/AvatarType/Dropdown").GetComponent<TMP_Dropdown>();
@@ -55,6 +68,8 @@ namespace Larvend.PlotEditor.UI
             mId.SetTextWithoutNotify(mModel.CurrentCommandController.Value.Data.Guid.ToString());
             
             mTiming.SetValueWithoutNotify((int) mAvatarData.Timing);
+            mTime.SetTextWithoutNotify(mAvatarData.Time.ToString("N2"));
+            mSkippable.SetIsOnWithoutNotify(mAvatarData.Skippable);
             mAvatarType.SetValueWithoutNotify((int) mAvatarData.AvatarType);
             mSourceGuid.SetTextWithoutNotify(mAvatarData.SourceGuid);
         }

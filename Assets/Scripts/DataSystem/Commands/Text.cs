@@ -37,7 +37,6 @@ namespace Larvend.PlotEditor.DataSystem
         [YamlIgnore] public static TextData Default => new TextData()
         {
             TextType = TextType.Bottom,
-            Timing = CommandTiming.OnClick,
             Speaker = "Sample",
             Content = "Content",
             VoiceId = ""

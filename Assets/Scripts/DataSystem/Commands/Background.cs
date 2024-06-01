@@ -20,7 +20,6 @@ namespace Larvend.PlotEditor.DataSystem
         public override CommandType Type => CommandType.Background;
         public BackgroundType BackgroundType { get; set; }
         public string SourceGuid { get; set; }
-        public float Duration { get; set; }
 
         public override void Update(CommandData data)
         {
@@ -29,7 +28,6 @@ namespace Larvend.PlotEditor.DataSystem
                 BackgroundType = backgroundData.BackgroundType;
                 
                 SourceGuid = string.IsNullOrEmpty(backgroundData.SourceGuid) ? SourceGuid : backgroundData.SourceGuid;
-                Duration = backgroundData.Duration == 0 ? Duration : backgroundData.Duration;
             }
         }
 
@@ -37,8 +35,7 @@ namespace Larvend.PlotEditor.DataSystem
         {
             BackgroundType = BackgroundType.Back,
             Timing = CommandTiming.OnClick,
-            SourceGuid = "",
-            Duration = 0f
+            SourceGuid = ""
         };
     }
 }

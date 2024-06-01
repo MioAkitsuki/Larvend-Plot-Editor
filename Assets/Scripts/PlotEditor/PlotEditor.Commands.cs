@@ -37,6 +37,13 @@ namespace Larvend.PlotEditor.UI
     {
         protected override void OnExecute()
         {
+# if UNITY_EDITOR
+            var _path = EditorUtility.OpenFilePanelWithFilters(title: "Open Project", directory: Application.dataPath, filters: new string[] {"Larvend Plot File", "lpf"});
+# else
+            var _path = Dialog.OpenFileDialog(Title: "Open Project", InitPath: Application.dataPath, Filter: "Larvend Plot File (*.lpf)|*.lpf|All Files|*.*");
+# endif
+
+            if (string.IsNullOrEmpty(_path)) return;
             if (!string.IsNullOrEmpty(ProjectManager.GUID))
             {
                 Debug.LogWarning("You have already opened a project. Cleaning temp file...");
@@ -45,12 +52,7 @@ namespace Larvend.PlotEditor.UI
                 ResourceManager.ClearAllResources();
                 ProjectManager.CloseProject();
             }
-
-# if UNITY_EDITOR
-            var _path = EditorUtility.OpenFilePanelWithFilters(title: "Open Project", directory: Application.dataPath, filters: new string[] {"Larvend Plot File", "lpf"});
-# else
-            var _path = Dialog.OpenFileDialog(Title: "Open Project", InitPath: Application.dataPath, Filter: "Larvend Plot File (*.lpf)|*.lpf|All Files|*.*");
-# endif
+            
             ProjectManager.OpenProject(_path);
         }
     }

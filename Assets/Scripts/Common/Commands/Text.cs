@@ -8,16 +8,6 @@ namespace Larvend.PlotEditor
     [Serializable]
     public class Text : Command
     {
-        // public enum AppearMethod
-        // {
-        //     Appear,
-        //     Fade,
-        //     FadeFromBlank,
-        //     TypeWriter
-        // }
-
-        // public AppearMethod appearMethod;
-
         public TextType textType;
         public string speaker;
         public string text;
@@ -31,10 +21,8 @@ namespace Larvend.PlotEditor
         private bool isFinished = false;
 
         public override CommandType GetCommandType() => CommandType.Text;
-        public Text(TextData _data)
+        public Text(TextData _data) : base(_data)
         {
-            Data = _data;
-
             speaker = _data.Speaker;
             text = _data.Content;
             textType = _data.TextType;

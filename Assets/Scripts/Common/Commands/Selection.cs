@@ -15,10 +15,8 @@ namespace Larvend.PlotEditor
         private bool isFinished = false;
 
         public override CommandType GetCommandType() => CommandType.Avatar;
-        public Selection(SelectionData _data)
+        public Selection(SelectionData _data) : base(_data)
         {
-            Data = _data;
-
             selectionType = _data.SelectionType;
         }
 
