@@ -23,6 +23,7 @@ namespace Larvend.PlotEditor
         public override void OnEnter()
         {
             isFinished = false;
+            SelectionController.Execute(this);
         }
 
         public override void OnUpdate()
@@ -32,11 +33,12 @@ namespace Larvend.PlotEditor
 
         public override void OnExit()
         {
-            return;
+            SelectionController.Exit();
         }
 
         public override void Skip()
         {
+            SelectionController.Skip();
             Finish();
         }
 

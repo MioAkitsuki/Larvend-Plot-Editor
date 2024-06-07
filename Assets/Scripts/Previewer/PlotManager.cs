@@ -116,6 +116,26 @@ namespace Larvend.PlotEditor
             }
         }
 
+        public void JumpToCommand(Guid guid)
+        {
+            currentGroup?.OnExit();
+            var targetCommand = ProjectManager.GetCommandIndex(guid);
+
+            commands = new();
+            currentGroup = new();
+            automaticGroup = new();
+
+            IsCountingDown = false;
+            CurrentCoroutine = null;
+            StopAllCoroutines();
+
+            for (var i = targetCommand; i < ProjectManager.Project.Commands.Count; i++)
+            {
+                commands.Enqueue(Command.Parse(ProjectManager.Project.Commands[i]));
+            }
+            NextCommand();
+        }
+
         IEnumerator Countdown(float time)
         {
             IsCountingDown = true;

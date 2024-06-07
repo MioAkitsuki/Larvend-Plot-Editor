@@ -18,13 +18,13 @@ namespace Larvend.PlotEditor
         private Image mRightImage;
         private Image mRightOldImage;
 
-        public static Avatar mCurrentAvatar;
-        public static AvatarType mCurrentType = AvatarType.None;
-        public static CanvasGroup mCurrentCanvasGroup;
-        public static Image mCurrentImage;
-        public static Image mCurrentOldImage;
+        private Avatar mCurrentAvatar;
+        private AvatarType mCurrentType = AvatarType.None;
+        private CanvasGroup mCurrentCanvasGroup;
+        private Image mCurrentImage;
+        private Image mCurrentOldImage;
 
-        private static Coroutine mCurrentCoroutine;
+        private Coroutine mCurrentCoroutine;
 
         void Awake()
         {
@@ -67,13 +67,13 @@ namespace Larvend.PlotEditor
         {
             if (avatar.avatarType == AvatarType.None)
             {
-                Instance.StartCoroutine(Instance.Fade(mCurrentCanvasGroup, 0f, 0.2f));
-                mCurrentAvatar.Finish();
+                Instance.StartCoroutine(Instance.Fade(Instance.mCurrentCanvasGroup, 0f, 0.2f));
+                Instance.mCurrentAvatar.Finish();
                 return;
             }
 
-            mCurrentAvatar = avatar;
-            if (mCurrentType != avatar.avatarType) Instance.SwitchType(avatar.avatarType);
+            Instance.mCurrentAvatar = avatar;
+            if (Instance.mCurrentType != avatar.avatarType) Instance.SwitchType(avatar.avatarType);
 
             // if (avatar.appearMethod == Avatar.AppearMethod.Appear)
             // {
@@ -84,12 +84,12 @@ namespace Larvend.PlotEditor
             //     return;
             // }
 
-            if (mCurrentCoroutine != null)
+            if (Instance.mCurrentCoroutine != null)
             {
-                Instance.StopCoroutine(mCurrentCoroutine);
+                Instance.StopCoroutine(Instance.mCurrentCoroutine);
             }
-            mCurrentCoroutine = Instance.StartCoroutine(Instance.FadeFromTransparentAvatar());
-            Instance.StartCoroutine(Instance.Fade(mCurrentCanvasGroup, 1f, 0.2f));
+            Instance.mCurrentCoroutine = Instance.StartCoroutine(Instance.FadeFromTransparentAvatar());
+            Instance.StartCoroutine(Instance.Fade(Instance.mCurrentCanvasGroup, 1f, 0.2f));
         }
 
         private IEnumerator Fade(CanvasGroup canvasGroup, float targetAlpha, float speed)
@@ -118,11 +118,11 @@ namespace Larvend.PlotEditor
 
         public static void Skip()
         {
-            if (mCurrentCoroutine != null)
-                Instance.StopCoroutine(mCurrentCoroutine);
-            mCurrentCoroutine = null;
+            if (Instance.mCurrentCoroutine != null)
+                Instance.StopCoroutine(Instance.mCurrentCoroutine);
+            Instance.mCurrentCoroutine = null;
 
-            mCurrentImage.sprite = mCurrentAvatar.sprite ?? null;
+            Instance.mCurrentImage.sprite = Instance.mCurrentAvatar.sprite ?? null;
         }
 
         public IEnumerator FadeFromTransparentAvatar()

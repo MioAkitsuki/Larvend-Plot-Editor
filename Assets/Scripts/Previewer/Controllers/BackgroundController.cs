@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Kuchinashi;
 using Larvend.PlotEditor.DataSystem;
 using QFramework;
 using TMPro;
@@ -104,18 +105,19 @@ namespace Larvend.PlotEditor
 
         public void Execute(Background background)
         {
-            if (background.backgroundType == BackgroundType.None) throw new System.Exception("BackgroundType is None");
+            if (background.backgroundType == BackgroundType.None)
+            {
+                mCurrentType = BackgroundType.None;
+                if (mCurrentCoroutine != null)
+                {
+                    Instance.StopCoroutine(mCurrentCoroutine);
+                }
+                mCurrentCoroutine = Instance.StartCoroutine(CanvasGroupHelper.FadeCanvasGroup(Instance.mCurrentCanvasGroup, 0f));
+                Instance.mCurrentBackground.Finish();
+                return;
+            }
             mCurrentBackground = background;
             if (mCurrentType != background.backgroundType) Instance.SwitchType(background.backgroundType);
-
-            // if (background.appearMethod == Background.AppearMethod.Appear)
-            // {
-            //     mCurrentImage.sprite = mCurrentBackground.sprite ?? null;
-            //     mCurrentCanvasGroup.alpha = 1;
-
-            //     mCurrentBackground.Finish();
-            //     return;
-            // }
 
             if (mCurrentCoroutine != null)
             {
@@ -153,6 +155,13 @@ namespace Larvend.PlotEditor
         {
             if (mCurrentCoroutine != null) Instance.StopCoroutine(mCurrentCoroutine);
             mCurrentCoroutine = null;
+
+            if (mCurrentType == BackgroundType.None)
+            {
+                mCurrentImage.sprite = null;
+                mCurrentCanvasGroup.alpha = 0f;
+                return;
+            }
 
             mCurrentImage.sprite = mCurrentBackground.sprite ?? null;
             mCurrentRatio.aspectRatio = mCurrentImage.sprite.rect.width / mCurrentImage.sprite.rect.height;

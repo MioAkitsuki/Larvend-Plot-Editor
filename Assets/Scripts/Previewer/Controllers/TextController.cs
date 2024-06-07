@@ -17,11 +17,11 @@ namespace Larvend.PlotEditor
         private TMP_Text mByBarText;
         private TMP_Text mByBarSpeaker;
 
-        public Text mCurrentText;
-        public TextType mCurrentType = TextType.None;
-        public CanvasGroup mCurrentCanvasGroup;
-        public TMP_Text mCurrentSpeakerField;
-        public TMP_Text mCurrentTextField;
+        private Text mCurrentText;
+        private TextType mCurrentType = TextType.None;
+        private CanvasGroup mCurrentCanvasGroup;
+        private TMP_Text mCurrentSpeakerField;
+        private TMP_Text mCurrentTextField;
 
         private Coroutine mCurrentCoroutine;
 
