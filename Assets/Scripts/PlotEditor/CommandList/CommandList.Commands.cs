@@ -40,6 +40,9 @@ namespace Larvend.PlotEditor.UI
                 case CommandType.Sleep:
                     data = Data == null ? SleepData.Default : Data as SleepData;
                     break;
+                case CommandType.Goto:
+                    data = Data == null ? GotoData.Default : Data as GotoData;
+                    break;
             }
             ProjectManager.AddCommand(data);
 
@@ -84,6 +87,9 @@ namespace Larvend.PlotEditor.UI
                     break;
                 case CommandType.Sleep:
                     data = Data == null ? SleepData.Default : Data as SleepData;
+                    break;
+                case CommandType.Goto:
+                    data = Data == null ? GotoData.Default : Data as GotoData;
                     break;
             }
 

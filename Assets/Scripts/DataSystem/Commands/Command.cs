@@ -15,7 +15,8 @@ namespace Larvend.PlotEditor.DataSystem
         Music,
         Selection,
         Sleep,
-        Tachie
+        Tachie,
+        Goto
     }
 
     public enum CommandTiming

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using UnityEngine;
 using UnityEngine.Video;
 using YamlDotNet.Serialization;
@@ -10,6 +11,7 @@ namespace Larvend.PlotEditor.DataSystem
     public abstract class ResourceBase
     {
         [YamlIgnore] public string Guid { get; set; }
+        public string Md5 { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
     }
@@ -20,11 +22,12 @@ namespace Larvend.PlotEditor.DataSystem
         [YamlIgnore] public Texture2D texture;
 
         public ImageResource() {}
-        public ImageResource(string _guid, string _name, Texture2D _texture)
+        public ImageResource(string _guid, string _name, Texture2D _texture, string _md5)
         {
             Guid = _guid;
             Name = _name;
             texture = _texture;
+            Md5 = _md5;
         }
 
         public Sprite GetSprite()
@@ -39,11 +42,12 @@ namespace Larvend.PlotEditor.DataSystem
         [YamlIgnore] public AudioClip audioClip;
 
         public AudioResource() {}
-        public AudioResource(string _guid, string _name, AudioClip _audioClip)
+        public AudioResource(string _guid, string _name, AudioClip _audioClip, string _md5)
         {
             Guid = _guid;
             Name = _name;
             audioClip = _audioClip;
+            Md5 = _md5;
         }
     }
 

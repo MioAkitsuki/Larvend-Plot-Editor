@@ -30,34 +30,9 @@ namespace Larvend.PlotEditor.UI
         {
             foreach (var command in ProjectManager.Project.Commands)
             {
-                switch (command)
-                {
-                    case TextData data:
-                        mModel.CommandControllerDictionary.Add(data.Guid, mModel.CommandControllers.AddLast(
-                            Instantiate(CommandPrefabs[CommandType.Text], CommandListParent)
-                            .GetComponent<CommandControllerBase>().Initialize(data)));
-                        break;
-                    case BackgroundData data:
-                        mModel.CommandControllerDictionary.Add(data.Guid, mModel.CommandControllers.AddLast(
-                            Instantiate(CommandPrefabs[CommandType.Background], CommandListParent)
-                            .GetComponent<CommandControllerBase>().Initialize(data)));
-                        break;
-                    case AvatarData data:
-                        mModel.CommandControllerDictionary.Add(data.Guid, mModel.CommandControllers.AddLast(
-                            Instantiate(CommandPrefabs[CommandType.Avatar], CommandListParent)
-                            .GetComponent<CommandControllerBase>().Initialize(data)));
-                        break;
-                    case SelectionData data:
-                        mModel.CommandControllerDictionary.Add(data.Guid, mModel.CommandControllers.AddLast(
-                            Instantiate(CommandPrefabs[CommandType.Selection], CommandListParent)
-                            .GetComponent<CommandControllerBase>().Initialize(data)));
-                        break;
-                    case SleepData data:
-                        mModel.CommandControllerDictionary.Add(data.Guid, mModel.CommandControllers.AddLast(
-                            Instantiate(CommandPrefabs[CommandType.Sleep], CommandListParent)
-                            .GetComponent<CommandControllerBase>().Initialize(data)));
-                        break;
-                }
+                mModel.CommandControllerDictionary.Add(command.Guid, mModel.CommandControllers.AddLast(
+                    Instantiate(CommandPrefabs[command.Type], CommandListParent)
+                    .GetComponent<CommandControllerBase>().Initialize(command)));
             }
         }
 

@@ -17,6 +17,9 @@ namespace Larvend.PlotEditor
 
         public List<ImageResourceController> ImageResourceControllers = new();
         public ImageResourceController CurrentImageResourceController = null;
+
+        public List<AudioResourceController> AudioResourceControllers = new();
+        public AudioResourceController CurrentAudioResourceController = null;
         
         protected override void OnInit() {}
 

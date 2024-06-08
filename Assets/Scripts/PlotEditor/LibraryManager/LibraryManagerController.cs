@@ -21,6 +21,7 @@ namespace Larvend.PlotEditor.UI
         public static FSM<States> StateMachine => Instance.stateMachine;
         private FSM<States> stateMachine = new FSM<States>();
         public List<GameObject> ResourcePrefabs;
+        public List<Sprite> AudioPreviewSprites;
 
         private CanvasGroup mCanvasGroup;
         private Button mCloseButon;
@@ -28,7 +29,9 @@ namespace Larvend.PlotEditor.UI
         private CanvasGroup mImageManager;
         private Transform mImageManagerContent;
         private ImageInspectorController mImageInspector;
+
         private CanvasGroup mAudioManager;
+        private Transform mAudioManagerContent;
 
         private Toggle mImageManagerToggle;
         private Toggle mAudioManagerToggle;
@@ -52,7 +55,13 @@ namespace Larvend.PlotEditor.UI
                 TypeEventSystem.Global.Send<OnCurrentImageResourceChangedEvent>();
             };
             mImageInspector = mImageManager.transform.Find("Inspector").GetComponent<ImageInspectorController>();
+
             mAudioManager = transform.Find("AudioManager").GetComponent<CanvasGroup>();
+            mAudioManagerContent = mAudioManager.transform.Find("Scroll View/Viewport/Content");
+            mAudioManagerContent.GetChild(0).GetComponent<ButtonExtension>().OnLeftClick += () => {
+                ResourceManager.ImportAudioResource();
+                TypeEventSystem.Global.Send<OnCurrentAudioResourceChangedEvent>();
+            };
 
             mImageManagerToggle = transform.Find("Menu/Image").GetComponent<Toggle>();
             mImageManagerToggle.onValueChanged.AddListener(value => {
@@ -103,10 +112,18 @@ namespace Larvend.PlotEditor.UI
             {
                 image.Dispose();
             }
+            foreach (var audio in mAudioManagerContent.GetComponentsInChildren<AudioResourceController>())
+            {
+                audio.Dispose();
+            }
 
             foreach (var image in ResourceManager.Instance.Images)
             {
                 Instantiate(ResourcePrefabs[0], mImageManagerContent).GetComponent<ImageResourceController>().Initialize(image.Value);
+            }
+            foreach (var audio in ResourceManager.Instance.Audios)
+            {
+                Instantiate(ResourcePrefabs[1], mAudioManagerContent).GetComponent<AudioResourceController>().Initialize(audio.Value);
             }
         }
 

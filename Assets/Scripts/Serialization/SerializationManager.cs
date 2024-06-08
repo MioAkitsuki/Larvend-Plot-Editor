@@ -11,6 +11,7 @@ using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 using System;
 using YamlDotNet.Core;
+using System.Security.Cryptography;
 
 namespace Larvend.PlotEditor.Serialization
 {
@@ -92,8 +93,9 @@ namespace Larvend.PlotEditor.Serialization
             {
                 var _texture = ImageHelper.LoadImage(_path);
                 var _guid = System.Guid.NewGuid().ToString("D");
+                var _md5 = new MD5CryptoServiceProvider().ComputeHash(File.ReadAllBytes(_path));
 
-                var newImageResource = new ImageResource(_guid, _path.GetFileNameWithoutExtend(), _texture);
+                var newImageResource = new ImageResource(_guid, _path.GetFileNameWithoutExtend(), _texture, BitConverter.ToString(_md5).Replace("-", "").ToLower());
 
                 _resource = newImageResource;
                 return true;
@@ -135,8 +137,9 @@ namespace Larvend.PlotEditor.Serialization
             {
                 var _clip = OggVorbis.VorbisPlugin.Load(_path);
                 var _guid = System.Guid.NewGuid().ToString("D");
+                var _md5 = new MD5CryptoServiceProvider().ComputeHash(File.ReadAllBytes(_path));
 
-                var newAudioResource = new AudioResource(_guid, _path.GetFileNameWithoutExtend(), _clip);
+                var newAudioResource = new AudioResource(_guid, _path.GetFileNameWithoutExtend(), _clip, BitConverter.ToString(_md5).Replace("-", "").ToLower());
 
                 _resource = newAudioResource;
                 return true;
@@ -229,6 +232,7 @@ namespace Larvend.PlotEditor.Serialization
                     .WithTagMapping("!avatar", typeof(AvatarData))
                     .WithTagMapping("!selection", typeof(SelectionData))
                     .WithTagMapping("!sleep", typeof(SleepData))
+                    .WithTagMapping("!goto", typeof(GotoData))
                     .WithIndentedSequences()
                     .Build();
                 
@@ -258,6 +262,7 @@ namespace Larvend.PlotEditor.Serialization
                     .WithTagMapping("!avatar", typeof(AvatarData))
                     .WithTagMapping("!selection", typeof(SelectionData))
                     .WithTagMapping("!sleep", typeof(SleepData))
+                    .WithTagMapping("!goto", typeof(GotoData))
                     .IgnoreUnmatchedProperties()
                     .Build();
                 
@@ -323,7 +328,7 @@ namespace Larvend.PlotEditor.Serialization
                 var _guid = _file.GetFileNameWithoutExtend();
                 var _texture = ImageHelper.LoadImage(_file);
 
-                var _imageResource = new ImageResource(_guid, _guid, _texture);
+                var _imageResource = new ImageResource(_guid, _guid, _texture, "");
 
                 ResourceManager.AddResource(_imageResource);
             }
@@ -339,7 +344,7 @@ namespace Larvend.PlotEditor.Serialization
                 var _guid = _file.GetFileNameWithoutExtend();
                 var _clip = OggVorbis.VorbisPlugin.Load(_file);
 
-                var _audioResource = new AudioResource(_guid, _guid, _clip);
+                var _audioResource = new AudioResource(_guid, _guid, _clip, "");
 
                 ResourceManager.AddResource(_audioResource);
             }

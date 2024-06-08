@@ -20,6 +20,7 @@ namespace Larvend.PlotEditor.UI
         private TMP_InputField mDescription;
         private Image mImage;
         private TMP_Text mSize;
+        private Button mDelete;
 
         void Awake()
         {
@@ -44,6 +45,14 @@ namespace Larvend.PlotEditor.UI
             });
             mImage = transform.Find("Content/Image").GetComponent<Image>();
             mSize = transform.Find("Content/Size").GetComponent<TMP_Text>();
+            mDelete = transform.Find("Content/Delete").GetComponent<Button>();
+            mDelete.onClick.AddListener(() => {
+                if (mImageResource == null || mModel.CurrentImageResourceController == null) return;
+
+                ResourceManager.RemoveResource(mImageResource.Guid);
+                mModel.CurrentImageResourceController.Dispose();
+                TypeEventSystem.Global.Send<OnResourceRefreshEvent>();
+            });
 
             TypeEventSystem.Global.Register<OnCurrentImageResourceChangedEvent>(e => Refresh()).UnRegisterWhenGameObjectDestroyed(gameObject);
             TypeEventSystem.Global.Register<OnResourceRefreshEvent>(e => Refresh()).UnRegisterWhenGameObjectDestroyed(gameObject);

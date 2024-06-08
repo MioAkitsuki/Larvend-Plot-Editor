@@ -42,6 +42,11 @@ namespace Larvend.PlotEditor.DataSystem
 
             if (ResourceHelper.OpenImageResource(_path, out var _resource))
             {
+                foreach (var i in Instance.Images)
+                {
+                    if (i.Value.Md5 == _resource.Md5) return;
+                }
+
                 Instance.Images.Add(_resource.Guid, _resource);
                 ResourceHelper.SaveImageResource(_resource);
 
@@ -72,6 +77,11 @@ namespace Larvend.PlotEditor.DataSystem
 
             if (ResourceHelper.OpenAudioResource(_path, out var _resource))
             {
+                foreach (var i in Instance.Audios)
+                {
+                    if (i.Value.Md5 == _resource.Md5) return;
+                }
+
                 Instance.Audios.Add(_resource.Guid, _resource);
                 ResourceHelper.SaveAudioResource(_resource);
 

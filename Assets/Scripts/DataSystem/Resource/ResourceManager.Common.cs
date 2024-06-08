@@ -6,6 +6,7 @@ using UnityEditor;
 using UnityEngine;
 using YamlDotNet.Serialization;
 using Larvend.PlotEditor.Serialization;
+using System.IO;
 
 namespace Larvend.PlotEditor.DataSystem
 {
@@ -38,12 +39,32 @@ namespace Larvend.PlotEditor.DataSystem
             }
         }
 
+        public static void RemoveResource(string _guid)
+        {
+            if (Instance.Images.ContainsKey(_guid))
+            {
+                Instance.Images.Remove(_guid);
+
+                var path = Path.Combine(ProjectManager.ProjectFolderPath, $"resources/image/{_guid}.png");
+                if (File.Exists(path)) File.Delete(path);
+            }
+
+            if (Instance.Audios.ContainsKey(_guid))
+            {
+                Instance.Audios.Remove(_guid);
+
+                var path = Path.Combine(ProjectManager.ProjectFolderPath, $"resources/audio/{_guid}.png");
+                if (File.Exists(path)) File.Delete(path);
+            }
+        }
+
         public static void TryLinkResource(ImageResource _resource)
         {
             if (Instance.Images.TryGetValue(_resource.Guid, out var image))
             {
                 image.Guid = _resource.Guid;
                 image.texture = _resource.texture;
+                image.Md5 = _resource.Md5;
             }
             else
             {

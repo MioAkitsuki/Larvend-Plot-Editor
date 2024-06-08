@@ -16,7 +16,8 @@ namespace Larvend.PlotEditor.UI
             Text,
             Background,
             Avatar,
-            Selection
+            Selection,
+            Goto
         }
 
         private PlotEditorModel mModel;
@@ -54,6 +55,7 @@ namespace Larvend.PlotEditor.UI
             stateMachine.AddState(States.Background, new BackgroundState(stateMachine, this));
             stateMachine.AddState(States.Avatar, new AvatarState(stateMachine, this));
             stateMachine.AddState(States.Selection, new SelectionState(stateMachine, this));
+            stateMachine.AddState(States.Goto, new GotoState(stateMachine, this));
 
             stateMachine.StartState(States.None);
         }
@@ -81,6 +83,9 @@ namespace Larvend.PlotEditor.UI
                 case CommandType.Selection:
                     SelectionPropertyController.Instance.Refresh();
                     break;
+                case CommandType.Goto:
+                    GotoPropertyController.Instance.Refresh();
+                    break;
             }
 
             if (stateMachine.CurrentStateId != States.None)
@@ -105,6 +110,9 @@ namespace Larvend.PlotEditor.UI
                     break;
                 case CommandType.Selection:
                     stateMachine.ChangeState(States.Selection);
+                    break;
+                case CommandType.Goto:
+                    stateMachine.ChangeState(States.Goto);
                     break;
                 default:
                     stateMachine.ChangeState(States.None);
@@ -253,6 +261,26 @@ namespace Larvend.PlotEditor.UI
                 SelectionPropertyController.Instance.mCanvasGroup.alpha = 0f;
                 SelectionPropertyController.Instance.mCanvasGroup.interactable = false;
                 SelectionPropertyController.Instance.mCanvasGroup.blocksRaycasts = false;
+            }
+        }
+
+        public class GotoState : AbstractState<States, CommandPropertyController>
+        {
+            public GotoState(FSM<States> fsm, CommandPropertyController target) : base(fsm, target) {}
+            protected override bool OnCondition() => mFSM.CurrentStateId != States.Goto;
+
+            protected override void OnEnter()
+            {
+                GotoPropertyController.Instance.mCanvasGroup.alpha = 1f;
+                GotoPropertyController.Instance.mCanvasGroup.interactable = true;
+                GotoPropertyController.Instance.mCanvasGroup.blocksRaycasts = true;
+            }
+
+            protected override void OnExit()
+            {
+                GotoPropertyController.Instance.mCanvasGroup.alpha = 0f;
+                GotoPropertyController.Instance.mCanvasGroup.interactable = false;
+                GotoPropertyController.Instance.mCanvasGroup.blocksRaycasts = false;
             }
         }
     }

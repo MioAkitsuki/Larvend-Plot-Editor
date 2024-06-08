@@ -33,4 +33,28 @@ namespace Larvend.PlotEditor.UI
             TypeEventSystem.Global.Send<OnCurrentImageResourceChangedEvent>();
         }
     }
+
+    public class SelectAudioResourceCommand : AbstractCommand
+    {
+        public AudioResourceController Resource;
+        public SelectAudioResourceCommand(AudioResourceController _resource)
+        {
+            Resource = _resource;
+        }
+
+        protected override void OnExecute()
+        {
+            var model = this.GetModel<PlotEditorModel>();
+            
+            if (model.CurrentAudioResourceController != null)
+            {
+                if (model.CurrentAudioResourceController == Resource) return;
+                model.CurrentAudioResourceController.DeSelect();
+            }
+            model.CurrentAudioResourceController = Resource;
+            model.CurrentAudioResourceController.Select();
+
+            TypeEventSystem.Global.Send<OnCurrentAudioResourceChangedEvent>();
+        }
+    }
 }

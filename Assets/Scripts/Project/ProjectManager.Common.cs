@@ -65,7 +65,7 @@ namespace Larvend.PlotEditor
 
         public static CommandData GetCommand(int _index)
         {
-            if (!IsProjectExist() || _index >= Project.Commands.Count) return null;
+            if (!IsProjectExist() || _index >= Project.Commands.Count || _index < 0) return null;
 
             return Project.Commands[_index];
         }

@@ -7,22 +7,23 @@ using YamlDotNet.Serialization;
 namespace Larvend.PlotEditor.DataSystem
 {
     [YamlSerializable, Serializable]
-    public class SleepData : CommandData
+    public class GotoData : CommandData
     {
-        public override CommandType Type => CommandType.Sleep;
+        public override CommandType Type => CommandType.Goto;
+        public Guid GotoGuid { get; set; }
 
         public override void Update(CommandData data)
         {
-            if (data is SleepData sleepData)
+            if (data is GotoData gotoData)
             {
-                Time = sleepData.Time == 0f ? Time : sleepData.Time;
+                GotoGuid = gotoData.GotoGuid == Guid.Empty ? GotoGuid : gotoData.GotoGuid;
             }
         }
 
-        [YamlIgnore] public static SleepData Default => new SleepData()
+        [YamlIgnore] public static GotoData Default => new GotoData()
         {
             Timing = CommandTiming.OnClick,
-            Time = 1f
+            Time = 0f
         };
     }
 }
