@@ -19,4 +19,8 @@ namespace Larvend.PlotEditor.UI
     public struct OnImageResourceSelectedEvent {
         public string Guid;
     }
+
+    public struct OnAudioResourceSelectedEvent {
+        public string Guid;
+    }
 }

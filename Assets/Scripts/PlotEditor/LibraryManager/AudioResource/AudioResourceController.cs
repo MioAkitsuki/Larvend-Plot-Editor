@@ -37,26 +37,25 @@ namespace Larvend.PlotEditor.UI
             preview.onClick.AddListener(() => {
                 if (IsPlaying)
                 {
-                    IsPlaying = false;
-                    previewImg.sprite = LibraryManagerController.Instance.AudioPreviewSprites[0];
+                    Stop();
                 }
                 else
                 {
-                    IsPlaying = true;
-                    previewImg.sprite = LibraryManagerController.Instance.AudioPreviewSprites[1];
+                    model.CurrentPlayingAudioResource?.Stop();
+                    Play();
                 }
             });
 
             button.OnLeftClick += () => {
                 this.SendCommand(new SelectAudioResourceCommand(this));
             };
-            // button.OnDoubleClick += () => {
-            //     if (LibraryManagerController.IsOnSelection)
-            //     {
-            //         TypeEventSystem.Global.Send(new OnImageResourceSelectedEvent() { Guid = Data.Guid });
-            //         LibraryManagerController.StateMachine.ChangeState(LibraryManagerController.States.None);
-            //     }
-            // };
+            button.OnDoubleClick += () => {
+                if (LibraryManagerController.IsOnSelection)
+                {
+                    TypeEventSystem.Global.Send(new OnAudioResourceSelectedEvent() { Guid = Data.Guid });
+                    LibraryManagerController.StateMachine.ChangeState(LibraryManagerController.States.None);
+                }
+            };
 
             TypeEventSystem.Global.Register<OnResourceRefreshEvent>(e => Refresh()).UnRegisterWhenGameObjectDestroyed(gameObject);
         }
@@ -83,6 +82,24 @@ namespace Larvend.PlotEditor.UI
         {
             background.color = new Color(238f / 255f, 238f / 255f, 238f / 255f);
             IsCurrent = false;
+        }
+
+        public void Play()
+        {
+            IsPlaying = true;
+            previewImg.sprite = LibraryManagerController.Instance.AudioPreviewSprites[1];
+
+            AudioKit.PlayMusic(Data.audioClip, loop: false, onEndCallback: Stop);
+            model.CurrentPlayingAudioResource = this;
+        }
+
+        public void Stop()
+        {
+            IsPlaying = false;
+            previewImg.sprite = LibraryManagerController.Instance.AudioPreviewSprites[0];
+
+            AudioKit.StopMusic();
+            model.CurrentPlayingAudioResource = null;
         }
 
         public void Dispose()

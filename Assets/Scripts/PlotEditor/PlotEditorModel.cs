@@ -20,6 +20,7 @@ namespace Larvend.PlotEditor
 
         public List<AudioResourceController> AudioResourceControllers = new();
         public AudioResourceController CurrentAudioResourceController = null;
+        public AudioResourceController CurrentPlayingAudioResource = null;
         
         protected override void OnInit() {}
 
