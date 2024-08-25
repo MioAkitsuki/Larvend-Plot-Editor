@@ -83,6 +83,12 @@ namespace Larvend.PlotEditor.UI
             stateMachine.StartState(States.None);
         }
 
+        public static void CallUp()
+        {
+            if (Instance.mImageManagerToggle.isOn) StateMachine.ChangeState(States.Image);
+            else if (Instance.mAudioManagerToggle.isOn) StateMachine.ChangeState(States.Audio);
+        }
+
         public static void SelectResource<T>()
         {
             IsOnSelection = true;

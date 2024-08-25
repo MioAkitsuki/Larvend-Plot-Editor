@@ -12,6 +12,8 @@ using YamlDotNet.Serialization.NamingConventions;
 using System;
 using YamlDotNet.Core;
 using System.Security.Cryptography;
+using Cysharp.Threading.Tasks;
+using Cysharp.Threading.Tasks.Linq;
 
 namespace Larvend.PlotEditor.Serialization
 {
@@ -151,9 +153,40 @@ namespace Larvend.PlotEditor.Serialization
             }
         }
 
+        public static async UniTask<AudioResource> OpenAudioResourceAsync(string _path)
+        {
+            if (string.IsNullOrEmpty(ProjectManager.GUID)) return null;
+            if (_path == null || !File.Exists(_path)) return null;
+
+            await UniTask.SwitchToMainThread();
+            try
+            {
+                byte[] data = null;
+                await File.ReadAllBytesAsync(_path).ContinueWith((res) => {
+                    data = res.Result;
+                });
+
+                await UniTask.WaitUntil(() => data != null);
+
+                await UniTask.Yield();
+                var _clip = OggVorbis.VorbisPlugin.ToAudioClip(data, _path.GetFileNameWithoutExtend());
+
+                await UniTask.SwitchToThreadPool();
+                var _guid = System.Guid.NewGuid().ToString("D");
+                var _md5 = new MD5CryptoServiceProvider().ComputeHash(File.ReadAllBytes(_path));
+
+                return new AudioResource(_guid, _path.GetFileNameWithoutExtend(), _clip, BitConverter.ToString(_md5).Replace("-", "").ToLower());
+            }
+            catch (System.Exception _e)
+            {
+                Debug.LogError("[ResourceHelper.OpenAudioResource]: " + _e.ToString());
+                return null;
+            }
+        }
+
         public static bool SaveAudioResource(AudioResource _resource, string _directoryPath = null)
         {
-            if (_directoryPath == null) _directoryPath = Path.Combine(ProjectManager.ProjectFolderPath, $"resources/audio");
+            _directoryPath ??= Path.Combine(ProjectManager.ProjectFolderPath, $"resources/audio");
             if (!Directory.Exists(_directoryPath)) Directory.CreateDirectory(_directoryPath);
 
             try
@@ -161,7 +194,7 @@ namespace Larvend.PlotEditor.Serialization
                 var _audioPath = Path.Combine(_directoryPath, $"{_resource.Guid}.ogg");
 
                 if (File.Exists(_audioPath)) File.Delete(_audioPath);
-                OggVorbis.VorbisPlugin.Save(_audioPath, _resource.audioClip, 1);
+                OggVorbis.VorbisPlugin.Save(_audioPath, _resource.audioClip);
 
                 return true;
             }
@@ -169,6 +202,25 @@ namespace Larvend.PlotEditor.Serialization
             {
                 Debug.LogError("[ResourceHelper.SaveAudioResource]: " + _e.ToString());
                 return false;
+            }
+        }
+
+        public static async UniTask SaveAudioResourceAsync(AudioResource _resource, string _directoryPath = null)
+        {
+            await UniTask.Yield();
+            _directoryPath ??= Path.Combine(ProjectManager.ProjectFolderPath, $"resources/audio");
+            if (!Directory.Exists(_directoryPath)) Directory.CreateDirectory(_directoryPath);
+
+            try
+            {
+                var _audioPath = Path.Combine(_directoryPath, $"{_resource.Guid}.ogg");
+                if (File.Exists(_audioPath)) File.Delete(_audioPath);
+                
+                OggVorbis.VorbisPlugin.Save(_audioPath, _resource.audioClip);
+            }
+            catch (System.Exception _e)
+            {
+                Debug.LogError("[ResourceHelper.SaveAudioResource]: " + _e.ToString());
             }
         }
     }

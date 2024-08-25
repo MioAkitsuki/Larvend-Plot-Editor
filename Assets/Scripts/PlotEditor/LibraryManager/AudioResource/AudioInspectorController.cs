@@ -50,8 +50,30 @@ namespace Larvend.PlotEditor.UI
             mDuration = transform.Find("Content/Duration").GetComponent<TMP_Text>();
 
             mStop = transform.Find("Content/Control/Stop").GetComponent<Button>();
+            mStop.onClick.AddListener(() => {
+                if (mAudioResource == null || mModel.CurrentAudioResourceController == null) return;
+
+                mModel.CurrentAudioResourceController.Stop();
+            });
             mPlay = transform.Find("Content/Control/Play").GetComponent<Button>();
+            mPlay.onClick.AddListener(() => {
+                if (mAudioResource == null || mModel.CurrentAudioResourceController == null) return;
+
+                if (AudioKit.MusicPlayer.AudioSource.isPlaying)
+                {
+                    mModel.CurrentAudioResourceController.Pause();
+                }
+                else
+                {
+                    mModel.CurrentAudioResourceController.Play();
+                }
+            });
             mForward = transform.Find("Content/Control/Forward").GetComponent<Button>();
+            mForward.onClick.AddListener(() => {
+                if (mAudioResource == null || mModel.CurrentAudioResourceController == null) return;
+
+                mModel.CurrentAudioResourceController.Forward(15f);
+            });
 
             mDelete = transform.Find("Content/Delete").GetComponent<Button>();
             mDelete.onClick.AddListener(() => {
@@ -68,7 +90,7 @@ namespace Larvend.PlotEditor.UI
 
         private void Update()
         {
-            if (mModel.CurrentPlayingAudioResource != null && mModel.CurrentAudioResourceController == mModel.CurrentPlayingAudioResource)
+            if (mAudioResource != null && AudioKit.MusicPlayer.AudioSource != null)
             {
                 var length = mAudioResource.audioClip.length;
                 var duration = new float[] {Mathf.Floor(length / 60f), length % 60f};
@@ -76,6 +98,15 @@ namespace Larvend.PlotEditor.UI
 
                 mDuration.SetText(string.Format("{0:00}:{1:00.000} / {2:00}:{3:00.000}", pointer[0], pointer[1], duration[0], duration[1]));
                 mSlider.SetValueWithoutNotify(AudioKit.MusicPlayer.AudioSource.time / length);
+
+                mPlay.GetComponent<Image>().sprite = AudioKit.MusicPlayer.AudioSource.isPlaying
+                    ? LibraryManagerController.Instance.AudioPreviewSprites[1]
+                    : LibraryManagerController.Instance.AudioPreviewSprites[0];
+            }
+            else
+            {
+                mDuration.SetText("0:00.000 / 0:00.000");
+                mSlider.SetValueWithoutNotify(0);
             }
         }
 

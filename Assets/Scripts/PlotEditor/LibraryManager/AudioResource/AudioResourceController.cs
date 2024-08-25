@@ -89,7 +89,9 @@ namespace Larvend.PlotEditor.UI
             IsPlaying = true;
             previewImg.sprite = LibraryManagerController.Instance.AudioPreviewSprites[1];
 
-            AudioKit.PlayMusic(Data.audioClip, loop: false, onEndCallback: Stop);
+            if (AudioKit.MusicPlayer.AudioSource?.clip == Data.audioClip) AudioKit.ResumeMusic();
+            else AudioKit.PlayMusic(Data.audioClip, loop: false, onEndCallback: Stop);
+
             model.CurrentPlayingAudioResource = this;
         }
 
@@ -99,7 +101,22 @@ namespace Larvend.PlotEditor.UI
             previewImg.sprite = LibraryManagerController.Instance.AudioPreviewSprites[0];
 
             AudioKit.StopMusic();
+            AudioKit.MusicPlayer.AudioSource.time = 0;
+            
             model.CurrentPlayingAudioResource = null;
+        }
+
+        public void Pause()
+        {
+            IsPlaying = false;
+            previewImg.sprite = LibraryManagerController.Instance.AudioPreviewSprites[0];
+
+            AudioKit.PauseMusic();
+        }
+
+        public void Forward(float second)
+        {
+            AudioKit.MusicPlayer.AudioSource.time += second;
         }
 
         public void Dispose()

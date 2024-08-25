@@ -94,7 +94,7 @@ namespace Larvend.PlotEditor.UI
 
             libraryManagerButton = transform.Find("Library/Dropdown/LibraryManager").GetComponent<Button>();
             libraryManagerButton.onClick.AddListener(() => {
-                LibraryManagerController.StateMachine.ChangeState(LibraryManagerController.States.Image);
+                LibraryManagerController.CallUp();
                 libraryManagerButton.GetComponentInParent<DropdownMenu>().toggle.onClick.Invoke();
             });
 

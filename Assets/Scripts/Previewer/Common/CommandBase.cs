@@ -37,6 +37,7 @@ namespace Larvend.PlotEditor
                 BackgroundData backgroundData => new Background(backgroundData),
                 AvatarData avatarData => new Avatar(avatarData),
                 SelectionData selectionData => new Selection(selectionData),
+                GotoData gotoData => new Goto(gotoData),
                 _ => null,
             };
         }

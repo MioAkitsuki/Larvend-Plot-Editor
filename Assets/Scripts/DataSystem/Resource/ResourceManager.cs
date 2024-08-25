@@ -7,6 +7,9 @@ using UnityEngine;
 using YamlDotNet.Serialization;
 using Larvend.PlotEditor.Serialization;
 using Larvend.PlotEditor.UI;
+using Larvend.PlotEditor.Utils;
+using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 
 namespace Larvend.PlotEditor.DataSystem
 {
@@ -75,18 +78,34 @@ namespace Larvend.PlotEditor.DataSystem
             var _path = Dialog.OpenFileDialog(Title: "Select File", InitPath: Application.dataPath, Filter: "Ogg Vorbis (*.ogg)|*.ogg");
 #endif
 
-            if (ResourceHelper.OpenAudioResource(_path, out var _resource))
-            {
-                foreach (var i in Instance.Audios)
+            Instance.LoadAudioResource(_path);
+        }
+
+        private async void LoadAudioResource(object _path)
+        {
+            if (string.IsNullOrEmpty((string)_path)) return;
+            LoadingMask.FadeIn();
+
+            await UniTask.WaitUntil(() => LoadingMask.IsActive);
+            await ResourceHelper.OpenAudioResourceAsync(_path.ToString()).ContinueWith(async res => {
+                if (res != null)
                 {
-                    if (i.Value.Md5 == _resource.Md5) return;
+                    foreach (var i in Instance.Audios)
+                    {
+                        if (i.Value.Md5 == res.Md5)
+                        {
+                            LoadingMask.FadeOut();
+                        }
+                    }
+
+                    Instance.Audios.Add(res.Guid, res);
+                    await ResourceHelper.SaveAudioResourceAsync(res);
+
+                    TypeEventSystem.Global.Send<OnResourcesChangedEvent>();
                 }
+            });
 
-                Instance.Audios.Add(_resource.Guid, _resource);
-                ResourceHelper.SaveAudioResource(_resource);
-
-                TypeEventSystem.Global.Send<OnResourcesChangedEvent>();
-            }
+            LoadingMask.FadeOut();
         }
 
         #endregion
