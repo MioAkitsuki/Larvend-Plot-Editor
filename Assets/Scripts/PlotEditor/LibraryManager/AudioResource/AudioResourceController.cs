@@ -14,7 +14,6 @@ namespace Larvend.PlotEditor.UI
         public AudioResource Data;
 
         public bool IsCurrent = false;
-        private bool IsPlaying = false;
 
         private PlotEditorModel model;
         private ButtonExtension button;
@@ -35,7 +34,7 @@ namespace Larvend.PlotEditor.UI
             nameText = transform.Find("Name").GetComponent<TMP_Text>();
 
             preview.onClick.AddListener(() => {
-                if (IsPlaying)
+                if (AudioKit.MusicPlayer.AudioSource && AudioKit.MusicPlayer.AudioSource.isPlaying)
                 {
                     Stop();
                 }
@@ -58,6 +57,14 @@ namespace Larvend.PlotEditor.UI
             };
 
             TypeEventSystem.Global.Register<OnResourceRefreshEvent>(e => Refresh()).UnRegisterWhenGameObjectDestroyed(gameObject);
+        }
+
+        private void Update()
+        {
+            if (model.CurrentPlayingAudioResource == this)
+            {
+                previewImg.sprite = LibraryManagerController.Instance.AudioPreviewSprites[(AudioKit.MusicPlayer.AudioSource.isPlaying) ? 1 : 0];
+            }
         }
 
         public AudioResourceController Initialize(AudioResource _data)
@@ -86,29 +93,33 @@ namespace Larvend.PlotEditor.UI
 
         public void Play()
         {
-            IsPlaying = true;
             previewImg.sprite = LibraryManagerController.Instance.AudioPreviewSprites[1];
 
-            if (AudioKit.MusicPlayer.AudioSource?.clip == Data.audioClip) AudioKit.ResumeMusic();
-            else AudioKit.PlayMusic(Data.audioClip, loop: false, onEndCallback: Stop);
+            if (AudioKit.MusicPlayer.AudioSource?.clip == Data.audioClip && AudioKit.MusicPlayer.AudioSource?.time > 0f)
+                AudioKit.ResumeMusic();
+            else
+            {
+                AudioKit.StopMusic();
+
+                if (AudioKit.MusicPlayer.AudioSource) AudioKit.MusicPlayer.AudioSource.time = 0f;
+                AudioKit.PlayMusic(Data.audioClip, loop: false, onEndCallback: Stop);
+            }
 
             model.CurrentPlayingAudioResource = this;
         }
 
         public void Stop()
         {
-            IsPlaying = false;
-            previewImg.sprite = LibraryManagerController.Instance.AudioPreviewSprites[0];
-
             AudioKit.StopMusic();
             AudioKit.MusicPlayer.AudioSource.time = 0;
-            
+
+            previewImg.sprite = LibraryManagerController.Instance.AudioPreviewSprites[0];
+
             model.CurrentPlayingAudioResource = null;
         }
 
         public void Pause()
         {
-            IsPlaying = false;
             previewImg.sprite = LibraryManagerController.Instance.AudioPreviewSprites[0];
 
             AudioKit.PauseMusic();
@@ -116,6 +127,11 @@ namespace Larvend.PlotEditor.UI
 
         public void Forward(float second)
         {
+            if (AudioKit.MusicPlayer.AudioSource == null)
+            {
+                AudioKit.PlayMusic(Data.audioClip, loop: false, onEndCallback: Stop);
+                AudioKit.PauseMusic();
+            }
             AudioKit.MusicPlayer.AudioSource.time += second;
         }
 

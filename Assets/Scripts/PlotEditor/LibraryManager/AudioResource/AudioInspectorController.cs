@@ -59,7 +59,7 @@ namespace Larvend.PlotEditor.UI
             mPlay.onClick.AddListener(() => {
                 if (mAudioResource == null || mModel.CurrentAudioResourceController == null) return;
 
-                if (AudioKit.MusicPlayer.AudioSource.isPlaying)
+                if (AudioKit.MusicPlayer.AudioSource && AudioKit.MusicPlayer.AudioSource.isPlaying)
                 {
                     mModel.CurrentAudioResourceController.Pause();
                 }
@@ -90,7 +90,7 @@ namespace Larvend.PlotEditor.UI
 
         private void Update()
         {
-            if (mAudioResource != null && AudioKit.MusicPlayer.AudioSource != null)
+            if (mAudioResource != null && AudioKit.MusicPlayer.AudioSource != null && AudioKit.MusicPlayer.AudioSource.clip == mModel.CurrentPlayingAudioResource.Data.audioClip)
             {
                 var length = mAudioResource.audioClip.length;
                 var duration = new float[] {Mathf.Floor(length / 60f), length % 60f};
