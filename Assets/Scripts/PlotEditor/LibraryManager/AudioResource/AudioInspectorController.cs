@@ -90,7 +90,7 @@ namespace Larvend.PlotEditor.UI
 
         private void Update()
         {
-            if (mAudioResource != null && AudioKit.MusicPlayer.AudioSource != null && AudioKit.MusicPlayer.AudioSource.clip == mModel.CurrentPlayingAudioResource.Data.audioClip)
+            if (mAudioResource != null && AudioKit.MusicPlayer.AudioSource != null && AudioKit.MusicPlayer.AudioSource.clip == mAudioResource.audioClip)
             {
                 var length = mAudioResource.audioClip.length;
                 var duration = new float[] {Mathf.Floor(length / 60f), length % 60f};
@@ -102,11 +102,6 @@ namespace Larvend.PlotEditor.UI
                 mPlay.GetComponent<Image>().sprite = AudioKit.MusicPlayer.AudioSource.isPlaying
                     ? LibraryManagerController.Instance.AudioPreviewSprites[1]
                     : LibraryManagerController.Instance.AudioPreviewSprites[0];
-            }
-            else
-            {
-                mDuration.SetText("0:00.000 / 0:00.000");
-                mSlider.SetValueWithoutNotify(0);
             }
         }
 
@@ -131,6 +126,7 @@ namespace Larvend.PlotEditor.UI
             var length = mAudioResource.audioClip.length;
             var duration = new float[] {Mathf.Floor(length / 60f), length % 60f};
             mDuration.SetText($"0:00.000 / {duration[0]}:{duration[1]:N3}");
+            mSlider.SetValueWithoutNotify(0);
 
             if (mModel.CurrentPlayingAudioResource != null && mModel.CurrentAudioResourceController == mModel.CurrentPlayingAudioResource)
             {

@@ -109,9 +109,40 @@ namespace Larvend.PlotEditor.Serialization
             }
         }
 
+        public static async UniTask<ImageResource> OpenImageResourceAsync(string _path)
+        {
+            if (string.IsNullOrEmpty(ProjectManager.GUID)) return null;
+            if (_path == null || !File.Exists(_path)) return null;
+
+            await UniTask.SwitchToMainThread();
+            try
+            {
+                byte[] data = null;
+                await File.ReadAllBytesAsync(_path).ContinueWith((res) => {
+                    data = res.Result;
+                });
+
+                await UniTask.WaitUntil(() => data != null);
+
+                await UniTask.Yield();
+                var _texture = ImageHelper.LoadImage(_path);
+
+                await UniTask.SwitchToThreadPool();
+                var _guid = System.Guid.NewGuid().ToString("D");
+                var _md5 = new MD5CryptoServiceProvider().ComputeHash(File.ReadAllBytes(_path));
+
+                return new ImageResource(_guid, _path.GetFileNameWithoutExtend(), _texture, BitConverter.ToString(_md5).Replace("-", "").ToLower());
+            }
+            catch (System.Exception _e)
+            {
+                Debug.LogError("[ResourceHelper.OpenImageResourceAsync]: " + _e.ToString());
+                return null;
+            }
+        }
+
         public static bool SaveImageResource(ImageResource _resource, string _directoryPath = null)
         {
-            if (_directoryPath == null) _directoryPath = Path.Combine(ProjectManager.ProjectFolderPath, $"resources/image");
+            _directoryPath ??= Path.Combine(ProjectManager.ProjectFolderPath, $"resources/image");
             if (!Directory.Exists(_directoryPath)) Directory.CreateDirectory(_directoryPath);
 
             try
@@ -125,6 +156,23 @@ namespace Larvend.PlotEditor.Serialization
             {
                 Debug.LogError("[ResourceHelper.SaveImageResource]: " + _e.ToString());
                 return false;
+            }
+        }
+
+        public static async UniTask SaveImageResourceAsync(ImageResource _resource, string _directoryPath = null)
+        {
+            await UniTask.Yield();
+            _directoryPath ??= Path.Combine(ProjectManager.ProjectFolderPath, $"resources/image");
+            if (!Directory.Exists(_directoryPath)) Directory.CreateDirectory(_directoryPath);
+
+            try
+            {
+                var _imagePath = Path.Combine(_directoryPath, $"{_resource.Guid}.png");
+                ImageHelper.SaveImage(_resource.texture, _imagePath);
+            }
+            catch (System.Exception _e)
+            {
+                Debug.LogError("[ResourceHelper.SaveImageResourceAsync]: " + _e.ToString());
             }
         }
 
@@ -179,7 +227,7 @@ namespace Larvend.PlotEditor.Serialization
             }
             catch (System.Exception _e)
             {
-                Debug.LogError("[ResourceHelper.OpenAudioResource]: " + _e.ToString());
+                Debug.LogError("[ResourceHelper.OpenAudioResourceAsync]: " + _e.ToString());
                 return null;
             }
         }
@@ -220,7 +268,7 @@ namespace Larvend.PlotEditor.Serialization
             }
             catch (System.Exception _e)
             {
-                Debug.LogError("[ResourceHelper.SaveAudioResource]: " + _e.ToString());
+                Debug.LogError("[ResourceHelper.SaveAudioResourceAsync]: " + _e.ToString());
             }
         }
     }
@@ -663,6 +711,24 @@ namespace Larvend.PlotEditor.Serialization
             }
         }
 
+        public static Texture2D LoadImage(byte[] _bytes)
+        {
+            if (_bytes == null || _bytes.Length == 0) return null;
+
+            try
+            {
+                Texture2D _texture = new Texture2D(1, 1);
+                _texture.LoadImage(_bytes);
+
+                return _texture;
+            }
+            catch (System.Exception _e)
+            {
+                Debug.LogError("[ImageHelper.LoadImage]: " + _e.ToString());
+                return null;
+            }
+        }
+
         public static void SaveImage(Texture2D _texture, string _path)
         {
             if (_texture == null || string.IsNullOrEmpty(_path)) return;
@@ -671,7 +737,7 @@ namespace Larvend.PlotEditor.Serialization
             try
             {
                 byte[] _bytes = _texture.EncodeToPNG();
-                File.WriteAllBytes(_path, _bytes);
+                File.WriteAllBytesAsync(_path, _bytes);
             }
             catch (System.Exception _e)
             {

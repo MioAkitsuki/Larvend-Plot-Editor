@@ -34,10 +34,14 @@ namespace Larvend.PlotEditor.UI
             nameText = transform.Find("Name").GetComponent<TMP_Text>();
 
             preview.onClick.AddListener(() => {
-                if (AudioKit.MusicPlayer.AudioSource && AudioKit.MusicPlayer.AudioSource.isPlaying)
+                var source = AudioKit.MusicPlayer.AudioSource;
+                if (source == null)
                 {
-                    Stop();
+                    Play();
+                    return;
                 }
+
+                if (source.clip == Data.audioClip && source.isPlaying) Stop();
                 else
                 {
                     model.CurrentPlayingAudioResource?.Stop();
@@ -61,10 +65,11 @@ namespace Larvend.PlotEditor.UI
 
         private void Update()
         {
-            if (model.CurrentPlayingAudioResource == this)
-            {
-                previewImg.sprite = LibraryManagerController.Instance.AudioPreviewSprites[(AudioKit.MusicPlayer.AudioSource.isPlaying) ? 1 : 0];
-            }
+            // if (model.CurrentPlayingAudioResource == this)
+            // {
+            //     previewImg.sprite = LibraryManagerController.Instance.AudioPreviewSprites[AudioKit.MusicPlayer.AudioSource.isPlaying ? 1 : 0];
+            // }
+            // else previewImg.sprite = LibraryManagerController.Instance.AudioPreviewSprites[0];
         }
 
         public AudioResourceController Initialize(AudioResource _data)

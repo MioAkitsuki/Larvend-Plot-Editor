@@ -43,18 +43,32 @@ namespace Larvend.PlotEditor.DataSystem
             var _path = Dialog.OpenFileDialog(Title: "Select File", InitPath: Application.dataPath, Filter: "Supported Image Format (*.png, *.jpg, *.jpeg)|*.png;*.jpg;*.jpeg;*.jfif");
 #endif
 
-            if (ResourceHelper.OpenImageResource(_path, out var _resource))
-            {
-                foreach (var i in Instance.Images)
+            Instance.LoadImageResource(_path);
+        }
+
+        private async void LoadImageResource(object _path)
+        {
+            if (string.IsNullOrEmpty((string)_path)) return;
+            LoadingMask.FadeIn();
+
+            await UniTask.WaitUntil(() => LoadingMask.IsActive);
+            await ResourceHelper.OpenImageResourceAsync(_path.ToString()).ContinueWith(async res => {
+                if (res != null)
                 {
-                    if (i.Value.Md5 == _resource.Md5) return;
+                    foreach (var i in Instance.Images)
+                    {
+                        if (i.Value.Md5 == res.Md5) return;
+                    }
+
+                    Instance.Images.Add(res.Guid, res);
+                    await ResourceHelper.SaveImageResourceAsync(res);
+
+                    TypeEventSystem.Global.Send<OnResourcesChangedEvent>();
                 }
+            });
 
-                Instance.Images.Add(_resource.Guid, _resource);
-                ResourceHelper.SaveImageResource(_resource);
-
-                TypeEventSystem.Global.Send<OnResourcesChangedEvent>();
-            }
+            await UniTask.Yield();
+            LoadingMask.FadeOut();
         }
 
         #endregion
@@ -105,6 +119,7 @@ namespace Larvend.PlotEditor.DataSystem
                 }
             });
 
+            await UniTask.Yield();
             LoadingMask.FadeOut();
         }
 
