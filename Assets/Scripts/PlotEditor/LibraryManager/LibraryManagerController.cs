@@ -180,6 +180,8 @@ namespace Larvend.PlotEditor.UI
                 mTarget.mAudioManager.blocksRaycasts = false;
                 mTarget.mAudioManager.interactable = false;
 
+                mTarget.mImageManagerToggle.SetIsOnWithoutNotify(true);
+
                 mTarget.StartCoroutine(CanvasGroupHelper.FadeCanvasGroup(mTarget.mCanvasGroup, 1f, 0.1f));
             }
 
@@ -200,6 +202,8 @@ namespace Larvend.PlotEditor.UI
                 mTarget.mAudioManager.alpha = 1f;
                 mTarget.mAudioManager.blocksRaycasts = true;
                 mTarget.mAudioManager.interactable = true;
+
+                mTarget.mAudioManagerToggle.SetIsOnWithoutNotify(true);
 
                 mTarget.StartCoroutine(CanvasGroupHelper.FadeCanvasGroup(mTarget.mCanvasGroup, 1f, 0.1f));
             }

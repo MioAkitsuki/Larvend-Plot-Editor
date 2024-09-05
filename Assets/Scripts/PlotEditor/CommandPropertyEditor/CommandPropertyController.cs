@@ -17,7 +17,8 @@ namespace Larvend.PlotEditor.UI
             Background,
             Avatar,
             Selection,
-            Goto
+            Goto,
+            Music
         }
 
         private PlotEditorModel mModel;
@@ -56,6 +57,7 @@ namespace Larvend.PlotEditor.UI
             stateMachine.AddState(States.Avatar, new AvatarState(stateMachine, this));
             stateMachine.AddState(States.Selection, new SelectionState(stateMachine, this));
             stateMachine.AddState(States.Goto, new GotoState(stateMachine, this));
+            stateMachine.AddState(States.Music, new MusicState(stateMachine, this));
 
             stateMachine.StartState(States.None);
         }
@@ -86,6 +88,9 @@ namespace Larvend.PlotEditor.UI
                 case CommandType.Goto:
                     GotoPropertyController.Instance.Refresh();
                     break;
+                case CommandType.Music:
+                    MusicPropertyController.Instance.Refresh();
+                    break;
             }
 
             if (stateMachine.CurrentStateId != States.None)
@@ -113,6 +118,9 @@ namespace Larvend.PlotEditor.UI
                     break;
                 case CommandType.Goto:
                     stateMachine.ChangeState(States.Goto);
+                    break;
+                case CommandType.Music:
+                    stateMachine.ChangeState(States.Music);
                     break;
                 default:
                     stateMachine.ChangeState(States.None);
@@ -156,10 +164,12 @@ namespace Larvend.PlotEditor.UI
                 var rect = mTarget.GetComponent<RectTransform>();
                 var targetPos = new Vector2(0f, -30f);
 
+                Vector2 v = Vector2.zero;
+
                 mTarget.StartCoroutine(CanvasGroupHelper.FadeCanvasGroup(mTarget.mMaskCanvasGroup, 0f, 0.15f));
                 while (!Mathf.Approximately(rect.anchoredPosition.x, 0f))
                 {
-                    rect.anchoredPosition = Vector2.Lerp(rect.anchoredPosition, targetPos, 0.2f);
+                    rect.anchoredPosition = Vector2.SmoothDamp(rect.anchoredPosition, targetPos, ref v, 0.2f);
                     yield return new WaitForFixedUpdate();
                 }
                 rect.anchoredPosition = targetPos;
@@ -172,10 +182,12 @@ namespace Larvend.PlotEditor.UI
                 var rect = mTarget.GetComponent<RectTransform>();
                 var targetPos = new Vector2(400f, -30f);
 
+                Vector2 v = Vector2.zero;
+
                 mTarget.StartCoroutine(CanvasGroupHelper.FadeCanvasGroup(mTarget.mMaskCanvasGroup, 1f, 0.15f));
                 while (!Mathf.Approximately(rect.anchoredPosition.x, 400f))
                 {
-                    rect.anchoredPosition = Vector2.Lerp(rect.anchoredPosition, targetPos, 0.2f);
+                    rect.anchoredPosition = Vector2.SmoothDamp(rect.anchoredPosition, targetPos, ref v, 0.2f);
                     yield return new WaitForFixedUpdate();
                 }
                 rect.anchoredPosition = targetPos;
@@ -281,6 +293,26 @@ namespace Larvend.PlotEditor.UI
                 GotoPropertyController.Instance.mCanvasGroup.alpha = 0f;
                 GotoPropertyController.Instance.mCanvasGroup.interactable = false;
                 GotoPropertyController.Instance.mCanvasGroup.blocksRaycasts = false;
+            }
+        }
+
+        public class MusicState : AbstractState<States, CommandPropertyController>
+        {
+            public MusicState(FSM<States> fsm, CommandPropertyController target) : base(fsm, target) {}
+            protected override bool OnCondition() => mFSM.CurrentStateId != States.Music;
+
+            protected override void OnEnter()
+            {
+                MusicPropertyController.Instance.mCanvasGroup.alpha = 1f;
+                MusicPropertyController.Instance.mCanvasGroup.interactable = true;
+                MusicPropertyController.Instance.mCanvasGroup.blocksRaycasts = true;
+            }
+
+            protected override void OnExit()
+            {
+                MusicPropertyController.Instance.mCanvasGroup.alpha = 0f;
+                MusicPropertyController.Instance.mCanvasGroup.interactable = false;
+                MusicPropertyController.Instance.mCanvasGroup.blocksRaycasts = false;
             }
         }
     }

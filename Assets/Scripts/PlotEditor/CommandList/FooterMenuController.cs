@@ -21,6 +21,7 @@ namespace Larvend.PlotEditor.UI
         private Button addSelectionCommandButton;
         private Button addSleepCommandButton;
         private Button addGotoCommandButton;
+        private Button addMusicCommandButton;
 
         #endregion
 
@@ -74,6 +75,10 @@ namespace Larvend.PlotEditor.UI
             addGotoCommandButton = transform.Find("AddCommand/Dropdown/Goto").GetComponent<Button>();
             addGotoCommandButton.onClick.AddListener(() => {
                 this.SendCommand(new AddCommandCommand(DataSystem.CommandType.Goto));
+            });
+            addMusicCommandButton = transform.Find("AddCommand/Dropdown/Music").GetComponent<Button>();
+            addMusicCommandButton.onClick.AddListener(() => {
+                this.SendCommand(new AddCommandCommand(DataSystem.CommandType.Music));
             });
 
             removeCommandButton = transform.Find("RemoveCommand").GetComponent<Button>();

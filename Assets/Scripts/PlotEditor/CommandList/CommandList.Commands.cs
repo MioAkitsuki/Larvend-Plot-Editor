@@ -43,6 +43,9 @@ namespace Larvend.PlotEditor.UI
                 case CommandType.Goto:
                     data = Data == null ? GotoData.Default : Data as GotoData;
                     break;
+                case CommandType.Music:
+                    data = Data == null ? MusicData.Default : Data as MusicData;
+                    break;
             }
             ProjectManager.AddCommand(data);
 
@@ -91,6 +94,9 @@ namespace Larvend.PlotEditor.UI
                 case CommandType.Goto:
                     data = Data == null ? GotoData.Default : Data as GotoData;
                     break;
+                case CommandType.Music:
+                    data = Data == null ? MusicData.Default : Data as MusicData;
+                    break;
             }
 
             var index = ProjectManager.InsertCommand(data, model.CurrentCommandController.Value.Data.Guid, false);
@@ -134,6 +140,15 @@ namespace Larvend.PlotEditor.UI
                     break;
                 case CommandType.Selection:
                     data = Data == null ? SelectionData.Default : Data as SelectionData;
+                    break;
+                case CommandType.Sleep:
+                    data = Data == null ? SleepData.Default : Data as SleepData;
+                    break;
+                case CommandType.Goto:
+                    data = Data == null ? GotoData.Default : Data as GotoData;
+                    break;
+                case CommandType.Music:
+                    data = Data == null ? MusicData.Default : Data as MusicData;
                     break;
             }
 

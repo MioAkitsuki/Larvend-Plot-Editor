@@ -333,6 +333,7 @@ namespace Larvend.PlotEditor.Serialization
                     .WithTagMapping("!selection", typeof(SelectionData))
                     .WithTagMapping("!sleep", typeof(SleepData))
                     .WithTagMapping("!goto", typeof(GotoData))
+                    .WithTagMapping("!music", typeof(MusicData))
                     .WithIndentedSequences()
                     .Build();
                 
@@ -363,6 +364,7 @@ namespace Larvend.PlotEditor.Serialization
                     .WithTagMapping("!selection", typeof(SelectionData))
                     .WithTagMapping("!sleep", typeof(SleepData))
                     .WithTagMapping("!goto", typeof(GotoData))
+                    .WithTagMapping("!music", typeof(MusicData))
                     .IgnoreUnmatchedProperties()
                     .Build();
                 
